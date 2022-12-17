@@ -24,6 +24,13 @@ function MyScreen:render()
 		
 	dfhack.imgui.TextColored(test_colour, "Bottom text")
 	dfhack.imgui.Text("After Col")
+	
+	dfhack.imgui.Text("On Line")
+	
+	dfhack.imgui.SameLine()
+	
+	dfhack.imgui.Text("Line continuation")
+	
 	dfhack.imgui.End()
 end
 
