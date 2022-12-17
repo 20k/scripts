@@ -6,6 +6,7 @@ state = false;
 
 function MyScreen:render()
 	self:renderParent()
+	
     dfhack.imgui.Begin("Script Title");
 	dfhack.imgui.Text("Help I'm Trapped In A Script!!")
 	
@@ -14,8 +15,12 @@ function MyScreen:render()
 	end
 	
 	dfhack.imgui.Text("Button State: " .. tostring(state))
+	dfhack.imgui.End()
 	
-	dfhack.imgui.End();
+	dfhack.imgui.Begin("Script 2")
+	dfhack.imgui.Text("Two Windows! Send Help")
+	dfhack.imgui.Text("Bottom text")
+	dfhack.imgui.End()
 end
 
 screen = MyScreen{ }:show()
