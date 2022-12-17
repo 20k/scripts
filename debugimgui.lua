@@ -19,7 +19,11 @@ function MyScreen:render()
 	
 	dfhack.imgui.Begin("Script 2")
 	dfhack.imgui.Text("Two Windows! Send Help")
-	dfhack.imgui.Text("Bottom text")
+	
+	local test_colour = dfhack.imgui.Name2Col("RED", "RED", 0)
+		
+	dfhack.imgui.TextColored(test_colour, "Bottom text")
+	dfhack.imgui.Text("After Col")
 	dfhack.imgui.End()
 end
 
