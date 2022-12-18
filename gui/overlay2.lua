@@ -63,10 +63,18 @@ function OverlayConfig:render()
 	end
 		
 	dfhack.imgui.InputText("##InputSearch", self.searchtext)
+	
+	local real_search = dfhack.imgui.Get(self.searchtext)
 		
 	local to_set = {}
 	
 	for _,name in ipairs(state.index) do
+		if(#real_search > 0) then
+			if(string.find(name, real_search) == nil) then
+				goto continue
+			end
+		end
+	
 		local db_entry = state.db[name]
         local widget = db_entry.widget
         if not widget.hotspot and filterState ~= 1 then
