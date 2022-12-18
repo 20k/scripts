@@ -33,7 +33,14 @@ function OverlayConfig:render()
 	
 	local state = overlay.get_state()
 	
-	dfhack.imgui.Text("Current screen: " .. self.scr_name)
+	local cyan = dfhack.imgui.Name2Col("CYAN", "BLACK", false)
+	local light_cyan = dfhack.imgui.Name2Col("LIGHTCYAN", "BLACK", false)
+		
+	dfhack.imgui.Text("Current screen: ")
+	
+	dfhack.imgui.SameLine()
+	
+	dfhack.imgui.TextColored(cyan, self.scr_name)
 	
 	local filter_name = "Showing: " .. get_filter_name(filterState)
 	
@@ -62,8 +69,7 @@ function OverlayConfig:render()
 		local col = cfg.enabled and "LIGHTGREEN" or "YELLOW"
 		local txt = cfg.enabled and "enabled" or "disabled"
 		
-		local col_imgui = dfhack.imgui.Name2Col("BLACK", col, false)
-
+		local col_imgui = dfhack.imgui.Name2Col(col, "BLACK", false)
 		local style_index = dfhack.imgui.StyleIndex("ImGuiCol_Text")
 		
 		dfhack.imgui.PushStyleColor(style_index, col_imgui)
@@ -84,7 +90,11 @@ function OverlayConfig:render()
 		
 		dfhack.imgui.SameLine()
 		
-		dfhack.imgui.Text(name)
+		if(not cfg.enabled) then
+			dfhack.imgui.TextColored(cyan, name)
+		else
+			dfhack.imgui.TextColored(light_cyan, name)
+		end
 		
 		::continue::
 	end
