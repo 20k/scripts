@@ -31,6 +31,10 @@ end
 function OverlayConfig:render()
 	self:renderParent()
 	
+	if(dfhack.imgui.IsKeyPressed(27)) then
+		self:dismiss()
+	end
+	
 	dfhack.imgui.Begin("Overlay ImGui Config")
 	
 	local state = overlay.get_state()
@@ -50,7 +54,11 @@ function OverlayConfig:render()
 		filterState = (filterState + 1) % 2
 	end
 	
-	dfhack.imgui.InputText("Search: ", self.searchtext)
+	dfhack.imgui.Text("Search:")
+	
+	dfhack.imgui.SameLine()
+	
+	dfhack.imgui.InputText("##InputSearch", self.searchtext)
 	
 	local to_set = {}
 	
@@ -111,6 +119,10 @@ function OverlayConfig:render()
 	
 		overlay.overlay_command({command, name}, true)
 	end
+end
+
+function OverlayConfig:onDismiss()
+    view = nil
 end
 
 if dfhack_flags.module then
