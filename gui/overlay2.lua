@@ -24,10 +24,8 @@ OverlayConfig = defclass(OverlayConfig, gui.Screen)
 function OverlayConfig:init()
 	self.scr_name = overlay.simplify_viewscreen_name(
             getmetatable(dfhack.gui.getCurViewscreen(true)))
-			
+
 	self.searchtext = dfhack.imgui.Ref("")
-	
-	self.was_focused = false;
 end
 
 function OverlayConfig:render()
@@ -59,19 +57,13 @@ function OverlayConfig:render()
 	dfhack.imgui.Text("Search:")
 	
 	dfhack.imgui.SameLine()
-	
-	dfhack.imgui.InputText("##InputSearch", self.searchtext)
-	
-	dfhack.imgui.SetItemDefaultFocus();
-	
-	local is_focused = dfhack.imgui.IsWindowFocused(0)
-	
-	if(is_focused ~= self.was_focused and is_focused) then
-		dfhack.imgui.SetKeyboardFocusHere(-1);
+		
+	if((dfhack.imgui.IsWindowFocused(0) or dfhack.imgui.IsWindowFocused(4)) and not dfhack.imgui.IsAnyItemActive()) then
+		dfhack.imgui.SetKeyboardFocusHere(0);
 	end
-	
-	self.was_focused = is_focused;
-	
+		
+	dfhack.imgui.InputText("##InputSearch", self.searchtext)
+		
 	local to_set = {}
 	
 	for _,name in ipairs(state.index) do
