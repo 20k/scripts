@@ -56,12 +56,18 @@ function OverlayConfig:render()
             end
             if not matched then goto continue end
         end
-	
+
 		local cfg = state.config[name]
-	
+
 		local col = cfg.enabled and "LIGHTGREEN" or "YELLOW"
 		local txt = cfg.enabled and "enabled" or "disabled"
 		
+		local col_imgui = dfhack.imgui.Name2Col("BLACK", col, false)
+
+		local style_index = dfhack.imgui.StyleIndex("ImGuiCol_Text")
+		
+		dfhack.imgui.PushStyleColor(style_index, col_imgui)
+
 		if(dfhack.imgui.Button("[" .. txt .. "]##" .. name)) then
 			cfg.enabled = not cfg.enabled
 			
@@ -73,6 +79,8 @@ function OverlayConfig:render()
 			
 			to_set[name] = command;
 		end
+		
+		dfhack.imgui.PopStyleColor(1)
 		
 		dfhack.imgui.SameLine()
 		
