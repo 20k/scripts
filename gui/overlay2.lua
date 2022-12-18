@@ -26,6 +26,8 @@ function OverlayConfig:init()
             getmetatable(dfhack.gui.getCurViewscreen(true)))
 			
 	self.searchtext = dfhack.imgui.Ref("")
+	
+	self.was_focused = false;
 end
 
 function OverlayConfig:render()
@@ -59,6 +61,16 @@ function OverlayConfig:render()
 	dfhack.imgui.SameLine()
 	
 	dfhack.imgui.InputText("##InputSearch", self.searchtext)
+	
+	dfhack.imgui.SetItemDefaultFocus();
+	
+	local is_focused = dfhack.imgui.IsWindowFocused(0)
+	
+	if(is_focused ~= self.was_focused and is_focused) then
+		dfhack.imgui.SetKeyboardFocusHere(-1);
+	end
+	
+	self.was_focused = is_focused;
 	
 	local to_set = {}
 	
