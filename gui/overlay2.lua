@@ -30,11 +30,23 @@ function OverlayConfig:init()
 	self.drag_name = ""
 end
 
-function on_drop(name, delta)
-	--overlay.overlay_command({'position', name, posx, posy},true)
-	
+function on_drag(name, delta)
 	local state = overlay.get_state()
+	local db_entry = state.db[name]
+	local widget = db_entry.widget
+
+	local my_config = state.config[name];
 	
+	local next_x = tonumber(my_config.pos.x) + delta[1]
+	local next_y = tonumber(my_config.pos.y) + delta[2]
+	
+	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
+
+	dfhack.imgui.ResetMouseDragDelta(0)
+end
+
+function on_drop(name, delta)
+	local state = overlay.get_state()
 	local my_config = state.config[name];
 	
 	local next_x = tonumber(my_config.pos.x) + delta[1]
@@ -125,8 +137,10 @@ function OverlayConfig:render()
 			end
 			
 			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, frame_colour)
-
-			--overlay.overlay_command({'position', name, posx, posy},true)
+		end
+		
+		if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
+			on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
 		end
 
 		local cfg = state.config[name]
@@ -151,7 +165,15 @@ function OverlayConfig:render()
 			to_set[name] = command;
 		end
 		
-		dfhack.imgui.PopStyleColor(1)
+		dfhack.imgui.PushStyleColor(style_index, dfhack.imgui.Name2Col("RED", "BLACK", false))
+		
+		dfhack.imgui.SameLine()
+		
+		if dfhack.imgui.Button("[R]##"..name) then
+			overlay.overlay_command({'position', name, 'default'}, true)
+		end
+		
+		dfhack.imgui.PopStyleColor(2)
 		
 		dfhack.imgui.SameLine()
 		
