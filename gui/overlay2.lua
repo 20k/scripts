@@ -24,6 +24,8 @@ OverlayConfig = defclass(OverlayConfig, gui.Screen)
 function OverlayConfig:init()
 	self.scr_name = overlay.simplify_viewscreen_name(
             getmetatable(dfhack.gui.getCurViewscreen(true)))
+			
+	self.searchtext = dfhack.imgui.Ref("")
 end
 
 function OverlayConfig:render()
@@ -47,6 +49,8 @@ function OverlayConfig:render()
 	if(dfhack.imgui.Button(filter_name)) then
 		filterState = (filterState + 1) % 2
 	end
+	
+	dfhack.imgui.InputText("Search: ", self.searchtext)
 	
 	local to_set = {}
 	
