@@ -26,6 +26,21 @@ function OverlayConfig:init()
             getmetatable(dfhack.gui.getCurViewscreen(true)))
 
 	self.searchtext = dfhack.imgui.Ref("")
+	self.dragging = false
+	self.drag_name = ""
+end
+
+function on_drop(name, delta)
+	--overlay.overlay_command({'position', name, posx, posy},true)
+	
+	local state = overlay.get_state()
+	
+	local my_config = state.config[name];
+	
+	local next_x = tonumber(my_config.pos.x) + delta[1]
+	local next_y = tonumber(my_config.pos.y) + delta[2]
+	
+	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)	
 end
 
 function OverlayConfig:render()
@@ -102,6 +117,11 @@ function OverlayConfig:render()
 			if mouse_pos[1] >= rect.x1-1 and mouse_pos[1] <= rect.x2 + 1 
 			    and mouse_pos[2] >= rect.y1-1 and mouse_pos[2] <= rect.y2 + 1 then
 				dfhack.imgui.AddBackgroundRectFilled({rect.x1, rect.y1}, {rect.x2, rect.y2}, frame_highlight_colour)				
+
+				if dfhack.imgui.IsMouseDragging(0) and not self.dragging then
+					self.drag_name = name;
+					self.dragging = true;
+				end
 			end
 			
 			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, frame_colour)
@@ -145,6 +165,11 @@ function OverlayConfig:render()
 	end
 
 	dfhack.imgui.End();
+	
+	if self.dragging and not dfhack.imgui.IsMouseDragging(0) then
+		self.dragging = false;
+		on_drop(self.drag_name, dfhack.imgui.GetMouseDragDelta(0))
+	end
 	
 	for name, command in pairs(to_set) do
 		--dfhack.imgui.Text(name)
