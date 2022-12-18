@@ -41,7 +41,7 @@ function OverlayConfig:render()
 	--local mouse_col = dfhack.imgui.Name2Col("WHITE", "WHITE", false)
 	--dfhack.imgui.AddRectFilled({mouse_pos[1], mouse_pos[2]}, {mouse_pos[1], mouse_pos[2]}, mouse_col)
 	
-	local frame_highlight_colour = dfhack.imgui.Name2Col("WHITE", "WHITE", false)
+	local frame_highlight_colour = dfhack.imgui.Name2Col("GREEN", "GREEN", false)
 	
 	local state = overlay.get_state()
 	
@@ -96,23 +96,11 @@ function OverlayConfig:render()
 		
 		if not widget.overlay_only then
 			local frame = widget.frame
-			
-			--local posx = frame.l and (frame.l+2)
-            --                or (-(frame.r+2))
-			--local posy = frame.t and (frame.t+2)
-            --                or (-(frame.b+2))
-				
-			--local width = frame.w
-			--local height = frame.h
-			
 			local rect = widget.frame_rect
 			
 			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, frame_highlight_colour)
-			
 			dfhack.imgui.Text(tostring(rect.x1) .. "/" .. tostring(rect.y1))
-			
-			--dfhack.imgui.AddBackgroundRectFilled({rect.x1, rect.y1}, {rect.x2, rect.y2}, frame_highlight_colour)
-							
+
 			--overlay.overlay_command({'position', name, posx, posy},true)
 		end
 
