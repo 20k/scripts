@@ -37,6 +37,10 @@ function OverlayConfig:render()
 	
 	dfhack.imgui.Begin("Overlay ImGui Config")
 	
+	--local mouse_pos = dfhack.imgui.GetMousePos();
+	--local mouse_col = dfhack.imgui.Name2Col("WHITE", "WHITE", false)
+	--dfhack.imgui.AddRectFilled({mouse_pos[1], mouse_pos[2]}, {mouse_pos[1], mouse_pos[2]}, mouse_col)
+	
 	local state = overlay.get_state()
 	
 	local cyan = dfhack.imgui.Name2Col("CYAN", "BLACK", false)
@@ -57,7 +61,7 @@ function OverlayConfig:render()
 	dfhack.imgui.Text("Search:")
 	
 	dfhack.imgui.SameLine()
-		
+
 	if((dfhack.imgui.IsWindowFocused(0) or dfhack.imgui.IsWindowFocused(4)) and not dfhack.imgui.IsAnyItemActive()) then
 		dfhack.imgui.SetKeyboardFocusHere(0);
 	end
