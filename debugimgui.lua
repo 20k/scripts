@@ -7,6 +7,10 @@ state = false;
 function MyScreen:render()
 	self:renderParent()
 	
+	if(dfhack.imgui.IsKeyPressed(27)) then
+		self:dismiss()
+	end
+	
     dfhack.imgui.Begin("Script Title");
 	dfhack.imgui.Text("Help I'm Trapped In A Script!!")
 	
@@ -30,6 +34,12 @@ function MyScreen:render()
 	dfhack.imgui.SameLine()
 	
 	dfhack.imgui.Text("Line continuation")
+	
+	for i = 0,512 do
+		if(dfhack.imgui.IsKeyPressed(i)) then
+			dfhack.imgui.Text(tostring(i))
+		end
+	end
 	
 	dfhack.imgui.End()
 end
