@@ -41,7 +41,49 @@ function on_drag(cfg, name, delta)
 	
 	local next_x = tonumber(my_config.pos.x) + delta[1]
 	local next_y = tonumber(my_config.pos.y) + delta[2]
-			
+	
+	local display_size = dfhack.imgui.GetDisplaySize()
+	
+	if tonumber(my_config.pos.x) > 0 then
+		if next_x < 1 then
+			next_x = 1
+		end
+		
+		if next_x >= display_size[1] - 1 then
+			next_x = display_size[1] - 1
+		end
+	end
+
+	if tonumber(my_config.pos.x) < 0 then
+		if next_x < -display_size[1] + 1 then
+			next_x = -display_size[1] + 1
+		end
+		
+		if next_x >= -1 then
+			next_x = -1
+		end
+	end
+
+	if tonumber(my_config.pos.y) > 0 then
+		if next_y < 1 then
+			next_y = 1
+		end
+		
+		if next_y >= display_size[2] - 1 then
+			next_y = display_size[2] - 1
+		end
+	end
+	
+	if tonumber(my_config.pos.y) < 0 then
+		if next_y < -display_size[2] + 1 then
+			next_y = -display_size[2] + 1
+		end
+
+		if next_y >= -1 then
+			next_y = -1
+		end
+	end
+
 	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
 		
 	dfhack.imgui.ResetMouseDragDelta(0)
