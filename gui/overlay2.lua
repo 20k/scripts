@@ -30,6 +30,18 @@ function OverlayConfig:init()
 	self.drag_name = ""
 end
 
+function clamp(x, left, right)
+	if x < left then
+		return left
+	end
+	
+	if x > right then
+		return right
+	end
+	
+	return x
+end
+
 function on_drag(cfg, name, delta)
 	local state = overlay.get_state()
 	local db_entry = state.db[name]
@@ -45,43 +57,19 @@ function on_drag(cfg, name, delta)
 	local display_size = dfhack.imgui.GetDisplaySize()
 	
 	if tonumber(my_config.pos.x) > 0 then
-		if next_x < 1 then
-			next_x = 1
-		end
-		
-		if next_x >= display_size[1] - 1 then
-			next_x = display_size[1] - 1
-		end
+		next_x = clamp(next_x, 1, display_size[1] - 1)
 	end
 
 	if tonumber(my_config.pos.x) < 0 then
-		if next_x < -display_size[1] + 1 then
-			next_x = -display_size[1] + 1
-		end
-		
-		if next_x >= -1 then
-			next_x = -1
-		end
+		next_x = clamp(next_x, -display_size[1] + 1, -1)
 	end
 
 	if tonumber(my_config.pos.y) > 0 then
-		if next_y < 1 then
-			next_y = 1
-		end
-		
-		if next_y >= display_size[2] - 1 then
-			next_y = display_size[2] - 1
-		end
+		next_y = clamp(next_y, 1, display_size[2] - 1)
 	end
 	
 	if tonumber(my_config.pos.y) < 0 then
-		if next_y < -display_size[2] + 1 then
-			next_y = -display_size[2] + 1
-		end
-
-		if next_y >= -1 then
-			next_y = -1
-		end
+		next_y = clamp(next_y, -display_size[2] + 1, -1)
 	end
 
 	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
