@@ -69,18 +69,8 @@ function on_drag(name, delta)
 	end
 
 	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
-		
-	dfhack.imgui.ResetMouseDragDelta(0)
-end
 
-function on_drop(name, delta)
-	local state = overlay.get_state()
-	local my_config = state.config[name];
-	
-	local next_x = tonumber(my_config.pos.x) + delta[1]
-	local next_y = tonumber(my_config.pos.y) + delta[2]
-	
-	--overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)	
+	dfhack.imgui.ResetMouseDragDelta(0)
 end
 
 function OverlayConfig:render()
@@ -303,12 +293,12 @@ function OverlayConfig:render()
 		if not widget.overlay_only then
 			local frame = widget.frame
 			local rect = widget.frame_rect
-						
+
 			if mouse_pos[1] >= rect.x1-1 and mouse_pos[1] <= rect.x2 + 1 
 			    and mouse_pos[2] >= rect.y1-1 and mouse_pos[2] <= rect.y2 + 1 then
 				dfhack.imgui.AddBackgroundRectFilled({rect.x1, rect.y1}, {rect.x2, rect.y2}, frame_highlight_colour)				
 
-				if dfhack.imgui.IsMouseDragging(0) and not self.dragging then
+				if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
 					self.drag_name = name;
 					self.dragging = true;
 				end
@@ -332,7 +322,6 @@ function OverlayConfig:render()
 	
 	if self.dragging and not dfhack.imgui.IsMouseDragging(0) then
 		self.dragging = false;
-		on_drop(self.drag_name, dfhack.imgui.GetMouseDragDelta(0))
 	end
 	
 	if not any_hovered then
@@ -340,15 +329,20 @@ function OverlayConfig:render()
 	end
 	
 	for name, command in pairs(to_set) do
-		--dfhack.imgui.Text(name)
-		--dfhack.imgui.Text(command)
-	
 		overlay.overlay_command({command, name}, true)
 	end
 end
 
 function OverlayConfig:onDismiss()
     view = nil
+end
+
+function OverlayConfig:onInput(keys)
+	if dfhack.imgui.WantCaptureKeyboard() then
+		return true
+	end
+	
+	return self:inputToSubviews(keys)
 end
 
 if dfhack_flags.module then
