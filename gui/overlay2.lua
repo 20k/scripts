@@ -154,6 +154,12 @@ function OverlayConfig:render()
         end
 		
 		local cfg = state.config[name]
+		
+		local textcolor = light_cyan
+		
+		if(not cfg.enabled) then
+			textcolor = cyan
+		end
 
 		local col = cfg.enabled and "LIGHTGREEN" or "YELLOW"
 		local txt = cfg.enabled and "enabled" or "disabled"
@@ -165,7 +171,10 @@ function OverlayConfig:render()
 		
 		dfhack.imgui.PushStyleColor(style_index, col_imgui)
 
-		if(dfhack.imgui.Button("[" .. txt .. "]##" .. name)) then
+		dfhack.imgui.TextColored(textcolor, "[")
+		dfhack.imgui.SameLine(0,0)
+
+		if(dfhack.imgui.Button(txt.. "##" .. name)) then
 			cfg.enabled = not cfg.enabled
 			
 			local command = 'disable'
@@ -177,13 +186,23 @@ function OverlayConfig:render()
 			to_set[name] = command;
 		end
 		
+		dfhack.imgui.SameLine(0,0)
+		dfhack.imgui.TextColored(textcolor, "]")
+		
 		dfhack.imgui.PushStyleColor(style_index, dfhack.imgui.Name2Col("RED", "BLACK", false))
 		
 		dfhack.imgui.SameLine()
 		
-		if dfhack.imgui.Button("[Reset]##"..name) then
+		dfhack.imgui.TextColored(textcolor, "[")
+		dfhack.imgui.SameLine(0,0)
+		
+		if dfhack.imgui.Button("reset##"..name) then
 			overlay.overlay_command({'position', name, 'default'}, true)
 		end
+		
+		dfhack.imgui.SameLine(0,0)
+		dfhack.imgui.TextColored(textcolor, "]")
+		
 		
 		dfhack.imgui.PushStyleColor(style_index, dfhack.imgui.Name2Col("YELLOW", "BLACK", false))
 		
@@ -252,12 +271,6 @@ function OverlayConfig:render()
 		dfhack.imgui.PopStyleColor(3)
 		
 		dfhack.imgui.SameLine()
-		
-		local textcolor = light_cyan
-		
-		if(not cfg.enabled) then
-			textcolor = cyan
-		end
 		
 		if self.hovered == name then
 			textcolor = dfhack.imgui.Name2Col("LIGHTMAGENTA", "BLACK", false)
