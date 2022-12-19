@@ -30,18 +30,20 @@ function OverlayConfig:init()
 	self.drag_name = ""
 end
 
-function on_drag(name, delta)
+function on_drag(cfg, name, delta)
 	local state = overlay.get_state()
 	local db_entry = state.db[name]
 	local widget = db_entry.widget
-
+	local frame = widget.frame
+	local frame_rect = widget.frame_rect
+	
 	local my_config = state.config[name];
 	
 	local next_x = tonumber(my_config.pos.x) + delta[1]
 	local next_y = tonumber(my_config.pos.y) + delta[2]
-	
+			
 	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
-
+		
 	dfhack.imgui.ResetMouseDragDelta(0)
 end
 
@@ -52,7 +54,7 @@ function on_drop(name, delta)
 	local next_x = tonumber(my_config.pos.x) + delta[1]
 	local next_y = tonumber(my_config.pos.y) + delta[2]
 	
-	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)	
+	--overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)	
 end
 
 function OverlayConfig:render()
@@ -61,6 +63,8 @@ function OverlayConfig:render()
 	if(dfhack.imgui.IsKeyPressed(27)) then
 		self:dismiss()
 	end
+	
+	local display_size = dfhack.imgui.GetDisplaySize()
 	
 	dfhack.imgui.Begin("Overlay ImGui Config")
 	
@@ -154,7 +158,55 @@ function OverlayConfig:render()
 			overlay.overlay_command({'position', name, 'default'}, true)
 		end
 		
-		dfhack.imgui.PopStyleColor(2)
+		dfhack.imgui.PushStyleColor(style_index, dfhack.imgui.Name2Col("YELLOW", "BLACK", false))
+		
+		dfhack.imgui.SameLine()
+		
+		local next_x = cfg.pos.x
+		local next_y = cfg.pos.y
+		local dirty_anchor = false
+		local widget_width = widget.frame_rect.x2 - widget.frame_rect.x1		
+		local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
+		
+		if dfhack.imgui.Button("[La]##"..name) then		
+			if cfg.pos.x < 0 then
+				next_x = display_size[1] + cfg.pos.x - widget_width + 1
+				dirty_anchor = true
+			end
+		end
+		
+		dfhack.imgui.SameLine()
+		
+		if dfhack.imgui.Button("[Ra]##"..name) then		
+			if cfg.pos.x > 0 then
+				next_x = -display_size[1] + cfg.pos.x + widget_width - 1
+				dirty_anchor = true
+			end
+		end
+		
+		dfhack.imgui.SameLine()
+		
+		if dfhack.imgui.Button("[Ua]##"..name) then
+			if cfg.pos.y < 0 then
+				next_y = display_size[2] + cfg.pos.y - widget_height + 1
+				dirty_anchor = true
+			end
+		end
+		
+		dfhack.imgui.SameLine()
+		
+		if dfhack.imgui.Button("[Ba]##"..name) then
+			if cfg.pos.y > 0 then
+				next_y = -display_size[2] + cfg.pos.y + widget_height - 1
+				dirty_anchor = true
+			end
+		end
+		
+		if dirty_anchor then
+			overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
+		end
+		
+		dfhack.imgui.PopStyleColor(3)
 		
 		dfhack.imgui.SameLine()
 		
@@ -186,11 +238,11 @@ function OverlayConfig:render()
 				end
 			end
 			
-			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, frame_colour)
+			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, border_col)
 		end
 		
 		if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
-			on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
+			on_drag(self, name, dfhack.imgui.GetMouseDragDelta(0))
 		end
 
 		
