@@ -192,38 +192,38 @@ function OverlayConfig:render()
 		local dirty_anchor = false
 		local widget_width = widget.frame_rect.x2 - widget.frame_rect.x1		
 		local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
-		
-		if dfhack.imgui.Button("[La]##"..name) then		
-			if cfg.pos.x < 0 then
-				next_x = display_size[1] + cfg.pos.x - widget_width + 1
-				dirty_anchor = true
+			
+		if cfg.pos.x < 0 then
+			if dfhack.imgui.Button("[Ra]##"..name) then		
+				if cfg.pos.x < 0 then
+					next_x = display_size[1] + cfg.pos.x - widget_width + 1
+					dirty_anchor = true
+				end
+			end
+		else 
+			if dfhack.imgui.Button("[La]##"..name) then		
+				if cfg.pos.x > 0 then
+					next_x = -display_size[1] + cfg.pos.x + widget_width - 1
+					dirty_anchor = true
+				end
 			end
 		end
 		
 		dfhack.imgui.SameLine()
 		
-		if dfhack.imgui.Button("[Ra]##"..name) then		
-			if cfg.pos.x > 0 then
-				next_x = -display_size[1] + cfg.pos.x + widget_width - 1
-				dirty_anchor = true
+		if cfg.pos.y < 0 then
+			if dfhack.imgui.Button("[Ba]##"..name) then
+				if cfg.pos.y < 0 then
+					next_y = display_size[2] + cfg.pos.y - widget_height + 1
+					dirty_anchor = true
+				end
 			end
-		end
-		
-		dfhack.imgui.SameLine()
-		
-		if dfhack.imgui.Button("[Ua]##"..name) then
-			if cfg.pos.y < 0 then
-				next_y = display_size[2] + cfg.pos.y - widget_height + 1
-				dirty_anchor = true
-			end
-		end
-		
-		dfhack.imgui.SameLine()
-		
-		if dfhack.imgui.Button("[Ba]##"..name) then
-			if cfg.pos.y > 0 then
-				next_y = -display_size[2] + cfg.pos.y + widget_height - 1
-				dirty_anchor = true
+		else
+			if dfhack.imgui.Button("[Ua]##"..name) then
+				if cfg.pos.y > 0 then
+					next_y = -display_size[2] + cfg.pos.y + widget_height - 1
+					dirty_anchor = true
+				end
 			end
 		end
 		
