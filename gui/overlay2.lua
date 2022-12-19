@@ -179,7 +179,7 @@ function OverlayConfig:render()
 		
 		dfhack.imgui.SameLine()
 		
-		if dfhack.imgui.Button("[R]##"..name) then
+		if dfhack.imgui.Button("[Reset]##"..name) then
 			overlay.overlay_command({'position', name, 'default'}, true)
 		end
 		
@@ -194,14 +194,14 @@ function OverlayConfig:render()
 		local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
 			
 		if cfg.pos.x < 0 then
-			if dfhack.imgui.Button("[Ra]##"..name) then		
+			if dfhack.imgui.Button("R##"..name) then		
 				if cfg.pos.x < 0 then
 					next_x = display_size[1] + cfg.pos.x - widget_width + 1
 					dirty_anchor = true
 				end
 			end
 		else 
-			if dfhack.imgui.Button("[La]##"..name) then		
+			if dfhack.imgui.Button("L##"..name) then		
 				if cfg.pos.x > 0 then
 					next_x = -display_size[1] + cfg.pos.x + widget_width - 1
 					dirty_anchor = true
@@ -209,17 +209,17 @@ function OverlayConfig:render()
 			end
 		end
 		
-		dfhack.imgui.SameLine()
+		dfhack.imgui.SameLine(0, 0)
 		
 		if cfg.pos.y < 0 then
-			if dfhack.imgui.Button("[Ba]##"..name) then
+			if dfhack.imgui.Button("B##"..name) then
 				if cfg.pos.y < 0 then
 					next_y = display_size[2] + cfg.pos.y - widget_height + 1
 					dirty_anchor = true
 				end
 			end
 		else
-			if dfhack.imgui.Button("[Ua]##"..name) then
+			if dfhack.imgui.Button("T##"..name) then
 				if cfg.pos.y > 0 then
 					next_y = -display_size[2] + cfg.pos.y + widget_height - 1
 					dirty_anchor = true
