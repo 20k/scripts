@@ -29,6 +29,7 @@ function OverlayConfig:init()
 	self.dragging = false
 	self.drag_name = ""
 	self.hovered = "";
+	self.inputfocused = false
 end
 
 function clamp(x, left, right)
@@ -112,7 +113,15 @@ function OverlayConfig:render()
 	
 	dfhack.imgui.NewLine()
 	
+	if self.inputfocused then
+		dfhack.imgui.PushStyleColor(dfhack.imgui.StyleIndex("ImGuiCol_Text"), dfhack.imgui.Name2Col("RED", "BLACK", false))
+	end
+	
 	dfhack.imgui.Text("Search:")
+	
+	if self.inputfocused then
+		dfhack.imgui.PopStyleColor(1)
+	end
 		
 	dfhack.imgui.SameLine()
 
@@ -121,6 +130,8 @@ function OverlayConfig:render()
 	end
 		
 	dfhack.imgui.InputText("##InputSearch", self.searchtext)
+
+	self.inputfocused = dfhack.imgui.IsItemFocused()
 
 	dfhack.imgui.NewLine()
 
