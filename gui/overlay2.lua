@@ -28,6 +28,7 @@ function OverlayConfig:init()
 	self.searchtext = dfhack.imgui.Ref("")
 	self.dragging = false
 	self.drag_name = ""
+	self.hovered = "";
 end
 
 function clamp(x, left, right)
@@ -130,6 +131,7 @@ function OverlayConfig:render()
 	local real_search = dfhack.imgui.Get(self.searchtext)
 		
 	local to_set = {}
+	local any_hovered = false;
 	
 	for _,name in ipairs(state.index) do
 		if(#real_search > 0) then
@@ -235,12 +237,27 @@ function OverlayConfig:render()
 		
 		dfhack.imgui.SameLine()
 		
+		local textcolor = light_cyan
+		
 		if(not cfg.enabled) then
-			dfhack.imgui.TextColored(cyan, name)
-		else
-			dfhack.imgui.TextColored(light_cyan, name)
+			textcolor = cyan
 		end
 		
+		if self.hovered == name then
+			textcolor = dfhack.imgui.Name2Col("LIGHTMAGENTA", "BLACK", false)
+		end
+		
+		dfhack.imgui.BeginGroup()
+		
+		dfhack.imgui.TextColored(textcolor, name)
+		
+		dfhack.imgui.EndGroup()
+
+		if dfhack.imgui.IsItemHovered() then
+			self.hovered = name
+			any_hovered = true
+		end
+
 		dfhack.imgui.EndGroup()
 		
 		local border_col = frame_colour
@@ -261,6 +278,9 @@ function OverlayConfig:render()
 					self.drag_name = name;
 					self.dragging = true;
 				end
+				
+				self.hovered = name
+				any_hovered = true
 			end
 			
 			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, border_col)
@@ -279,6 +299,10 @@ function OverlayConfig:render()
 	if self.dragging and not dfhack.imgui.IsMouseDragging(0) then
 		self.dragging = false;
 		on_drop(self.drag_name, dfhack.imgui.GetMouseDragDelta(0))
+	end
+	
+	if not any_hovered then
+		self.hovered = ""
 	end
 	
 	for name, command in pairs(to_set) do
