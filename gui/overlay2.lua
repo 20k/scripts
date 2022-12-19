@@ -124,6 +124,8 @@ function OverlayConfig:render()
 
 	dfhack.imgui.NewLine()
 
+	dfhack.imgui.AddNavGate()
+
 	local real_search = dfhack.imgui.Get(self.searchtext)
 		
 	local to_set = {}
