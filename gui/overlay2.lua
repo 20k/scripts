@@ -42,13 +42,8 @@ function clamp(x, left, right)
 	return x
 end
 
-function on_drag(cfg, name, delta)
+function on_drag(name, delta)
 	local state = overlay.get_state()
-	local db_entry = state.db[name]
-	local widget = db_entry.widget
-	local frame = widget.frame
-	local frame_rect = widget.frame_rect
-	
 	local my_config = state.config[name];
 	
 	local next_x = tonumber(my_config.pos.x) + delta[1]
@@ -272,7 +267,7 @@ function OverlayConfig:render()
 		end
 		
 		if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
-			on_drag(self, name, dfhack.imgui.GetMouseDragDelta(0))
+			on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
 		end
 
 		
