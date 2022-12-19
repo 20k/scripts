@@ -194,13 +194,17 @@ function OverlayConfig:render()
 		local dirty_anchor = false
 		local widget_width = widget.frame_rect.x2 - widget.frame_rect.x1		
 		local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
-			
+
 		if cfg.pos.x < 0 then
 			if dfhack.imgui.Button("R##"..name) then		
 				if cfg.pos.x < 0 then
 					next_x = display_size[1] + cfg.pos.x - widget_width + 1
 					dirty_anchor = true
 				end
+			end
+			
+			if dfhack.imgui.IsItemHovered() then
+				dfhack.imgui.SetTooltip("Right Anchored")
 			end
 		else 
 			if dfhack.imgui.Button("L##"..name) then		
@@ -209,9 +213,13 @@ function OverlayConfig:render()
 					dirty_anchor = true
 				end
 			end
+			
+			if dfhack.imgui.IsItemHovered() then
+				dfhack.imgui.SetTooltip("Left Anchored")
+			end
 		end
 		
-		dfhack.imgui.SameLine(0, 0)
+		dfhack.imgui.SameLine()
 		
 		if cfg.pos.y < 0 then
 			if dfhack.imgui.Button("B##"..name) then
@@ -220,6 +228,10 @@ function OverlayConfig:render()
 					dirty_anchor = true
 				end
 			end
+			
+			if dfhack.imgui.IsItemHovered() then
+				dfhack.imgui.SetTooltip("Bottom Anchored")
+			end
 		else
 			if dfhack.imgui.Button("T##"..name) then
 				if cfg.pos.y > 0 then
@@ -227,8 +239,12 @@ function OverlayConfig:render()
 					dirty_anchor = true
 				end
 			end
+			
+			if dfhack.imgui.IsItemHovered() then
+				dfhack.imgui.SetTooltip("Top Anchored")
+			end
 		end
-		
+				
 		if dirty_anchor then
 			overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
 		end
