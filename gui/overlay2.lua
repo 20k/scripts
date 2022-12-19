@@ -117,7 +117,7 @@ function OverlayConfig:render()
 	dfhack.imgui.SameLine()
 
 	if((dfhack.imgui.IsWindowFocused(0) or dfhack.imgui.IsWindowFocused(4)) and not dfhack.imgui.IsAnyItemActive()) then
-		dfhack.imgui.SetKeyboardFocusHere(0);
+		--dfhack.imgui.SetKeyboardFocusHere(0);
 	end
 		
 	dfhack.imgui.InputText("##InputSearch", self.searchtext)
@@ -170,7 +170,7 @@ function OverlayConfig:render()
 		dfhack.imgui.TextColored(textcolor, "[")
 		dfhack.imgui.SameLine(0,0)
 
-		if(dfhack.imgui.Button(txt.. "##" .. name)) then
+		if(dfhack.imgui.Button(txt.. "###enable" .. name)) then
 			cfg.enabled = not cfg.enabled
 			
 			local command = 'disable'
@@ -192,7 +192,7 @@ function OverlayConfig:render()
 		dfhack.imgui.TextColored(textcolor, "[")
 		dfhack.imgui.SameLine(0,0)
 		
-		if dfhack.imgui.Button("reset##"..name) then
+		if dfhack.imgui.Button("reset###reset"..name) then
 			overlay.overlay_command({'position', name, 'default'}, true)
 		end
 		
@@ -210,7 +210,7 @@ function OverlayConfig:render()
 		local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
 
 		if cfg.pos.x < 0 then
-			if dfhack.imgui.Button("R##"..name) then		
+			if dfhack.imgui.Button("R###LT"..name) then		
 				if cfg.pos.x < 0 then
 					next_x = display_size[1] + cfg.pos.x - widget_width + 1
 					dirty_anchor = true
@@ -221,7 +221,7 @@ function OverlayConfig:render()
 				dfhack.imgui.SetTooltip("Right Anchored")
 			end
 		else 
-			if dfhack.imgui.Button("L##"..name) then		
+			if dfhack.imgui.Button("L###LT"..name) then		
 				if cfg.pos.x > 0 then
 					next_x = -display_size[1] + cfg.pos.x + widget_width - 1
 					dirty_anchor = true
@@ -236,7 +236,7 @@ function OverlayConfig:render()
 		dfhack.imgui.SameLine()
 		
 		if cfg.pos.y < 0 then
-			if dfhack.imgui.Button("B##"..name) then
+			if dfhack.imgui.Button("B###RT"..name) then
 				if cfg.pos.y < 0 then
 					next_y = display_size[2] + cfg.pos.y - widget_height + 1
 					dirty_anchor = true
@@ -247,7 +247,7 @@ function OverlayConfig:render()
 				dfhack.imgui.SetTooltip("Bottom Anchored")
 			end
 		else
-			if dfhack.imgui.Button("T##"..name) then
+			if dfhack.imgui.Button("T###RT"..name) then
 				if cfg.pos.y > 0 then
 					next_y = -display_size[2] + cfg.pos.y + widget_height - 1
 					dirty_anchor = true
