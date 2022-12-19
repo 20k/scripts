@@ -112,14 +112,18 @@ function OverlayConfig:render()
 	
 	dfhack.imgui.TextColored(cyan, self.scr_name)
 	
+	dfhack.imgui.NewLine()
+	
 	local filter_name = "Showing: " .. get_filter_name(filterState)
 	
 	if(dfhack.imgui.Button(filter_name)) then
 		filterState = (filterState + 1) % 2
 	end
 	
-	dfhack.imgui.Text("Search:")
+	dfhack.imgui.NewLine()
 	
+	dfhack.imgui.Text("Search:")
+		
 	dfhack.imgui.SameLine()
 
 	if((dfhack.imgui.IsWindowFocused(0) or dfhack.imgui.IsWindowFocused(4)) and not dfhack.imgui.IsAnyItemActive()) then
@@ -127,7 +131,9 @@ function OverlayConfig:render()
 	end
 		
 	dfhack.imgui.InputText("##InputSearch", self.searchtext)
-	
+
+	dfhack.imgui.NewLine()
+
 	local real_search = dfhack.imgui.Get(self.searchtext)
 		
 	local to_set = {}
@@ -202,7 +208,6 @@ function OverlayConfig:render()
 		
 		dfhack.imgui.SameLine(0,0)
 		dfhack.imgui.TextColored(textcolor, "]")
-		
 		
 		dfhack.imgui.PushStyleColor(style_index, dfhack.imgui.Name2Col("YELLOW", "BLACK", false))
 		
