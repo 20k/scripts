@@ -122,27 +122,6 @@ function OverlayConfig:render()
             if not matched then goto continue end
         end
 		
-		if not widget.overlay_only then
-			local frame = widget.frame
-			local rect = widget.frame_rect
-						
-			if mouse_pos[1] >= rect.x1-1 and mouse_pos[1] <= rect.x2 + 1 
-			    and mouse_pos[2] >= rect.y1-1 and mouse_pos[2] <= rect.y2 + 1 then
-				dfhack.imgui.AddBackgroundRectFilled({rect.x1, rect.y1}, {rect.x2, rect.y2}, frame_highlight_colour)				
-
-				if dfhack.imgui.IsMouseDragging(0) and not self.dragging then
-					self.drag_name = name;
-					self.dragging = true;
-				end
-			end
-			
-			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, frame_colour)
-		end
-		
-		if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
-			on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
-		end
-
 		local cfg = state.config[name]
 
 		local col = cfg.enabled and "LIGHTGREEN" or "YELLOW"
@@ -150,6 +129,8 @@ function OverlayConfig:render()
 		
 		local col_imgui = dfhack.imgui.Name2Col(col, "BLACK", false)
 		local style_index = dfhack.imgui.StyleIndex("ImGuiCol_Text")
+		
+		dfhack.imgui.BeginGroup()
 		
 		dfhack.imgui.PushStyleColor(style_index, col_imgui)
 
@@ -182,6 +163,36 @@ function OverlayConfig:render()
 		else
 			dfhack.imgui.TextColored(light_cyan, name)
 		end
+		
+		dfhack.imgui.EndGroup()
+		
+		local border_col = frame_colour
+		
+		if not dfhack.imgui.IsItemHovered() then
+			border_col = dfhack.imgui.Name2Col("GREY", "GREY", false)
+		end
+		
+		if not widget.overlay_only then
+			local frame = widget.frame
+			local rect = widget.frame_rect
+						
+			if mouse_pos[1] >= rect.x1-1 and mouse_pos[1] <= rect.x2 + 1 
+			    and mouse_pos[2] >= rect.y1-1 and mouse_pos[2] <= rect.y2 + 1 then
+				dfhack.imgui.AddBackgroundRectFilled({rect.x1, rect.y1}, {rect.x2, rect.y2}, frame_highlight_colour)				
+
+				if dfhack.imgui.IsMouseDragging(0) and not self.dragging then
+					self.drag_name = name;
+					self.dragging = true;
+				end
+			end
+			
+			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, frame_colour)
+		end
+		
+		if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
+			on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
+		end
+
 		
 		::continue::
 	end
