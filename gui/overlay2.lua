@@ -84,9 +84,7 @@ function OverlayConfig:render()
 	local display_size = dfhack.imgui.GetDisplaySize()
 	
 	dfhack.imgui.Begin("Overlay ImGui Config")
-	
-	local mouse_pos = dfhack.imgui.GetMousePos();
-		
+
 	local state = overlay.get_state()
 			
 	dfhack.imgui.Text("Current screen: ")
@@ -307,8 +305,7 @@ function OverlayConfig:render()
 			local rect = widget.frame_rect
 			local background_dl = dfhack.imgui.GetBackgroundDrawList()
 
-			if mouse_pos.x >= rect.x1-1 and mouse_pos.x <= rect.x2 + 1 
-			    and mouse_pos.y >= rect.y1-1 and mouse_pos.y <= rect.y2 + 1 then
+			if dfhack.imgui.IsMouseHoveringRect({x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+1, y=rect.y2+1}, false) then
 				dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, COLOR_LIGHTGREEN)
 
 				if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
