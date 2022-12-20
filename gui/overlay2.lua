@@ -107,22 +107,20 @@ function OverlayConfig:render()
 	
 	local filter_name = "Showing: " .. get_filter_name(filterState)
 	
-	if(dfhack.imgui.Button(filter_name)) then
+	if(dfhack.imgui.Button(filter_name .. "###showingtoggle")) then
 		filterState = (filterState + 1) % 2
 	end
 	
 	dfhack.imgui.NewLine()
 	
+	--inputtext doesn't have any way to be highlighted by default on the keyboard
+	--due to the lack of functioning nav highlights
 	if self.inputfocused then
-		dfhack.imgui.PushStyleColor(dfhack.imgui.StyleIndex("Text"), dfhack.imgui.Name2Col("RED", "BLACK", false))
+		dfhack.imgui.TextBackgroundColored(dfhack.imgui.Name2Col("WHITE", "RED", false), "Search:")
+	else
+		dfhack.imgui.Text("Search:")
 	end
 	
-	dfhack.imgui.Text("Search:")
-	
-	if self.inputfocused then
-		dfhack.imgui.PopStyleColor(1)
-	end
-		
 	dfhack.imgui.SameLine()
 
 	if((dfhack.imgui.IsWindowFocused(0) or dfhack.imgui.IsWindowFocused(4)) and not dfhack.imgui.IsAnyItemActive()) then
