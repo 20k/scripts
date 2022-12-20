@@ -28,6 +28,7 @@ function OverlayConfig:init()
 	self.searchtext = dfhack.imgui.Ref("")
 	self.dragging = false
 	self.drag_name = ""
+	self.keyboarddragging = false;
 	self.hovered = "";
 	self.inputfocused = false
 end
@@ -72,6 +73,14 @@ function on_drag(name, delta)
 	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
 
 	dfhack.imgui.ResetMouseDragDelta(0)
+end
+
+function b2n(x)
+	if x then 
+		return 1
+	end
+	
+	return 0
 end
 
 function OverlayConfig:render()
@@ -129,6 +138,7 @@ function OverlayConfig:render()
 		
 	local to_set = {}
 	local any_hovered = false;
+	local just_dragged = false
 	
 	for _,name in ipairs(state.index) do
 		if(#real_search > 0) then
@@ -269,6 +279,20 @@ function OverlayConfig:render()
 		
 		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
 				
+		dfhack.imgui.SameLine()
+
+		if dfhack.imgui.Button("[K]##K"..name) then
+			self.keyboarddragging = true
+			self.drag_name = name
+			just_dragged = true
+		end
+		
+		if dfhack.imgui.IsItemHovered() then
+			dfhack.imgui.SetTooltip("Keyboard Drag")
+		end
+		
+		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
+				
 		if dirty_anchor then
 			overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
 		end
@@ -324,6 +348,14 @@ function OverlayConfig:render()
 			on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
 		end
 
+		if self.keyboarddragging and self.drag_name == name then
+			dfhack.imgui.NavCapture(true)
+		
+			local dx = b2n(dfhack.imgui.IsKeyDown(40)) - b2n(dfhack.imgui.IsKeyDown(39))
+			local dy = b2n(dfhack.imgui.IsKeyDown(38)) - b2n(dfhack.imgui.IsKeyDown(37))
+			
+			on_drag(name, {x=dx, y=dy})
+		end
 		
 		::continue::
 	end
@@ -332,6 +364,11 @@ function OverlayConfig:render()
 	
 	if self.dragging and not dfhack.imgui.IsMouseDragging(0) then
 		self.dragging = false;
+	end
+	
+	if self.keyboarddragging and dfhack.imgui.IsKeyDown(1) and not just_dragged  then
+		self.keyboarddragging = false
+		dfhack.imgui.NavCapture(false)
 	end
 	
 	if not any_hovered then
