@@ -86,22 +86,14 @@ function OverlayConfig:render()
 	dfhack.imgui.Begin("Overlay ImGui Config")
 	
 	local mouse_pos = dfhack.imgui.GetMousePos();
-	--local mouse_col = dfhack.imgui.Name2Col("WHITE", "WHITE", false)
-	--dfhack.imgui.AddRectFilled({mouse_pos[1], mouse_pos[2]}, {mouse_pos[1], mouse_pos[2]}, mouse_col)
-	
-	local frame_colour = dfhack.imgui.Name2Col("GREEN", "GREEN", false)
-	local frame_highlight_colour = dfhack.imgui.Name2Col("LIGHTGREEN", "LIGHTGREEN", false)
-	
-	local state = overlay.get_state()
-	
-	local cyan = dfhack.imgui.Name2Col("CYAN", "BLACK", false)
-	local light_cyan = dfhack.imgui.Name2Col("LIGHTCYAN", "BLACK", false)
 		
+	local state = overlay.get_state()
+			
 	dfhack.imgui.Text("Current screen: ")
 	
 	dfhack.imgui.SameLine()
 	
-	dfhack.imgui.TextColored(cyan, self.scr_name)
+	dfhack.imgui.TextColored(COLOR_CYAN, self.scr_name)
 	
 	dfhack.imgui.NewLine()
 	
@@ -116,7 +108,7 @@ function OverlayConfig:render()
 	--inputtext doesn't have any way to be highlighted by default on the keyboard
 	--due to the lack of functioning nav highlights
 	if self.inputfocused then
-		dfhack.imgui.TextBackgroundColored(dfhack.imgui.Name2Col("WHITE", "RED", false), "Search:")
+		dfhack.imgui.TextBackgroundColored({fg=COLOR_WHITE, bg=COLOR_RED}, "Search:")
 	else
 		dfhack.imgui.Text("Search:")
 	end
@@ -162,21 +154,20 @@ function OverlayConfig:render()
 		
 		local cfg = state.config[name]
 		
-		local textcolor = light_cyan
+		local textcolor = COLOR_LIGHTCYAN
 		
 		if(not cfg.enabled) then
-			textcolor = cyan
+			textcolor = COLOR_CYAN
 		end
 
-		local col = cfg.enabled and "LIGHTGREEN" or "YELLOW"
+		local col = cfg.enabled and COLOR_LIGHTGREEN or COLOR_YELLOW
 		local txt = cfg.enabled and "enabled" or "disabled"
 		
-		local col_imgui = dfhack.imgui.Name2Col(col, "BLACK", false)
 		local style_index = dfhack.imgui.StyleIndex("Text")
 		
 		dfhack.imgui.BeginGroup()
 		
-		dfhack.imgui.PushStyleColor(style_index, col_imgui)
+		dfhack.imgui.PushStyleColor(style_index, {fg=col, bg=COLOR_BLACK})
 
 		dfhack.imgui.TextColored(textcolor, "[")
 		dfhack.imgui.SameLine(0,0)
@@ -196,7 +187,7 @@ function OverlayConfig:render()
 		dfhack.imgui.SameLine(0,0)
 		dfhack.imgui.TextColored(textcolor, "]")
 		
-		dfhack.imgui.PushStyleColor(style_index, dfhack.imgui.Name2Col("RED", "BLACK", false))
+		dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_RED, bg=COLOR_BLACK})
 		
 		dfhack.imgui.SameLine()
 		
@@ -210,7 +201,7 @@ function OverlayConfig:render()
 		dfhack.imgui.SameLine(0,0)
 		dfhack.imgui.TextColored(textcolor, "]")
 		
-		dfhack.imgui.PushStyleColor(style_index, dfhack.imgui.Name2Col("YELLOW", "BLACK", false))
+		dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_YELLOW, bg=COLOR_BLACK})
 		
 		dfhack.imgui.SameLine()
 		
@@ -279,7 +270,7 @@ function OverlayConfig:render()
 		dfhack.imgui.SameLine()
 		
 		if self.hovered == name then
-			textcolor = dfhack.imgui.Name2Col("LIGHTMAGENTA", "BLACK", false)
+			textcolor = COLOR_LIGHTMAGENTA
 		end
 		
 		dfhack.imgui.BeginGroup()
@@ -295,12 +286,11 @@ function OverlayConfig:render()
 
 		dfhack.imgui.EndGroup()
 		
-		local border_col = frame_colour
+		local border_col = COLOR_GREEN
 		
 		if not dfhack.imgui.IsItemHovered() then
-			border_col = dfhack.imgui.Name2Col("GREY", "GREY", false)
+			border_col = COLOR_GREY
 		end
-		
 		
 		if not widget.overlay_only then
 			local frame = widget.frame
@@ -309,7 +299,7 @@ function OverlayConfig:render()
 
 			if mouse_pos.x >= rect.x1-1 and mouse_pos.x <= rect.x2 + 1 
 			    and mouse_pos.y >= rect.y1-1 and mouse_pos.y <= rect.y2 + 1 then
-				dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, frame_highlight_colour)
+				dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, COLOR_LIGHTGREEN)
 
 				if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
 					self.drag_name = name;
