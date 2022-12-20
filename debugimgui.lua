@@ -7,7 +7,7 @@ state = false;
 function MyScreen:render()
 	self:renderParent()
 	
-	if(dfhack.imgui.IsKeyPressed(27)) then
+	if(dfhack.imgui.IsKeyPressed(6)) then
 		self:dismiss()
 	end
 	
