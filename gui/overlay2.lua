@@ -48,25 +48,25 @@ function on_drag(name, delta)
 	local state = overlay.get_state()
 	local my_config = state.config[name];
 	
-	local next_x = tonumber(my_config.pos.x) + delta[1]
-	local next_y = tonumber(my_config.pos.y) + delta[2]
+	local next_x = tonumber(my_config.pos.x) + delta.x
+	local next_y = tonumber(my_config.pos.y) + delta.y
 	
 	local display_size = dfhack.imgui.GetDisplaySize()
 	
 	if tonumber(my_config.pos.x) > 0 then
-		next_x = clamp(next_x, 1, display_size[1] - 1)
+		next_x = clamp(next_x, 1, display_size.x - 1)
 	end
 
 	if tonumber(my_config.pos.x) < 0 then
-		next_x = clamp(next_x, -display_size[1] + 1, -1)
+		next_x = clamp(next_x, -display_size.x + 1, -1)
 	end
 
 	if tonumber(my_config.pos.y) > 0 then
-		next_y = clamp(next_y, 1, display_size[2] - 1)
+		next_y = clamp(next_y, 1, display_size.y - 1)
 	end
 	
 	if tonumber(my_config.pos.y) < 0 then
-		next_y = clamp(next_y, -display_size[2] + 1, -1)
+		next_y = clamp(next_y, -display_size.y + 1, -1)
 	end
 
 	overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
@@ -223,7 +223,7 @@ function OverlayConfig:render()
 		if cfg.pos.x < 0 then
 			if dfhack.imgui.Button("R###LT"..name) then		
 				if cfg.pos.x < 0 then
-					next_x = display_size[1] + cfg.pos.x - widget_width + 1
+					next_x = display_size.x + cfg.pos.x - widget_width + 1
 					dirty_anchor = true
 				end
 			end
@@ -234,7 +234,7 @@ function OverlayConfig:render()
 		else 
 			if dfhack.imgui.Button("L###LT"..name) then		
 				if cfg.pos.x > 0 then
-					next_x = -display_size[1] + cfg.pos.x + widget_width - 1
+					next_x = -display_size.x + cfg.pos.x + widget_width - 1
 					dirty_anchor = true
 				end
 			end
@@ -249,7 +249,7 @@ function OverlayConfig:render()
 		if cfg.pos.y < 0 then
 			if dfhack.imgui.Button("B###RT"..name) then
 				if cfg.pos.y < 0 then
-					next_y = display_size[2] + cfg.pos.y - widget_height + 1
+					next_y = display_size.y + cfg.pos.y - widget_height + 1
 					dirty_anchor = true
 				end
 			end
@@ -260,7 +260,7 @@ function OverlayConfig:render()
 		else
 			if dfhack.imgui.Button("T###RT"..name) then
 				if cfg.pos.y > 0 then
-					next_y = -display_size[2] + cfg.pos.y + widget_height - 1
+					next_y = -display_size.y + cfg.pos.y + widget_height - 1
 					dirty_anchor = true
 				end
 			end
