@@ -301,13 +301,15 @@ function OverlayConfig:render()
 			border_col = dfhack.imgui.Name2Col("GREY", "GREY", false)
 		end
 		
+		
 		if not widget.overlay_only then
 			local frame = widget.frame
 			local rect = widget.frame_rect
+			local background_dl = dfhack.imgui.GetBackgroundDrawList()
 
 			if mouse_pos.x >= rect.x1-1 and mouse_pos.x <= rect.x2 + 1 
 			    and mouse_pos.y >= rect.y1-1 and mouse_pos.y <= rect.y2 + 1 then
-				dfhack.imgui.AddBackgroundRectFilled({rect.x1, rect.y1}, {rect.x2, rect.y2}, frame_highlight_colour)				
+				dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, frame_highlight_colour)
 
 				if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
 					self.drag_name = name;
@@ -318,7 +320,7 @@ function OverlayConfig:render()
 				any_hovered = true
 			end
 			
-			dfhack.imgui.AddBackgroundRect({rect.x1-1, rect.y1-1}, {rect.x2+2, rect.y2+2}, border_col)
+			dfhack.imgui.AddRect(background_dl, {x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+2, y=rect.y2+2}, border_col)
 		end
 		
 		if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
