@@ -183,6 +183,10 @@ function OverlayConfig:render()
 			
 			to_set[name] = command;
 		end
+
+		--everything involving keynav_item_hovered is to work around an imgui bug
+		--that was fixed in 1.88
+		local keynav_item_hovered = dfhack.imgui.IsItemHovered()
 		
 		dfhack.imgui.SameLine(0,0)
 		dfhack.imgui.TextColored(textcolor, "]")
@@ -197,6 +201,8 @@ function OverlayConfig:render()
 		if dfhack.imgui.Button("reset###reset"..name) then
 			overlay.overlay_command({'position', name, 'default'}, true)
 		end
+		
+		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
 		
 		dfhack.imgui.SameLine(0,0)
 		dfhack.imgui.TextColored(textcolor, "]")
@@ -235,6 +241,8 @@ function OverlayConfig:render()
 			end
 		end
 		
+		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
+		
 		dfhack.imgui.SameLine()
 		
 		if cfg.pos.y < 0 then
@@ -260,6 +268,8 @@ function OverlayConfig:render()
 				dfhack.imgui.SetTooltip("Top Anchored")
 			end
 		end
+		
+		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
 				
 		if dirty_anchor then
 			overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
@@ -288,7 +298,7 @@ function OverlayConfig:render()
 		
 		local border_col = COLOR_GREEN
 		
-		if not dfhack.imgui.IsItemHovered() then
+		if not dfhack.imgui.IsItemHovered() and not keynav_item_hovered then
 			border_col = COLOR_GREY
 		end
 		
