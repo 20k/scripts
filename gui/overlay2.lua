@@ -114,7 +114,7 @@ function OverlayConfig:render()
 	dfhack.imgui.NewLine()
 	
 	if self.inputfocused then
-		dfhack.imgui.PushStyleColor(dfhack.imgui.StyleIndex("ImGuiCol_Text"), dfhack.imgui.Name2Col("RED", "BLACK", false))
+		dfhack.imgui.PushStyleColor(dfhack.imgui.StyleIndex("Text"), dfhack.imgui.Name2Col("RED", "BLACK", false))
 	end
 	
 	dfhack.imgui.Text("Search:")
@@ -174,7 +174,7 @@ function OverlayConfig:render()
 		local txt = cfg.enabled and "enabled" or "disabled"
 		
 		local col_imgui = dfhack.imgui.Name2Col(col, "BLACK", false)
-		local style_index = dfhack.imgui.StyleIndex("ImGuiCol_Text")
+		local style_index = dfhack.imgui.StyleIndex("Text")
 		
 		dfhack.imgui.BeginGroup()
 		
