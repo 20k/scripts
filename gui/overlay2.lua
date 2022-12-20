@@ -305,8 +305,8 @@ function OverlayConfig:render()
 			local frame = widget.frame
 			local rect = widget.frame_rect
 
-			if mouse_pos[1] >= rect.x1-1 and mouse_pos[1] <= rect.x2 + 1 
-			    and mouse_pos[2] >= rect.y1-1 and mouse_pos[2] <= rect.y2 + 1 then
+			if mouse_pos.x >= rect.x1-1 and mouse_pos.x <= rect.x2 + 1 
+			    and mouse_pos.y >= rect.y1-1 and mouse_pos.y <= rect.y2 + 1 then
 				dfhack.imgui.AddBackgroundRectFilled({rect.x1, rect.y1}, {rect.x2, rect.y2}, frame_highlight_colour)				
 
 				if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
