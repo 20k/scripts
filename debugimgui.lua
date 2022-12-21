@@ -41,13 +41,13 @@ function MyScreen:render()
 	--	end
 	--end
 	
-	dfhack.imgui.Checkbox("Filter Inputs", is_filtered);
+	dfhack.imgui.Checkbox("Block Inputs", is_filtered);
 	
 	dfhack.imgui.Text("Want Capture Keyboard"..tostring(dfhack.imgui.WantCaptureKeyboard()))
 	
-	if dfhack.imgui.Get(is_filtered) then
-		dfhack.imgui.EatKeyboardInputs()
-	end
+	--if dfhack.imgui.Get(is_filtered) then
+		--dfhack.imgui.EatKeyboardInputs()
+	--end
 	
 	dfhack.imgui.End()
 end
@@ -57,7 +57,7 @@ function MyScreen:onDismiss()
 end
 
 function MyScreen:onInput(keys)
-	if not dfhack.imgui.WantCaptureInput() then
+	if not dfhack.imgui.WantCaptureInput() and not dfhack.imgui.Get(is_filtered) then
 		dfhack.imgui.FeedUpwards()
 	end
 end
