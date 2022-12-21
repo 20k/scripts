@@ -349,6 +349,7 @@ function OverlayConfig:render()
 			end
 
 			if self.keyboarddragging and self.drag_name == name then
+				-- disable keyboard navigation
 				dfhack.imgui.NavCapture(true)
 			
 				local dx = b2n(dfhack.imgui.IsKeyDown(40)) - b2n(dfhack.imgui.IsKeyDown(39))
@@ -376,6 +377,7 @@ function OverlayConfig:render()
 	
 	if self.keyboarddragging and dfhack.imgui.IsKeyDown(1) and not just_dragged  then
 		self.keyboarddragging = false
+		-- reenable the ability to keyboard navigate
 		dfhack.imgui.NavCapture(false)
 	end
 	
