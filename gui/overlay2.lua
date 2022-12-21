@@ -173,9 +173,7 @@ function OverlayConfig:render()
 			local txt = cfg.enabled and "enabled " or "disabled"
 			
 			local style_index = dfhack.imgui.StyleIndex("Text")
-			
-			--dfhack.imgui.BeginGroup()
-			
+
 			dfhack.imgui.TableNextRow();
 			dfhack.imgui.TableNextColumn();
 			
@@ -273,7 +271,13 @@ function OverlayConfig:render()
 					
 			dfhack.imgui.TableNextColumn();
 
-			if dfhack.imgui.Button("K##K"..name) then
+			local drag_col = {fg=COLOR_YELLOW}
+			
+			if self.keyboarddragging then
+				drag_col = {fg=COLOR_GREEN}
+			end
+
+			if dfhack.imgui.ButtonColored(drag_col, "K##K"..name) then
 				self.keyboarddragging = true
 				self.drag_name = name
 				just_dragged = true
@@ -309,8 +313,6 @@ function OverlayConfig:render()
 				self.hovered = name
 				any_hovered = true
 			end
-
-			--dfhack.imgui.EndGroup()
 			
 			local border_col = COLOR_GREEN
 			
@@ -349,6 +351,8 @@ function OverlayConfig:render()
 				local dy = b2n(dfhack.imgui.IsKeyDown(38)) - b2n(dfhack.imgui.IsKeyDown(37))
 				
 				on_drag(name, {x=dx, y=dy})
+				
+				dfhack.imgui.SetTooltip("Keyboard Dragging " .. name)
 			end
 			
 			::continue::
@@ -356,19 +360,6 @@ function OverlayConfig:render()
 	
 		dfhack.imgui.EndTable()
 	end
-
-	--[[if (dfhack.imgui.BeginTable("table2", 3)) then
-		for row = 0,5 do
-			dfhack.imgui.TableNextRow();
-			dfhack.imgui.TableNextColumn();
-			dfhack.imgui.Text("Row".. tostring(row));
-			dfhack.imgui.TableNextColumn();
-			dfhack.imgui.Text("Some contents");
-			dfhack.imgui.TableNextColumn();
-			dfhack.imgui.Text("123.456");
-		end
-		dfhack.imgui.EndTable();
-	end]]--
 
 	dfhack.imgui.End();
 	
