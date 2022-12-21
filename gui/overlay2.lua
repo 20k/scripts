@@ -86,7 +86,7 @@ end
 function OverlayConfig:render()
 	self:renderParent()
 	
-	if(dfhack.imgui.IsKeyPressed(6)) then
+	if(not dfhack.imgui.IsAnyItemActive() and dfhack.imgui.IsKeyPressed(6)) then
 		self:dismiss()
 	end
 	
