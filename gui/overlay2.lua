@@ -140,7 +140,7 @@ function OverlayConfig:render()
 	local any_hovered = false;
 	local just_dragged = false
 	
-	dfhack.imgui.BeginTable("Table", 6, (1<<13) | (1<<9) | (1<<7))
+	dfhack.imgui.BeginTable("Table", 6, (1<<13) | (1<<9) | (1<<7) | (1<<23))
 	
 	for _,name in ipairs(state.index) do
 		if(#real_search > 0) then
