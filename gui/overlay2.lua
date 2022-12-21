@@ -304,11 +304,10 @@ function OverlayConfig:render()
 			dfhack.imgui.TableNextColumn();
 			
 			dfhack.imgui.BeginGroup()
-			
 			dfhack.imgui.TextColored(textcolor, name)
-			
 			dfhack.imgui.EndGroup()
 
+			-- Text can't be hovered by default as it has no ID, so the above group is a workaround
 			if dfhack.imgui.IsItemHovered() then
 				self.hovered = name
 				any_hovered = true
@@ -332,6 +331,7 @@ function OverlayConfig:render()
 				if dfhack.imgui.IsMouseHoveringRect({x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+1, y=rect.y2+1}, false) then
 					dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, COLOR_LIGHTGREEN)
 
+					--if the mouse isn't busy, and we're dragging, and not currently dragging something else
 					if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
 						self.drag_name = name;
 						self.dragging = true;
@@ -341,6 +341,7 @@ function OverlayConfig:render()
 					any_hovered = true
 				end
 				
+				-- +2 because of an off by 1 error that I'll track down
 				dfhack.imgui.AddRect(background_dl, {x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+2, y=rect.y2+2}, border_col)
 			end
 			
@@ -352,11 +353,13 @@ function OverlayConfig:render()
 				-- disable keyboard navigation
 				dfhack.imgui.NavCapture(true)
 			
+				--this is pretty crap
 				local dx = b2n(dfhack.imgui.IsKeyDown(40)) - b2n(dfhack.imgui.IsKeyDown(39))
 				local dy = b2n(dfhack.imgui.IsKeyDown(38)) - b2n(dfhack.imgui.IsKeyDown(37))
 				
 				on_drag(name, {x=dx, y=dy})
 				
+				--custom tooltip just because
 				dfhack.imgui.BeginTooltip()
 				dfhack.imgui.TextBackgroundColored({fg=COLOR_WHITE, bg=COLOR_LIGHTRED}, "Keyboard Dragging " .. name)
 				dfhack.imgui.TextBackgroundColored({fg=COLOR_WHITE, bg=COLOR_LIGHTRED}, "Press Enter To Stop")
