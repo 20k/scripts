@@ -140,222 +140,222 @@ function OverlayConfig:render()
 	local any_hovered = false;
 	local just_dragged = false
 	
-	dfhack.imgui.BeginTable("Table", 6, (1<<13) | (1<<9) | (1<<7) | (1<<23))
-	
-	for _,name in ipairs(state.index) do
-		if(#real_search > 0) then
-			if(string.find(name, real_search) == nil) then
-				goto continue
-			end
-		end
-	
-		local db_entry = state.db[name]
-        local widget = db_entry.widget
-        if not widget.hotspot and filterState ~= 1 then
-            local matched = false
-            for _,scr in ipairs(overlay.normalize_list(widget.viewscreens)) do
-                if overlay.simplify_viewscreen_name(scr) == self.scr_name then
-                    matched = true
-                    break
-                end
-            end
-            if not matched then goto continue end
-        end
-		
-		local cfg = state.config[name]
-		
-		local textcolor = COLOR_LIGHTCYAN
-		
-		if(not cfg.enabled) then
-			textcolor = COLOR_CYAN
-		end
-
-		local col = cfg.enabled and COLOR_LIGHTGREEN or COLOR_YELLOW
-		local txt = cfg.enabled and "enabled" or "disabled"
-		
-		local style_index = dfhack.imgui.StyleIndex("Text")
-		
-		--dfhack.imgui.BeginGroup()
-		
-		dfhack.imgui.TableNextRow();
-		dfhack.imgui.TableNextColumn();
-		
-		dfhack.imgui.PushStyleColor(style_index, {fg=col, bg=COLOR_BLACK})
-
-		if(dfhack.imgui.Button(txt.. "###enable" .. name)) then
-			cfg.enabled = not cfg.enabled
-			
-			local command = 'disable'
-			
-			if(cfg.enabled) then
-				command = 'enable'
-			end
-			
-			to_set[name] = command;
-		end
-
-		--everything involving keynav_item_hovered is to work around an imgui bug
-		--that was fixed in 1.88
-		local keynav_item_hovered = dfhack.imgui.IsItemHovered()
-				
-		dfhack.imgui.TableNextColumn();
-		
-		dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_RED, bg=COLOR_BLACK})
-		
-		if dfhack.imgui.Button("reset###reset"..name) then
-			overlay.overlay_command({'position', name, 'default'}, true)
-		end
-		
-		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
-		
-		dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_YELLOW, bg=COLOR_BLACK})
-		
-		dfhack.imgui.TableNextColumn();
-
-		local next_x = cfg.pos.x
-		local next_y = cfg.pos.y
-		local dirty_anchor = false
-		local widget_width = widget.frame_rect.x2 - widget.frame_rect.x1		
-		local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
-
-		if cfg.pos.x < 0 then
-			if dfhack.imgui.Button("R###LT"..name) then		
-				if cfg.pos.x < 0 then
-					next_x = display_size.x + cfg.pos.x - widget_width + 1
-					dirty_anchor = true
+	if dfhack.imgui.BeginTable("Table", 6, (1<<13) | (1<<9) | (1<<7)) then
+		for _,name in ipairs(state.index) do
+			if(#real_search > 0) then
+				if(string.find(name, real_search) == nil) then
+					goto continue
 				end
+			end
+		
+			local db_entry = state.db[name]
+			local widget = db_entry.widget
+			if not widget.hotspot and filterState ~= 1 then
+				local matched = false
+				for _,scr in ipairs(overlay.normalize_list(widget.viewscreens)) do
+					if overlay.simplify_viewscreen_name(scr) == self.scr_name then
+						matched = true
+						break
+					end
+				end
+				if not matched then goto continue end
+			end
+			
+			local cfg = state.config[name]
+			
+			local textcolor = COLOR_LIGHTCYAN
+			
+			if(not cfg.enabled) then
+				textcolor = COLOR_CYAN
+			end
+
+			local col = cfg.enabled and COLOR_LIGHTGREEN or COLOR_YELLOW
+			local txt = cfg.enabled and "enabled" or "disabled"
+			
+			local style_index = dfhack.imgui.StyleIndex("Text")
+			
+			--dfhack.imgui.BeginGroup()
+			
+			dfhack.imgui.TableNextRow();
+			dfhack.imgui.TableNextColumn();
+			
+			dfhack.imgui.PushStyleColor(style_index, {fg=col, bg=COLOR_BLACK})
+
+			if(dfhack.imgui.Button(txt.. "###enable" .. name)) then
+				cfg.enabled = not cfg.enabled
+				
+				local command = 'disable'
+				
+				if(cfg.enabled) then
+					command = 'enable'
+				end
+				
+				to_set[name] = command;
+			end
+
+			--everything involving keynav_item_hovered is to work around an imgui bug
+			--that was fixed in 1.88
+			local keynav_item_hovered = dfhack.imgui.IsItemHovered()
+					
+			dfhack.imgui.TableNextColumn();
+			
+			dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_RED, bg=COLOR_BLACK})
+			
+			if dfhack.imgui.Button("reset###reset"..name) then
+				overlay.overlay_command({'position', name, 'default'}, true)
+			end
+			
+			keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
+			
+			dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_YELLOW, bg=COLOR_BLACK})
+			
+			dfhack.imgui.TableNextColumn();
+
+			local next_x = cfg.pos.x
+			local next_y = cfg.pos.y
+			local dirty_anchor = false
+			local widget_width = widget.frame_rect.x2 - widget.frame_rect.x1		
+			local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
+
+			if cfg.pos.x < 0 then
+				if dfhack.imgui.Button("R###LT"..name) then		
+					if cfg.pos.x < 0 then
+						next_x = display_size.x + cfg.pos.x - widget_width + 1
+						dirty_anchor = true
+					end
+				end
+				
+				if dfhack.imgui.IsItemHovered() then
+					dfhack.imgui.SetTooltip("Right Anchored")
+				end
+			else 
+				if dfhack.imgui.Button("L###LT"..name) then		
+					if cfg.pos.x > 0 then
+						next_x = -display_size.x + cfg.pos.x + widget_width - 1
+						dirty_anchor = true
+					end
+				end
+				
+				if dfhack.imgui.IsItemHovered() then
+					dfhack.imgui.SetTooltip("Left Anchored")
+				end
+			end
+			
+			keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
+			
+			dfhack.imgui.TableNextColumn();
+			
+			if cfg.pos.y < 0 then
+				if dfhack.imgui.Button("B###RT"..name) then
+					if cfg.pos.y < 0 then
+						next_y = display_size.y + cfg.pos.y - widget_height + 1
+						dirty_anchor = true
+					end
+				end
+				
+				if dfhack.imgui.IsItemHovered() then
+					dfhack.imgui.SetTooltip("Bottom Anchored")
+				end
+			else
+				if dfhack.imgui.Button("T###RT"..name) then
+					if cfg.pos.y > 0 then
+						next_y = -display_size.y + cfg.pos.y + widget_height - 1
+						dirty_anchor = true
+					end
+				end
+				
+				if dfhack.imgui.IsItemHovered() then
+					dfhack.imgui.SetTooltip("Top Anchored")
+				end
+			end
+			
+			keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
+					
+			dfhack.imgui.TableNextColumn();
+
+			if dfhack.imgui.Button("K##K"..name) then
+				self.keyboarddragging = true
+				self.drag_name = name
+				just_dragged = true
 			end
 			
 			if dfhack.imgui.IsItemHovered() then
-				dfhack.imgui.SetTooltip("Right Anchored")
-			end
-		else 
-			if dfhack.imgui.Button("L###LT"..name) then		
-				if cfg.pos.x > 0 then
-					next_x = -display_size.x + cfg.pos.x + widget_width - 1
-					dirty_anchor = true
-				end
+				dfhack.imgui.SetTooltip("Keyboard Drag")
 			end
 			
-			if dfhack.imgui.IsItemHovered() then
-				dfhack.imgui.SetTooltip("Left Anchored")
-			end
-		end
-		
-		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
-		
-		dfhack.imgui.TableNextColumn();
-		
-		if cfg.pos.y < 0 then
-			if dfhack.imgui.Button("B###RT"..name) then
-				if cfg.pos.y < 0 then
-					next_y = display_size.y + cfg.pos.y - widget_height + 1
-					dirty_anchor = true
-				end
+			keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
+					
+			if dirty_anchor then
+				overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
 			end
 			
-			if dfhack.imgui.IsItemHovered() then
-				dfhack.imgui.SetTooltip("Bottom Anchored")
-			end
-		else
-			if dfhack.imgui.Button("T###RT"..name) then
-				if cfg.pos.y > 0 then
-					next_y = -display_size.y + cfg.pos.y + widget_height - 1
-					dirty_anchor = true
-				end
+			dfhack.imgui.PopStyleColor(3)
+			
+			dfhack.imgui.SameLine()
+			
+			if self.hovered == name then
+				textcolor = COLOR_LIGHTMAGENTA
 			end
 			
+			dfhack.imgui.TableNextColumn();
+			
+			dfhack.imgui.BeginGroup()
+			
+			dfhack.imgui.TextColored(textcolor, name)
+			
+			dfhack.imgui.EndGroup()
+
 			if dfhack.imgui.IsItemHovered() then
-				dfhack.imgui.SetTooltip("Top Anchored")
-			end
-		end
-		
-		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
-				
-		dfhack.imgui.TableNextColumn();
-
-		if dfhack.imgui.Button("K##K"..name) then
-			self.keyboarddragging = true
-			self.drag_name = name
-			just_dragged = true
-		end
-		
-		if dfhack.imgui.IsItemHovered() then
-			dfhack.imgui.SetTooltip("Keyboard Drag")
-		end
-		
-		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
-				
-		if dirty_anchor then
-			overlay.overlay_command({'position', name, tostring(next_x), tostring(next_y)},true)
-		end
-		
-		dfhack.imgui.PopStyleColor(3)
-		
-		dfhack.imgui.SameLine()
-		
-		if self.hovered == name then
-			textcolor = COLOR_LIGHTMAGENTA
-		end
-		
-		dfhack.imgui.TableNextColumn();
-		
-		dfhack.imgui.BeginGroup()
-		
-		dfhack.imgui.TextColored(textcolor, name)
-		
-		dfhack.imgui.EndGroup()
-
-		if dfhack.imgui.IsItemHovered() then
-			self.hovered = name
-			any_hovered = true
-		end
-
-		--dfhack.imgui.EndGroup()
-		
-		local border_col = COLOR_GREEN
-		
-		if not dfhack.imgui.IsItemHovered() and not keynav_item_hovered then
-			border_col = COLOR_GREY
-		end
-		
-		if not widget.overlay_only then
-			local frame = widget.frame
-			local rect = widget.frame_rect
-			local background_dl = dfhack.imgui.GetBackgroundDrawList()
-
-			if dfhack.imgui.IsMouseHoveringRect({x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+1, y=rect.y2+1}, false) then
-				dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, COLOR_LIGHTGREEN)
-
-				if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
-					self.drag_name = name;
-					self.dragging = true;
-				end
-				
 				self.hovered = name
 				any_hovered = true
 			end
-			
-			dfhack.imgui.AddRect(background_dl, {x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+2, y=rect.y2+2}, border_col)
-		end
-		
-		if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
-			on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
-		end
 
-		if self.keyboarddragging and self.drag_name == name then
-			dfhack.imgui.NavCapture(true)
-		
-			local dx = b2n(dfhack.imgui.IsKeyDown(40)) - b2n(dfhack.imgui.IsKeyDown(39))
-			local dy = b2n(dfhack.imgui.IsKeyDown(38)) - b2n(dfhack.imgui.IsKeyDown(37))
+			--dfhack.imgui.EndGroup()
 			
-			on_drag(name, {x=dx, y=dy})
+			local border_col = COLOR_GREEN
+			
+			if not dfhack.imgui.IsItemHovered() and not keynav_item_hovered then
+				border_col = COLOR_GREY
+			end
+			
+			if not widget.overlay_only then
+				local frame = widget.frame
+				local rect = widget.frame_rect
+				local background_dl = dfhack.imgui.GetBackgroundDrawList()
+
+				if dfhack.imgui.IsMouseHoveringRect({x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+1, y=rect.y2+1}, false) then
+					dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, COLOR_LIGHTGREEN)
+
+					if not dfhack.imgui.WantCaptureMouse() and dfhack.imgui.IsMouseDragging(0) and not self.dragging then
+						self.drag_name = name;
+						self.dragging = true;
+					end
+					
+					self.hovered = name
+					any_hovered = true
+				end
+				
+				dfhack.imgui.AddRect(background_dl, {x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+2, y=rect.y2+2}, border_col)
+			end
+			
+			if self.dragging and dfhack.imgui.IsMouseDragging(0) and self.drag_name == name then
+				on_drag(name, dfhack.imgui.GetMouseDragDelta(0))
+			end
+
+			if self.keyboarddragging and self.drag_name == name then
+				dfhack.imgui.NavCapture(true)
+			
+				local dx = b2n(dfhack.imgui.IsKeyDown(40)) - b2n(dfhack.imgui.IsKeyDown(39))
+				local dy = b2n(dfhack.imgui.IsKeyDown(38)) - b2n(dfhack.imgui.IsKeyDown(37))
+				
+				on_drag(name, {x=dx, y=dy})
+			end
+			
+			::continue::
 		end
-		
-		::continue::
-	end
 	
-	dfhack.imgui.EndTable()
+		dfhack.imgui.EndTable()
+	end
 
 	--[[if (dfhack.imgui.BeginTable("table2", 3)) then
 		for row = 0,5 do
