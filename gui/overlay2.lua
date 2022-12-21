@@ -170,7 +170,7 @@ function OverlayConfig:render()
 			end
 
 			local col = cfg.enabled and COLOR_LIGHTGREEN or COLOR_YELLOW
-			local txt = cfg.enabled and "enabled" or "disabled"
+			local txt = cfg.enabled and "enabled " or "disabled"
 			
 			local style_index = dfhack.imgui.StyleIndex("Text")
 			
