@@ -35,11 +35,11 @@ function MyScreen:render()
 	
 	dfhack.imgui.Text("Line continuation")
 	
-	for i = 0,512 do
-		if(dfhack.imgui.IsKeyPressed(i)) then
-			dfhack.imgui.Text(tostring(i))
-		end
-	end
+	--for i = 0,512 do
+	--	if(dfhack.imgui.IsKeyPressed(i)) then
+	--		dfhack.imgui.Text(tostring(i))
+	--	end
+	--end
 	
 	dfhack.imgui.Checkbox("Filter Inputs", is_filtered);
 	
@@ -56,13 +56,10 @@ function MyScreen:onDismiss()
     view = nil
 end
 
---[[function MyScreen:onInput(keys)
-	for k, v in pairs(keys) do
-		dfhack.imgui.FeedUpwards(v)
+function MyScreen:onInput(keys)
+	if not dfhack.imgui.WantCaptureInput() then
+		dfhack.imgui.FeedUpwards()
 	end
-	
-	return false
-end]]--
-
+end
 
 screen = MyScreen{ }:show()
