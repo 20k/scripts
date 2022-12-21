@@ -216,7 +216,7 @@ function OverlayConfig:render()
 			local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
 
 			if cfg.pos.x < 0 then
-				if dfhack.imgui.Button("R###LT"..name) then		
+				if dfhack.imgui.Button("[R]###LT"..name) then		
 					if cfg.pos.x < 0 then
 						next_x = display_size.x + cfg.pos.x - widget_width + 1
 						dirty_anchor = true
@@ -227,7 +227,7 @@ function OverlayConfig:render()
 					dfhack.imgui.SetTooltip("Right Anchored")
 				end
 			else 
-				if dfhack.imgui.Button("L###LT"..name) then		
+				if dfhack.imgui.Button("[L]###LT"..name) then		
 					if cfg.pos.x > 0 then
 						next_x = -display_size.x + cfg.pos.x + widget_width - 1
 						dirty_anchor = true
@@ -244,7 +244,7 @@ function OverlayConfig:render()
 			dfhack.imgui.TableNextColumn();
 			
 			if cfg.pos.y < 0 then
-				if dfhack.imgui.Button("B###RT"..name) then
+				if dfhack.imgui.Button("[B]###RT"..name) then
 					if cfg.pos.y < 0 then
 						next_y = display_size.y + cfg.pos.y - widget_height + 1
 						dirty_anchor = true
@@ -255,7 +255,7 @@ function OverlayConfig:render()
 					dfhack.imgui.SetTooltip("Bottom Anchored")
 				end
 			else
-				if dfhack.imgui.Button("T###RT"..name) then
+				if dfhack.imgui.Button("[T]###RT"..name) then
 					if cfg.pos.y > 0 then
 						next_y = -display_size.y + cfg.pos.y + widget_height - 1
 						dirty_anchor = true
@@ -277,7 +277,7 @@ function OverlayConfig:render()
 				drag_col = {fg=COLOR_LIGHTGREEN}
 			end
 
-			if dfhack.imgui.ButtonColored(drag_col, "K##K"..name) then
+			if dfhack.imgui.ButtonColored(drag_col, "[K]##K"..name) then
 				self.keyboarddragging = true
 				self.drag_name = name
 				just_dragged = true
@@ -318,6 +318,10 @@ function OverlayConfig:render()
 			
 			if not dfhack.imgui.IsItemHovered() and not keynav_item_hovered then
 				border_col = COLOR_GREY
+				
+				if not cfg.enabled then 
+					border_col = COLOR_RED
+				end
 			end
 			
 			if not widget.overlay_only then
