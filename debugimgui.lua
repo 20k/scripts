@@ -4,6 +4,8 @@ MyScreen = defclass(MyScreen, gui.Screen)
 
 state = false;
 
+is_filtered = dfhack.imgui.Ref(false)
+
 function MyScreen:render()
 	self:renderParent()
 	
@@ -11,7 +13,7 @@ function MyScreen:render()
 		self:dismiss()
 	end
 	
-    dfhack.imgui.Begin("Script Title");
+    --[[dfhack.imgui.Begin("Script Title");
 	dfhack.imgui.Text("Help I'm Trapped In A Script!!")
 	
 	if(dfhack.imgui.Button("Button")) then
@@ -19,7 +21,7 @@ function MyScreen:render()
 	end
 	
 	dfhack.imgui.Text("Button State: " .. tostring(state))
-	dfhack.imgui.End()
+	dfhack.imgui.End()]]--
 	
 	dfhack.imgui.Begin("Script 2")
 	dfhack.imgui.Text("Two Windows! Send Help")
@@ -39,7 +41,28 @@ function MyScreen:render()
 		end
 	end
 	
+	dfhack.imgui.Checkbox("Filter Inputs", is_filtered);
+	
+	dfhack.imgui.Text("Want Capture Keyboard"..tostring(dfhack.imgui.WantCaptureKeyboard()))
+	
+	if dfhack.imgui.Get(is_filtered) then
+		dfhack.imgui.EatKeyboardInputs()
+	end
+	
 	dfhack.imgui.End()
 end
+
+function MyScreen:onDismiss()
+    view = nil
+end
+
+--[[function MyScreen:onInput(keys)
+	for k, v in pairs(keys) do
+		dfhack.imgui.FeedUpwards(v)
+	end
+	
+	return false
+end]]--
+
 
 screen = MyScreen{ }:show()
