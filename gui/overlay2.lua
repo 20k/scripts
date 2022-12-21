@@ -140,6 +140,8 @@ function OverlayConfig:render()
 	local any_hovered = false;
 	local just_dragged = false
 	
+	dfhack.imgui.BeginTable("Table", 6, (1<<13) | (1<<9) | (1<<7))
+	
 	for _,name in ipairs(state.index) do
 		if(#real_search > 0) then
 			if(string.find(name, real_search) == nil) then
@@ -173,12 +175,12 @@ function OverlayConfig:render()
 		
 		local style_index = dfhack.imgui.StyleIndex("Text")
 		
-		dfhack.imgui.BeginGroup()
+		--dfhack.imgui.BeginGroup()
+		
+		dfhack.imgui.TableNextRow();
+		dfhack.imgui.TableNextColumn();
 		
 		dfhack.imgui.PushStyleColor(style_index, {fg=col, bg=COLOR_BLACK})
-
-		dfhack.imgui.TextColored(textcolor, "[")
-		dfhack.imgui.SameLine(0,0)
 
 		if(dfhack.imgui.Button(txt.. "###enable" .. name)) then
 			cfg.enabled = not cfg.enabled
@@ -195,16 +197,10 @@ function OverlayConfig:render()
 		--everything involving keynav_item_hovered is to work around an imgui bug
 		--that was fixed in 1.88
 		local keynav_item_hovered = dfhack.imgui.IsItemHovered()
-		
-		dfhack.imgui.SameLine(0,0)
-		dfhack.imgui.TextColored(textcolor, "]")
+				
+		dfhack.imgui.TableNextColumn();
 		
 		dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_RED, bg=COLOR_BLACK})
-		
-		dfhack.imgui.SameLine()
-		
-		dfhack.imgui.TextColored(textcolor, "[")
-		dfhack.imgui.SameLine(0,0)
 		
 		if dfhack.imgui.Button("reset###reset"..name) then
 			overlay.overlay_command({'position', name, 'default'}, true)
@@ -212,13 +208,10 @@ function OverlayConfig:render()
 		
 		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
 		
-		dfhack.imgui.SameLine(0,0)
-		dfhack.imgui.TextColored(textcolor, "]")
-		
 		dfhack.imgui.PushStyleColor(style_index, {fg=COLOR_YELLOW, bg=COLOR_BLACK})
 		
-		dfhack.imgui.SameLine()
-		
+		dfhack.imgui.TableNextColumn();
+
 		local next_x = cfg.pos.x
 		local next_y = cfg.pos.y
 		local dirty_anchor = false
@@ -226,7 +219,7 @@ function OverlayConfig:render()
 		local widget_height = widget.frame_rect.y2 - widget.frame_rect.y1		
 
 		if cfg.pos.x < 0 then
-			if dfhack.imgui.Button("[R]###LT"..name) then		
+			if dfhack.imgui.Button("R###LT"..name) then		
 				if cfg.pos.x < 0 then
 					next_x = display_size.x + cfg.pos.x - widget_width + 1
 					dirty_anchor = true
@@ -237,7 +230,7 @@ function OverlayConfig:render()
 				dfhack.imgui.SetTooltip("Right Anchored")
 			end
 		else 
-			if dfhack.imgui.Button("[L]###LT"..name) then		
+			if dfhack.imgui.Button("L###LT"..name) then		
 				if cfg.pos.x > 0 then
 					next_x = -display_size.x + cfg.pos.x + widget_width - 1
 					dirty_anchor = true
@@ -251,10 +244,10 @@ function OverlayConfig:render()
 		
 		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
 		
-		dfhack.imgui.SameLine()
+		dfhack.imgui.TableNextColumn();
 		
 		if cfg.pos.y < 0 then
-			if dfhack.imgui.Button("[B]###RT"..name) then
+			if dfhack.imgui.Button("B###RT"..name) then
 				if cfg.pos.y < 0 then
 					next_y = display_size.y + cfg.pos.y - widget_height + 1
 					dirty_anchor = true
@@ -265,7 +258,7 @@ function OverlayConfig:render()
 				dfhack.imgui.SetTooltip("Bottom Anchored")
 			end
 		else
-			if dfhack.imgui.Button("[T]###RT"..name) then
+			if dfhack.imgui.Button("T###RT"..name) then
 				if cfg.pos.y > 0 then
 					next_y = -display_size.y + cfg.pos.y + widget_height - 1
 					dirty_anchor = true
@@ -279,9 +272,9 @@ function OverlayConfig:render()
 		
 		keynav_item_hovered = keynav_item_hovered or dfhack.imgui.IsItemHovered()
 				
-		dfhack.imgui.SameLine()
+		dfhack.imgui.TableNextColumn();
 
-		if dfhack.imgui.Button("[K]##K"..name) then
+		if dfhack.imgui.Button("K##K"..name) then
 			self.keyboarddragging = true
 			self.drag_name = name
 			just_dragged = true
@@ -305,6 +298,8 @@ function OverlayConfig:render()
 			textcolor = COLOR_LIGHTMAGENTA
 		end
 		
+		dfhack.imgui.TableNextColumn();
+		
 		dfhack.imgui.BeginGroup()
 		
 		dfhack.imgui.TextColored(textcolor, name)
@@ -316,7 +311,7 @@ function OverlayConfig:render()
 			any_hovered = true
 		end
 
-		dfhack.imgui.EndGroup()
+		--dfhack.imgui.EndGroup()
 		
 		local border_col = COLOR_GREEN
 		
@@ -359,6 +354,21 @@ function OverlayConfig:render()
 		
 		::continue::
 	end
+	
+	dfhack.imgui.EndTable()
+
+	--[[if (dfhack.imgui.BeginTable("table2", 3)) then
+		for row = 0,5 do
+			dfhack.imgui.TableNextRow();
+			dfhack.imgui.TableNextColumn();
+			dfhack.imgui.Text("Row".. tostring(row));
+			dfhack.imgui.TableNextColumn();
+			dfhack.imgui.Text("Some contents");
+			dfhack.imgui.TableNextColumn();
+			dfhack.imgui.Text("123.456");
+		end
+		dfhack.imgui.EndTable();
+	end]]--
 
 	dfhack.imgui.End();
 	
