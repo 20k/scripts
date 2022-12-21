@@ -273,8 +273,8 @@ function OverlayConfig:render()
 
 			local drag_col = {fg=COLOR_YELLOW}
 			
-			if self.keyboarddragging then
-				drag_col = {fg=COLOR_GREEN}
+			if self.keyboarddragging and self.drag_name == name then
+				drag_col = {fg=COLOR_LIGHTGREEN}
 			end
 
 			if dfhack.imgui.ButtonColored(drag_col, "K##K"..name) then
@@ -352,7 +352,10 @@ function OverlayConfig:render()
 				
 				on_drag(name, {x=dx, y=dy})
 				
-				dfhack.imgui.SetTooltip("Keyboard Dragging " .. name)
+				dfhack.imgui.BeginTooltip()
+				dfhack.imgui.TextBackgroundColored({fg=COLOR_WHITE, bg=COLOR_LIGHTRED}, "Keyboard Dragging " .. name)
+				dfhack.imgui.TextBackgroundColored({fg=COLOR_WHITE, bg=COLOR_LIGHTRED}, "Press Enter To Stop")
+				dfhack.imgui.EndTooltip()
 			end
 			
 			::continue::
