@@ -371,7 +371,9 @@ function OverlayConfig:render()
 	
 		dfhack.imgui.EndTable()
 	end
-
+	
+	dfhack.imgui.Text("Want Capture Keyboard"..tostring(dfhack.imgui.WantCaptureKeyboard()))
+	
 	dfhack.imgui.End();
 	
 	if self.dragging and not dfhack.imgui.IsMouseDragging(0) then
@@ -398,11 +400,9 @@ function OverlayConfig:onDismiss()
 end
 
 function OverlayConfig:onInput(keys)
-	if dfhack.imgui.WantCaptureKeyboard() then
-		return true
+	if not dfhack.imgui.WantCaptureInput() then
+		dfhack.imgui.FeedUpwards()
 	end
-	
-	return self:inputToSubviews(keys)
 end
 
 if dfhack_flags.module then
