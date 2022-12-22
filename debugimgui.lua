@@ -5,6 +5,7 @@ MyScreen = defclass(MyScreen, gui.Screen)
 state = false;
 
 is_filtered = dfhack.imgui.Ref(false)
+has_mouse = false
 
 function MyScreen:render()
 	self:renderParent()
@@ -48,7 +49,9 @@ function MyScreen:render()
 	--if dfhack.imgui.Get(is_filtered) then
 		--dfhack.imgui.EatKeyboardInputs()
 	--end
-	
+	dfhack.imgui.Text("HasLMouseOnInput " .. tostring(has_mouse))
+	has_mouse = false
+
 	dfhack.imgui.End()
 end
 
@@ -57,6 +60,11 @@ function MyScreen:onDismiss()
 end
 
 function MyScreen:onInput(keys)
+	if keys._MOUSE_L then
+		has_mouse = true
+		return
+	end
+	
 	if not dfhack.imgui.WantCaptureInput() and not dfhack.imgui.Get(is_filtered) then
 		dfhack.imgui.FeedUpwards()
 	end
