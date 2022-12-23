@@ -326,7 +326,7 @@ function OverlayConfig:render()
 			if not widget.overlay_only then
 				local frame = widget.frame
 				local rect = widget.frame_rect
-				local background_dl = dfhack.imgui.GetBackgroundDrawList()
+				local background_dl = dfhack.imgui.GetForegroundDrawList()
 
 				if dfhack.imgui.IsMouseHoveringRect({x=rect.x1-1, y=rect.y1-1}, {x=rect.x2+1, y=rect.y2+1}, false) then
 					dfhack.imgui.AddRectFilled(background_dl, {x=rect.x1, y=rect.y1}, {x=rect.x2, y=rect.y2}, COLOR_LIGHTGREEN)

@@ -42,6 +42,10 @@ function MyScreen:render()
 	--	end
 	--end
 	
+	if dfhack.imgui.IsKeyPressed("STRING_A097") then
+		dfhack.imgui.Text("A Pressed")
+	end
+	
 	dfhack.imgui.Checkbox("Block Inputs", is_filtered);
 	
 	dfhack.imgui.Text("Want Capture Keyboard"..tostring(dfhack.imgui.WantCaptureKeyboard()))
