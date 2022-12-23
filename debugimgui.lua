@@ -4,59 +4,62 @@ MyScreen = defclass(MyScreen, gui.Screen)
 
 state = false;
 
-is_filtered = dfhack.imgui.Ref(false)
+imgui = dfhack.imgui
+
+is_filtered = imgui.Ref(false)
 has_mouse = false
 
 function MyScreen:render()
 	self:renderParent()
 	
-	if(dfhack.imgui.IsKeyPressed(6)) then
+	if(imgui.IsKeyPressed(6)) then
 		self:dismiss()
 	end
 	
-    --[[dfhack.imgui.Begin("Script Title");
-	dfhack.imgui.Text("Help I'm Trapped In A Script!!")
+    --[[imgui.Begin("Script Title");
+	imgui.Text("Help I'm Trapped In A Script!!")
 	
-	if(dfhack.imgui.Button("Button")) then
+	if(imgui.Button("Button")) then
 		state = not state
 	end
 	
-	dfhack.imgui.Text("Button State: " .. tostring(state))
-	dfhack.imgui.End()]]--
+	imgui.Text("Button State: " .. tostring(state))
+	imgui.End()]]--
 	
-	dfhack.imgui.Begin("Script 2")
-	dfhack.imgui.Text("Two Windows! Send Help")
+	imgui.Begin("Script 2")
+	
+	imgui.Text("Two Windows! Send Help")
 			
-	dfhack.imgui.TextColored(COLOR_RED, "Bottom text")
-	dfhack.imgui.Text("After Col")
+	imgui.TextColored(COLOR_RED, "Bottom text")
+	imgui.Text("After Col")
 	
-	dfhack.imgui.Text("On Line")
+	imgui.Text("On Line")
 	
-	dfhack.imgui.SameLine()
+	imgui.SameLine()
 	
-	dfhack.imgui.Text("Line continuation")
+	imgui.Text("Line continuation")
 	
 	--for i = 0,512 do
-	--	if(dfhack.imgui.IsKeyPressed(i)) then
-	--		dfhack.imgui.Text(tostring(i))
+	--	if(imgui.IsKeyPressed(i)) then
+	--		imgui.Text(tostring(i))
 	--	end
 	--end
 	
-	if dfhack.imgui.IsKeyPressed("STRING_A097") then
-		dfhack.imgui.Text("A Pressed")
+	if imgui.IsKeyPressed("STRING_A097") then
+		imgui.Text("A Pressed")
 	end
 	
-	dfhack.imgui.Checkbox("Block Inputs", is_filtered);
+	imgui.Checkbox("Block Inputs", is_filtered);
 	
-	dfhack.imgui.Text("Want Capture Keyboard"..tostring(dfhack.imgui.WantCaptureKeyboard()))
+	imgui.Text("Want Capture Keyboard"..tostring(imgui.WantCaptureKeyboard()))
 	
-	--if dfhack.imgui.Get(is_filtered) then
-		--dfhack.imgui.EatKeyboardInputs()
+	--if imgui.Get(is_filtered) then
+		--imgui.EatKeyboardInputs()
 	--end
-	dfhack.imgui.Text("HasLMouseOnInput " .. tostring(has_mouse))
+	imgui.Text("HasLMouseOnInput " .. tostring(has_mouse))
 	has_mouse = false
 
-	dfhack.imgui.End()
+	imgui.End()
 end
 
 function MyScreen:onDismiss()
@@ -69,8 +72,8 @@ function MyScreen:onInput(keys)
 		return
 	end
 	
-	if not dfhack.imgui.WantCaptureInput() and not dfhack.imgui.Get(is_filtered) then
-		dfhack.imgui.FeedUpwards()
+	if not imgui.WantCaptureInput() and not imgui.Get(is_filtered) then
+		imgui.FeedUpwards()
 	end
 end
 
