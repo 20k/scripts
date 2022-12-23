@@ -26,7 +26,8 @@ function MyScreen:render()
 	imgui.Text("Button State: " .. tostring(state))
 	imgui.End()]]--
 	
-	imgui.Begin("Script 2")
+	--I really need to sort out the constants
+	imgui.Begin("Script 2", 0, (1<<10))
 	
 	if imgui.BeginMenuBar() then
 		if imgui.BeginMenu("Menu") then
@@ -37,6 +38,8 @@ function MyScreen:render()
 		
 		if imgui.BeginMenu("Second") then
 			imgui.Button("I Click")
+			
+			imgui.EndMenu()
 		end
 		
 		imgui.EndMenuBar()
