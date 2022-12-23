@@ -28,6 +28,20 @@ function MyScreen:render()
 	
 	imgui.Begin("Script 2")
 	
+	if imgui.BeginMenuBar() then
+		if imgui.BeginMenu("Menu") then
+			imgui.Text("Hello!")
+			
+			imgui.EndMenu()
+		end
+		
+		if imgui.BeginMenu("Second") then
+			imgui.Button("I Click")
+		end
+		
+		imgui.EndMenuBar()
+	end
+	
 	imgui.Text("Two Windows! Send Help")
 			
 	imgui.TextColored(COLOR_RED, "Bottom text")
