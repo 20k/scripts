@@ -6,6 +6,10 @@ imgui = dfhack.imgui
 state = "main"
 
 function brighten(col, should_bright)
+	if not should_bright then
+		return col
+	end
+
 	local arr = {7, 9, 10, 11, 12, 13, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15}
 	return arr[col + 1]
 end
@@ -18,9 +22,11 @@ function render_announcements()
 		local report = reports[i]
 	
 		local a_type = report.type
-		local text = report.text
+		local text = dfhack.df2utf(report.text)
 		local col = report.color
 		local bright = report.bright
+		
+		--imgui.Text(tostring(col) .. " " ..tostring(bright))
 		
 		col = brighten(col, bright)
 		
