@@ -8,6 +8,7 @@ imgui = dfhack.imgui
 
 is_filtered = imgui.Ref(false)
 has_mouse = false
+test_button = false
 
 function MyScreen:render()
 	self:renderParent()
@@ -28,6 +29,16 @@ function MyScreen:render()
 	
 	--I really need to sort out the constants
 	imgui.Begin("Script 2", 0, (1<<10))
+	
+	imgui.Text("B:")
+	
+	imgui.SameLine()
+	
+	if imgui.Button("Toggle Readout") or imgui.Shortcut("STRING_A098") then
+		test_button = not test_button
+	end
+	
+	imgui.Text("State: " .. tostring(test_button))
 	
 	if imgui.BeginMenuBar() then
 		if imgui.BeginMenu("Menu") then
