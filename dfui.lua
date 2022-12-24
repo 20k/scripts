@@ -68,8 +68,14 @@ function time_to_ymd(t)
 	return {year=fyear, month=fmonth, day=fday, hour=fhour}
 end
 
-function centre_camera(x, y)
+function centre_camera(x, y, z)
+	local sx = df.global.gps.dimx
+	local sy = df.global.gps.dimy
 
+	df.global.window_x = x - math.floor(sx/2)
+	df.global.window_y = y - math.floor(sy/2)
+	
+	df.global.window_z = z
 end
 
 function render_announcements()
@@ -89,6 +95,7 @@ function render_announcements()
 		
 		local lx = report.pos.x
 		local ly = report.pos.y
+		local lz = report.pos.z
 				
 		col = brighten(col, bright)
 		
@@ -99,8 +106,12 @@ function render_announcements()
 			df_time = report.time
 			
 			if imgui.Shortcut("STRING_A122") then
-				centre_camera(lx, ly)
+				centre_camera(lx, ly, lz)
 			end
+		end
+		
+		if imgui.IsItemClicked(0) then 
+			centre_camera(lx, ly, lz)
 		end
 	end
 	
