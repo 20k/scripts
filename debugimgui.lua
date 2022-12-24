@@ -110,6 +110,8 @@ function MyScreen:render()
 	--end
 	imgui.Text("HasLMouseOnInput " .. tostring(has_mouse))
 	has_mouse = false
+	
+	imgui.Text("Special: ë")
 
 	imgui.End()
 end
