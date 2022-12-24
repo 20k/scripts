@@ -33,16 +33,40 @@ function MyScreen:render()
 		if imgui.BeginMenu("Menu") then
 			imgui.Text("Hello!")
 			
+			imgui.Text("More text!")
+			
+			imgui.Text("Weewooweewoo")
+			
 			imgui.EndMenu()
 		end
 		
 		if imgui.BeginMenu("Second") then
 			imgui.Button("I Click")
 			
+			imgui.Button("Oh look, buttons!")
+			
+			imgui.Button("Part 3")
+			
 			imgui.EndMenu()
 		end
 		
 		imgui.EndMenuBar()
+	end
+	
+	if imgui.BeginTabBar("Tab Bar!") then
+		if imgui.BeginTabItem("Testo") then
+			imgui.Text("Test")
+			
+			imgui.EndTabItem()
+		end
+		
+		if imgui.BeginTabItem("Nexto") then
+			imgui.Text("Hello")
+			
+			imgui.EndTabItem()
+		end
+			
+		imgui.EndTabBar()
 	end
 	
 	imgui.Text("Two Windows! Send Help")
