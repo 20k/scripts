@@ -14,10 +14,67 @@ function brighten(col, should_bright)
 	return arr[col + 1]
 end
 
+function months()
+	return {"Granite", "Slate", "Felsite", "Hematite","Malachite","Galena", "Limestone", "Sandstone","Timber", "Moonstone","Opal","Obsidian"}
+end
+
+function days_in_month()
+	return 28
+end
+
+function days_in_year()
+	return 336
+end
+
+function ticks_in_day()
+	return 1200
+end
+
+function ticks_in_month()
+	return ticks_in_day() * days_in_month()
+end
+
+function ordinal_suffix(which)
+	local as_str = tostring(which)
+	
+	local back = as_str[#as_str]
+	
+	if back == 1 then
+		return "st"
+	end
+	
+	if back == 2 then
+		return "nd"
+	end
+	
+	if back == 3 then
+		return "rd"
+	end
+		
+	return "th"
+end
+
+function time_to_ymd(t)
+	local fhour = t % 50
+	local fday = (t / ticks_in_day()) % 28
+	local fmonth = (t / ticks_in_month()) % 12
+	local fyear = (t / (ticks_in_month() * 12))
+	
+	fhour = math.floor(fhour)
+	fday = math.floor(fday)
+	fmonth = math.floor(fmonth)
+	fyear = math.floor(fyear)
+	
+	return {year=fyear, month=fmonth, day=fday, hour=fhour}
+end
+
 function render_announcements()
 	local reports = df.global.world.status.reports
 	local count = #reports
 		
+	local df_year = -1
+	local df_time = -1
+
 	for i=0,(count-1) do
 		local report = reports[i]
 	
@@ -30,7 +87,28 @@ function render_announcements()
 		
 		col = brighten(col, bright)
 		
-		imgui.TextColored({fg=col}, text)
+		--if imgui.ButtonColored({fg=col}, text) then
+		--	df_date 
+		--end
+		
+		imgui.ButtonColored({fg=col}, text)
+		
+		if imgui.IsItemHovered() or imgui.IsItemFocused() then 
+			df_year = report.year
+			df_time = report.time
+		end
+		
+		--imgui.TextColored({fg=col}, text)
+	end
+	
+	if df_time ~= -1 then
+		local ymd = time_to_ymd(df_time)
+		
+		imgui.Text("Date: " .. tostring(ymd.day+1) .. ordinal_suffix(ymd.day+1) .. " "
+							.. months()[ymd.month + 1]
+							.. ", " .. tostring(df_year))
+	
+		--imgui.Text("Date: " .. tostring(df_time) .. ", " .. tostring(df_year))
 	end
 end
 
