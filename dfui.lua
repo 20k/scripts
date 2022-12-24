@@ -68,13 +68,17 @@ function time_to_ymd(t)
 	return {year=fyear, month=fmonth, day=fday, hour=fhour}
 end
 
+function centre_camera(x, y)
+
+end
+
 function render_announcements()
 	local reports = df.global.world.status.reports
 	local count = #reports
 		
 	local df_year = -1
 	local df_time = -1
-
+	
 	for i=0,(count-1) do
 		local report = reports[i]
 	
@@ -83,22 +87,21 @@ function render_announcements()
 		local col = report.color
 		local bright = report.bright
 		
-		--imgui.Text(tostring(col) .. " " ..tostring(bright))
-		
+		local lx = report.pos.x
+		local ly = report.pos.y
+				
 		col = brighten(col, bright)
-		
-		--if imgui.ButtonColored({fg=col}, text) then
-		--	df_date 
-		--end
 		
 		imgui.ButtonColored({fg=col}, text)
 		
 		if imgui.IsItemHovered() or imgui.IsItemFocused() then 
 			df_year = report.year
 			df_time = report.time
+			
+			if imgui.Shortcut("STRING_A122") then
+				centre_camera(lx, ly)
+			end
 		end
-		
-		--imgui.TextColored({fg=col}, text)
 	end
 	
 	if df_time ~= -1 then
