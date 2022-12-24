@@ -5,11 +5,26 @@ MyScreen = defclass(MyScreen, gui.Screen)
 imgui = dfhack.imgui
 state = "main"
 
+function brighten(col, should_bright)
+	local arr = {7, 9, 10, 11, 12, 13, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15}
+	return arr[col + 1]
+end
+
 function render_announcements()
-	local count = #df.global.world.status.reports
-	
-	for i=1,count do
+	local reports = df.global.world.status.reports
+	local count = #reports
 		
+	for i=0,(count-1) do
+		local report = reports[i]
+	
+		local a_type = report.type
+		local text = report.text
+		local col = report.color
+		local bright = report.bright
+		
+		col = brighten(col, bright)
+		
+		imgui.TextColored({fg=col}, text)
 	end
 end
 
