@@ -349,9 +349,37 @@ function render_designations()
 			end
 			
 			if tile ~= nil then
+				local tile_type = dfhack.maps.getTileType(xyz2pos(v.x-1, v.y-1, v.z))
+				
+				local tiletype_attrs = df.tiletype.attrs;
+				local my_shape = df.tiletype.attrs[tile_type].shape
+				
+				local basic_shape_attrs = df.tiletype_shape_basic;
+				--local my_basic_shape = basic_shape_attrs[my_shape]
+				local my_basic_shape = df.tiletype_shape.attrs[my_shape].basic_shape
+				
+				--tiletypes.h
+				local is_wall = my_basic_shape == df.tiletype_shape_basic.Wall;
+				local is_floor = my_basic_shape == df.tiletype_shape_basic.Floor;
+				local is_ramp = my_basic_shape == df.tiletype_shape_basic.Ramp;
+				local is_stair = my_basic_shape == df.tiletype_shape_basic.Stair;
+								
+				--local tiletype_shape = df.tiletype_shape
+				--local attrs = tiletype_shape.attrs
+								
+				--local tile_shape = tile_type._enum.shape
+				
+				--for j, m in ipairs(tiletype_shape) do
+				--	imgui.Text(tostring(j))
+				--end
+				
+				--imgui.Text(tostring(tiletype_shape))
+				
+				--dfhack.isOpenTerrain(tile_type)
+			
 				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
 				--not the end of the world, need to collect a tile list and then filter
-				if selected == "Mine" then
+				if selected == "Mine" and is_wall then
 					tile.dig = df.tile_dig_designation.Default
 				end
 
@@ -371,18 +399,20 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.UpDownStair
 				end
 				
-				if selected == "Up Ramp" then
+				if selected == "Up Ramp" and is_wall then
 					tile.dig = df.tile_dig_designation.Ramp
 				end
 				
-				if selected == "Remove Up Stairs/Ramps" then
+				if selected == "Remove Up Stairs/Ramps" and (is_ramp or is_stair) then
 					tile.dig = df.tile_dig_designation.Dig
 				end
 				
+				--todo is_tree
 				if selected == "Chop Down Trees" then
 					tile.dig = df.tile_dig_designation.Dig
 				end
 				
+				--todo, is construction
 				if selected == "Remove Construction" then				
 					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
 				end
