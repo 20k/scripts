@@ -225,7 +225,7 @@ selected_designation_marker = false
 mouse_click_start = {x=-1, y=-1, z=-1}
 mouse_click_end = {x=-1, y=-1, z=-1}
 mouse_has_drag = false
-mouse_right_drag = false
+mouse_which_clicked = 0
 
 function render_designations()
 	local menus = {{key="d", text="Mine"},
@@ -262,13 +262,19 @@ function render_designations()
 	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
 		
 	if not window_blocked and selected_designation ~= "None" then
-		if imgui.IsMouseClicked(0) then
+		if imgui.IsMouseClicked(0) or imgui.IsMouseClicked(1) then
 			mouse_click_start = current_world_mouse_pos
 			mouse_has_drag = true
+			
+			if imgui.IsMouseClicked(0) then
+				mouse_which_clicked = 0
+			else
+				mouse_which_clicked = 1
+			end
 		end
 	end
 	
-	if mouse_has_drag and imgui.IsMouseClicked(1) and not mouse_right_drag then
+	if mouse_has_drag and imgui.IsMouseClicked((mouse_which_clicked + 1) % 2) then
 		mouse_has_drag = false
 	end
 	
@@ -299,22 +305,15 @@ function render_designations()
 				render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, v)
 			end
 		end
-					
-		if imgui.IsMouseReleased(0) then
+
+		if imgui.IsMouseReleased(mouse_which_clicked) then
 			should_trigger_mouse = true
 			mouse_click_end = current_world_mouse_pos
 			mouse_has_drag = false
-		end
-		
-		if imgui.IsMouseReleased(1) then
-			should_trigger_mouse = true
-			mouse_click_end = current_world_mouse_pos
-			mouse_has_drag = false
-			trigger_rmouse = true
 		end
 	end
 
-	if not imgui.IsMouseDown(0) and not imgui.IsMouseDown(1) then
+	if not imgui.IsMouseDown(mouse_which_clicked) then
 		mouse_has_drag = false
 	end
 
@@ -327,7 +326,7 @@ function render_designations()
 			local selected = selected_designation
 			local marker = selected_designation_marker
 			
-			if trigger_rmouse then
+			if mouse_which_clicked == 1 then
 				selected = "Remove Designation"
 				marker = false
 			end
