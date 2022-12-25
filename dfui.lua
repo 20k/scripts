@@ -4,6 +4,7 @@ MyScreen = defclass(MyScreen, gui.Screen)
 
 imgui = dfhack.imgui
 state = "main"
+last_hovered_announce_id = -1
 
 function brighten(col, should_bright)
 	if not should_bright then
@@ -68,6 +69,7 @@ function time_to_ymd(t)
 	return {year=fyear, month=fmonth, day=fday, hour=fhour}
 end
 
+-- must be part of network api
 function centre_camera(x, y, z)
 	local sx = df.global.gps.dimx
 	local sy = df.global.gps.dimy
@@ -78,12 +80,26 @@ function centre_camera(x, y, z)
 	df.global.window_z = z
 end
 
+-- must be part of network api
+function get_camera()
+	return {x=df.global.window_x, y=df.global.window_y, z=df.global.window_z}
+end
+
+-- ideally should be part of network api
+function render_absolute_text(str, fg, bg, pos)
+	local draw_list = imgui.GetForegroundDrawList()
+	
+	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, "X", pos)
+end
+
 function render_announcements()
 	local reports = df.global.world.status.reports
 	local count = #reports
 		
 	local df_year = -1
 	local df_time = -1
+	
+	local any_hovered_yet = false
 	
 	for i=0,(count-1) do
 		local report = reports[i]
@@ -101,11 +117,17 @@ function render_announcements()
 		
 		imgui.ButtonColored({fg=col}, text)
 		
-		if imgui.IsItemHovered() or imgui.IsItemFocused() then 
+		if imgui.IsItemHovered() or (not any_hovered_yet and report.id == last_hovered_announce_id) then 
 			df_year = report.year
 			df_time = report.time
 			
-			if imgui.Shortcut("STRING_A122") then
+			last_hovered_announce_id = report.id
+			
+			local pos = {x=lx+1, y=ly+1, z=lz}
+			
+			render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
+			
+			if imgui.Shortcut("STRING_A122") and imgui.IsItemHovered() then
 				centre_camera(lx, ly, lz)
 			end
 		end
