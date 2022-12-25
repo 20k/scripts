@@ -181,15 +181,21 @@ function render_table_impl(menus, old_state)
 			
 			local description = v.text
 			
+			local pushed = false
 			if state == description then
+				pushed = true
 				imgui.PushStyleColor(imgui.StyleIndex("Text"), {fg=COLOR_WHITE})
 			end
 			
 			if imgui.Button(description) or imgui.Shortcut(keyboard_key) then
-				state = description
+				if state == description then
+					state = "None"
+				else
+					state = description
+				end
 			end
 			
-			if state == description then
+			if pushed then
 				imgui.PopStyleColor(1)
 			end
 			
@@ -212,7 +218,7 @@ function render_table_impl(menus, old_state)
 	return state
 end
 
-selected_designation = "Mine"
+selected_designation = "None"
 selected_designation_filter = "walls"
 selected_designation_marker = false
 
@@ -249,43 +255,49 @@ function render_designations()
 	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
 	
 	--todo: box select
-	if imgui.IsMouseDown(0) and not window_blocked then
+	if not window_blocked and selected_designation ~= "None" then
 
 		local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
 		
-		if tile ~= nil then
-			--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
-			--not the end of the world, need to collect a tile list and then filter
-			if selected_designation == "Mine" then
-				tile.dig = df.tile_dig_designation.Default
-			end
+		local exec = imgui.IsMouseDown(0)
+		
+		if tile ~= nil then			
+			render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=lx, y=ly, z=top_left.z})
+		
+			if exec then
+				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
+				--not the end of the world, need to collect a tile list and then filter
+				if selected_designation == "Mine" then
+					tile.dig = df.tile_dig_designation.Default
+				end
 
-			if selected_designation == "Channel" then
-				tile.dig = df.tile_dig_designation.Channel
-			end
+				if selected_designation == "Channel" then
+					tile.dig = df.tile_dig_designation.Channel
+				end
 
-			if selected_designation == "Up Stair" then
-				tile.dig = df.tile_dig_designation.UpStair
-			end
-			
-			if selected_designation == "Down Stair" then
-				tile.dig = df.tile_dig_designation.DownStair
-			end
-			
-			if selected_designation == "U/D Stair" then
-				tile.dig = df.tile_dig_designation.UpDownStair
-			end
-			
-			if selected_designation == "Up Ramp" then
-				tile.dig = df.tile_dig_designation.Ramp
-			end
-			
-			if selected_designation == "Remove Designation" then
-				tile.dig = df.tile_dig_designation.No
+				if selected_designation == "Up Stair" then
+					tile.dig = df.tile_dig_designation.UpStair
+				end
+				
+				if selected_designation == "Down Stair" then
+					tile.dig = df.tile_dig_designation.DownStair
+				end
+				
+				if selected_designation == "U/D Stair" then
+					tile.dig = df.tile_dig_designation.UpDownStair
+				end
+				
+				if selected_designation == "Up Ramp" then
+					tile.dig = df.tile_dig_designation.Ramp
+				end
+				
+				if selected_designation == "Remove Designation" then
+					tile.dig = df.tile_dig_designation.No
+				end
 			end
 		end
 		
-		if occupancy ~= nil then
+		if exec and occupancy ~= nil then
 			occupancy.dig_marked = selected_designation_marker
 		end
 	end
