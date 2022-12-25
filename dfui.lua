@@ -254,6 +254,8 @@ function render_designations()
 	
 	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
 	
+	local dirty_block = false
+	
 	--todo: box select
 	if not window_blocked and selected_designation ~= "None" then
 
@@ -294,6 +296,8 @@ function render_designations()
 				if selected_designation == "Remove Designation" then
 					tile.dig = df.tile_dig_designation.No
 				end
+				
+				dirty_block = true
 			end
 		end
 		
@@ -307,10 +311,21 @@ function render_designations()
 		
 		if tile ~= nil then
 			tile.dig = df.tile_dig_designation.No
+			dirty_block = true
 		end
 		
 		if occupancy ~= nil then
 			occupancy.dig_marked = false
+		end
+	end
+	
+	if dirty_block then
+		if (tile.dig > 0 || tile.smooth > 0) then
+			local tile_block = maps.getTileBlock(xyz2pos(lx - 1, ly - 1, top_left.z))
+			
+			if tile_block ~= nil then
+				tile_block.designated = true
+			end
 		end
 	end
 end
