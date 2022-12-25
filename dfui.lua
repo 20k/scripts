@@ -293,6 +293,14 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.Ramp
 				end
 				
+				if selected_designation == "Remove Up Stairs/Ramps" then
+					tile.dig = df.tile_dig_designation.Dig
+				end
+				
+				if selected_designation == "Chop Down Trees" then
+					tile.dig = df.tile_dig_designation.Dig
+				end
+				
 				if selected_designation == "Remove Designation" then
 					tile.dig = df.tile_dig_designation.No
 				end
@@ -306,9 +314,9 @@ function render_designations()
 		end
 	end
 	
+	local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
+	
 	if imgui.IsMouseDown(1) and not window_blocked then
-		local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
-		
 		if tile ~= nil then
 			tile.dig = df.tile_dig_designation.No
 			dirty_block = true
@@ -320,11 +328,11 @@ function render_designations()
 	end
 	
 	if dirty_block then
-		if (tile.dig > 0 || tile.smooth > 0) then
-			local tile_block = maps.getTileBlock(xyz2pos(lx - 1, ly - 1, top_left.z))
+		if (tile.dig > 0 or tile.smooth > 0) then
+			local tile_block = dfhack.maps.getTileBlock(xyz2pos(lx - 1, ly - 1, top_left.z))
 			
 			if tile_block ~= nil then
-				tile_block.designated = true
+				tile_block.flags.designated = true
 			end
 		end
 	end
