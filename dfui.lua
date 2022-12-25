@@ -205,6 +205,7 @@ function render_table_impl(menus, old_state)
 end
 
 selected_designation = "Mine"
+selected_designation_filter = "walls"
 
 function render_designations()
 	local menus = {{key="d", text="Mine"},
@@ -229,21 +230,56 @@ function render_designations()
 
 	selected_designation = render_table_impl(menus, selected_designation)
 
+	local top_left = get_camera()
+	
+	local mouse_pos = imgui.GetMousePos()
+	
+	local lx = top_left.x+mouse_pos.x
+	local ly = top_left.y+mouse_pos.y
+	
 	--todo: box select
 	if imgui.IsMouseDown(0) and not imgui.IsWindowHovered(0) then
-		local top_left = get_camera()
-		
-		local mouse_pos = imgui.GetMousePos()
-		
-		local lx = top_left.x+mouse_pos.x
-		local ly = top_left.y+mouse_pos.y
-		
+
 		local tile = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
 		
-		if selected_designation == "Mine" then
-			if tile ~= nil then
+		if tile ~= nil then
+			--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
+			--not the end of the world, need to collect a tile list and then filter
+			if selected_designation == "Mine" then
 				tile.dig = df.tile_dig_designation.Default
 			end
+
+			if selected_designation == "Channel" then
+				tile.dig = df.tile_dig_designation.Channel
+			end
+
+			if selected_designation == "Up Stair" then
+				tile.dig = df.tile_dig_designation.UpStair
+			end
+			
+			if selected_designation == "Down Stair" then
+				tile.dig = df.tile_dig_designation.DownStair
+			end
+			
+			if selected_designation == "U/D Stair" then
+				tile.dig = df.tile_dig_designation.UpDownStair
+			end
+			
+			if selected_designation == "Up Ramp" then
+				tile.dig = df.tile_dig_designation.Ramp
+			end
+			
+			if selected_designation == "Remove Designation" then
+				tile.dig = df.tile_dig_designation.No
+			end
+		end
+	end
+	
+	if imgui.IsMouseDown(1) and not imgui.IsWindowHovered(0) then
+		local tile = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
+		
+		if tile ~= nil then
+			tile.dig = df.tile_dig_designation.No
 		end
 	end
 end
