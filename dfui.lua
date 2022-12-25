@@ -148,6 +148,106 @@ function render_announcements()
 	end
 end
 
+function render_table_impl(menus, old_state)
+	local state = old_state
+		
+	local last_merged = false
+	
+	if imgui.BeginTable("Table", 2, (1 << 20)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+			for k, v in ipairs(menus) do
+			
+			local keyboard_key = 0;
+			
+			if #v.key > 1 then
+				keyboard_key = "STRING_A" .. v.key
+			else
+				local byt = tostring(string.byte(v.key))
+				
+				if #byt < 3 then
+					byt = "0"..byt
+				end
+					
+				keyboard_key = "STRING_A"..byt
+			end
+		
+			local shortcut_name = imgui.GetKeyDisplay(keyboard_key)
+			
+			imgui.TextColored(COLOR_LIGHTGREEN, shortcut_name)
+			imgui.SameLine(0,0)
+			imgui.Text(": ")
+			imgui.SameLine(0,0)
+			
+			local description = v.text
+			
+			if imgui.Button(description) or imgui.Shortcut(keyboard_key) then
+				state = description
+			end
+			
+			if #description < 13 and not last_merged then
+				--imgui.SameLine()
+				imgui.TableNextColumn();
+				
+				last_merged = true
+			else
+				imgui.TableNextRow();
+				imgui.TableNextColumn();
+			
+				last_merged = false
+			end
+		end
+		
+		imgui.EndTable()
+	end
+
+	return state
+end
+
+selected_designation = "Mine"
+
+function render_designations()
+	local menus = {{key="d", text="Mine"},
+				   {key="h", text="Channel"},
+				   {key="u", text="Up Stair"},
+				   {key="j", text="Down Stair"},
+				   {key="i", text="U/D Stair"},
+				   {key="r", text="Up Ramp"},
+				   {key="z", text="Remove Up Stairs/Ramps"},
+				   {key="t", text="Chop Down Trees"},
+				   {key="p", text="Gather Plants"},
+				   {key="s", text="Smooth Stone"},
+				   {key="e", text="Engrave Stone"},
+				   {key="F", text="Carve Fortifications"},
+				   {key="T", text="Carve Track"},
+				   {key="v", text="Toggle Engravings"},
+				   {key="M", text="Toggle Standard/Marking"},
+				   {key="n", text="Remove Construction"},
+				   {key="x", text="Remove Designation"},
+				   {key="b", text="Set Building/Item Property"},
+				   {key="o", text="Set Traffic Areas"}}
+
+	selected_designation = render_table_impl(menus, selected_designation)
+
+	--todo: box select
+	if imgui.IsMouseDown(0) and not imgui.IsWindowHovered(0) then
+		local top_left = get_camera()
+		
+		local mouse_pos = imgui.GetMousePos()
+		
+		local lx = top_left.x+mouse_pos.x
+		local ly = top_left.y+mouse_pos.y
+		
+		local tile = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
+		
+		if selected_designation == "Mine" then
+			if tile ~= nil then
+				tile.dig = df.tile_dig_designation.Default
+			end
+		end
+	end
+end
+
 function render_menu()
 	local menus = {{key="097", text="View Announcements"},
 				   {key="098", text="Building"},
@@ -179,43 +279,8 @@ function render_menu()
 				   {key="068", text="Depot Access"},
 				   {key="032", text="Resume"},
 				   {key="046", text="One-Step"}}
-	
-	local last_merged = false
-	
-	if dfhack.imgui.BeginTable("Table", 2, (1 << 20)) then
-		dfhack.imgui.TableNextRow();
-		dfhack.imgui.TableNextColumn();
-			for k, v in ipairs(menus) do
-			local keyboard_key = "STRING_A" .. v.key
-		
-			local shortcut_name = imgui.GetKeyDisplay(keyboard_key)
-			
-			imgui.TextColored(COLOR_LIGHTGREEN, shortcut_name)
-			imgui.SameLine(0,0)
-			imgui.Text(": ")
-			imgui.SameLine(0,0)
-			
-			local description = v.text
-			
-			if imgui.Button(description) or imgui.Shortcut(keyboard_key) then
-				state = description
-			end
-			
-			if #description < 13 and not last_merged then
-				--imgui.SameLine()
-				dfhack.imgui.TableNextColumn();
-				
-				last_merged = true
-			else
-				dfhack.imgui.TableNextRow();
-				dfhack.imgui.TableNextColumn();
-			
-				last_merged = false
-			end
-		end
-		
-		dfhack.imgui.EndTable()
-	end
+
+	state = render_table_impl(menus, state)
 end
 
 function MyScreen:render()
@@ -243,6 +308,10 @@ function MyScreen:render()
 	
 	if state == "View Announcements" then
 		render_announcements()
+	end
+	
+	if state == "Designations" then
+		render_designations()
 	end
 	
 	imgui.End()
