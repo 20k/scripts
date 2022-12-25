@@ -366,8 +366,14 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.Dig
 				end
 				
+				if selected == "Remove Construction" then				
+					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
+				end
+				
 				if selected == "Remove Designation" then
 					tile.dig = df.tile_dig_designation.No
+					
+					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
 				end
 				
 				if (tile.dig > 0 or tile.smooth > 0) then
