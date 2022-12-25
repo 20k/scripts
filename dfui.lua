@@ -222,6 +222,11 @@ selected_designation = "None"
 selected_designation_filter = "walls"
 selected_designation_marker = false
 
+mouse_click_start = {x=-1, y=-1, z=-1}
+mouse_click_end = {x=-1, y=-1, z=-1}
+mouse_has_drag = false
+mouse_right_drag = false
+
 function render_designations()
 	local menus = {{key="d", text="Mine"},
 				   {key="h", text="Channel"},
@@ -253,86 +258,130 @@ function render_designations()
 	local ly = top_left.y+mouse_pos.y
 	
 	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
-	
-	local dirty_block = false
-	
-	--todo: box select
+		
+	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
+		
 	if not window_blocked and selected_designation ~= "None" then
+		if imgui.IsMouseClicked(0) then
+			mouse_click_start = current_world_mouse_pos
+			mouse_has_drag = true
+		end
+	end
+	
+	if mouse_has_drag and imgui.IsMouseClicked(1) and not mouse_right_drag then
+		mouse_has_drag = false
+	end
+	
+	local tiles = {}
+	local should_trigger_mouse = false
+	local trigger_rmouse = false
 
-		local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
-		
-		local exec = imgui.IsMouseDown(0)
-		
-		if tile ~= nil then			
-			render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=lx, y=ly, z=top_left.z})
-		
-			if exec then
-				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
-				--not the end of the world, need to collect a tile list and then filter
-				if selected_designation == "Mine" then
-					tile.dig = df.tile_dig_designation.Default
+	local min_pos_x = math.min(mouse_click_start.x, current_world_mouse_pos.x)
+	local min_pos_y = math.min(mouse_click_start.y, current_world_mouse_pos.y)
+	local min_pos_z = math.min(mouse_click_start.z, current_world_mouse_pos.z)
+	
+	local max_pos_x = math.max(mouse_click_start.x, current_world_mouse_pos.x)
+	local max_pos_y = math.max(mouse_click_start.y, current_world_mouse_pos.y)
+	local max_pos_z = math.max(mouse_click_start.z, current_world_mouse_pos.z)
+	
+	if mouse_has_drag then		
+		for z=min_pos_z,max_pos_z do
+			for y=min_pos_y,max_pos_y do
+				for x=min_pos_x,max_pos_x do
+					--this is the most lua line of code ever
+					tiles[#tiles+1] = {x=x, y=y, z=z}
 				end
-
-				if selected_designation == "Channel" then
-					tile.dig = df.tile_dig_designation.Channel
-				end
-
-				if selected_designation == "Up Stair" then
-					tile.dig = df.tile_dig_designation.UpStair
-				end
-				
-				if selected_designation == "Down Stair" then
-					tile.dig = df.tile_dig_designation.DownStair
-				end
-				
-				if selected_designation == "U/D Stair" then
-					tile.dig = df.tile_dig_designation.UpDownStair
-				end
-				
-				if selected_designation == "Up Ramp" then
-					tile.dig = df.tile_dig_designation.Ramp
-				end
-				
-				if selected_designation == "Remove Up Stairs/Ramps" then
-					tile.dig = df.tile_dig_designation.Dig
-				end
-				
-				if selected_designation == "Chop Down Trees" then
-					tile.dig = df.tile_dig_designation.Dig
-				end
-				
-				if selected_designation == "Remove Designation" then
-					tile.dig = df.tile_dig_designation.No
-				end
-				
-				dirty_block = true
 			end
 		end
 		
-		if exec and occupancy ~= nil then
-			occupancy.dig_marked = selected_designation_marker
+		for k, v in ipairs(tiles) do
+			if v.z == top_left.z then
+				render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, v)
+			end
 		end
-	end
-	
-	local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
-	
-	if imgui.IsMouseDown(1) and not window_blocked then
-		if tile ~= nil then
-			tile.dig = df.tile_dig_designation.No
-			dirty_block = true
+					
+		if imgui.IsMouseReleased(0) then
+			should_trigger_mouse = true
+			mouse_click_end = current_world_mouse_pos
+			mouse_has_drag = false
 		end
 		
-		if occupancy ~= nil then
-			occupancy.dig_marked = false
+		if imgui.IsMouseReleased(1) then
+			should_trigger_mouse = true
+			mouse_click_end = current_world_mouse_pos
+			mouse_has_drag = false
+			trigger_rmouse = true
 		end
 	end
-	
-	if dirty_block then
-		if (tile.dig > 0 or tile.smooth > 0) then
-			local tile_block = dfhack.maps.getTileBlock(xyz2pos(lx - 1, ly - 1, top_left.z))
+
+	if not imgui.IsMouseDown(0) and not imgui.IsMouseDown(1) then
+		mouse_has_drag = false
+	end
+
+	local dirty_block = false
+
+	if should_trigger_mouse then
+		for k, v in ipairs(tiles) do
+			local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(v.x - 1, v.y - 1, v.z))
 			
-			if tile_block ~= nil then
-				tile_block.flags.designated = true
+			local selected = selected_designation
+			local marker = selected_designation_marker
+			
+			if trigger_rmouse then
+				selected = "Remove Designation"
+				marker = false
+			end
+			
+			if tile ~= nil then
+				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
+				--not the end of the world, need to collect a tile list and then filter
+				if selected == "Mine" then
+					tile.dig = df.tile_dig_designation.Default
+				end
+
+				if selected == "Channel" then
+					tile.dig = df.tile_dig_designation.Channel
+				end
+
+				if selected == "Up Stair" then
+					tile.dig = df.tile_dig_designation.UpStair
+				end
+				
+				if selected == "Down Stair" then
+					tile.dig = df.tile_dig_designation.DownStair
+				end
+				
+				if selected == "U/D Stair" then
+					tile.dig = df.tile_dig_designation.UpDownStair
+				end
+				
+				if selected == "Up Ramp" then
+					tile.dig = df.tile_dig_designation.Ramp
+				end
+				
+				if selected == "Remove Up Stairs/Ramps" then
+					tile.dig = df.tile_dig_designation.Dig
+				end
+				
+				if selected == "Chop Down Trees" then
+					tile.dig = df.tile_dig_designation.Dig
+				end
+				
+				if selected == "Remove Designation" then
+					tile.dig = df.tile_dig_designation.No
+				end
+				
+				if (tile.dig > 0 or tile.smooth > 0) then
+					local tile_block = dfhack.maps.getTileBlock(xyz2pos(v.x - 1, v.y - 1, v.z))
+					
+					if tile_block ~= nil then
+						tile_block.flags.designated = true
+					end
+				end
+			end
+
+			if occupancy ~= nil then
+				occupancy.dig_marked = marker
 			end
 		end
 	end
