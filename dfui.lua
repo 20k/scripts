@@ -227,6 +227,23 @@ mouse_click_end = {x=-1, y=-1, z=-1}
 mouse_has_drag = false
 mouse_which_clicked = 0
 
+function remove_jobs_for_tile(x, y, z, filter)
+	local link = df.global.world.jobs.list.next
+
+	while link ~= nil do
+		local nxt = link.next
+		local job = link.item
+
+		if job ~= nil and 
+		   job.pos.x == x and job.pos.y == y and job.pos.z == z and
+		   filter(job) then
+			dfhack.job.removeJob(job)
+		end
+
+		link = nxt
+	end
+end
+
 function render_designations()
 	local menus = {{key="d", text="Mine"},
 				   {key="h", text="Channel"},
@@ -374,6 +391,12 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.No
 					
 					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
+					
+					function is_any(j)
+						return true
+					end
+					
+					remove_jobs_for_tile(v.x-1, v.y-1, v.z, is_any)
 				end
 				
 				if (tile.dig > 0 or tile.smooth > 0) then
