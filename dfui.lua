@@ -181,8 +181,16 @@ function render_table_impl(menus, old_state)
 			
 			local description = v.text
 			
+			if state == description then
+				imgui.PushStyleColor(imgui.StyleIndex("Text"), {fg=COLOR_WHITE})
+			end
+			
 			if imgui.Button(description) or imgui.Shortcut(keyboard_key) then
 				state = description
+			end
+			
+			if state == description then
+				imgui.PopStyleColor(1)
 			end
 			
 			if #description < 13 and not last_merged then
@@ -237,8 +245,10 @@ function render_designations()
 	local lx = top_left.x+mouse_pos.x
 	local ly = top_left.y+mouse_pos.y
 	
+	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
+	
 	--todo: box select
-	if imgui.IsMouseDown(0) and not imgui.IsWindowHovered(0) then
+	if imgui.IsMouseDown(0) and not window_blocked then
 
 		local tile = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
 		
@@ -275,7 +285,7 @@ function render_designations()
 		end
 	end
 	
-	if imgui.IsMouseDown(1) and not imgui.IsWindowHovered(0) then
+	if imgui.IsMouseDown(1) and not window_blocked then
 		local tile = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
 		
 		if tile ~= nil then
