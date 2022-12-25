@@ -214,6 +214,7 @@ end
 
 selected_designation = "Mine"
 selected_designation_filter = "walls"
+selected_designation_marker = false
 
 function render_designations()
 	local menus = {{key="d", text="Mine"},
@@ -250,7 +251,7 @@ function render_designations()
 	--todo: box select
 	if imgui.IsMouseDown(0) and not window_blocked then
 
-		local tile = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
+		local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
 		
 		if tile ~= nil then
 			--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
@@ -283,13 +284,21 @@ function render_designations()
 				tile.dig = df.tile_dig_designation.No
 			end
 		end
+		
+		if occupancy ~= nil then
+			occupancy.dig_marked = selected_designation_marker
+		end
 	end
 	
 	if imgui.IsMouseDown(1) and not window_blocked then
-		local tile = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
+		local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(lx - 1, ly - 1, top_left.z))
 		
 		if tile ~= nil then
 			tile.dig = df.tile_dig_designation.No
+		end
+		
+		if occupancy ~= nil then
+			occupancy.dig_marked = false
 		end
 	end
 end
