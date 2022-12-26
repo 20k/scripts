@@ -363,20 +363,7 @@ function render_designations()
 				local is_floor = my_basic_shape == df.tiletype_shape_basic.Floor;
 				local is_ramp = my_basic_shape == df.tiletype_shape_basic.Ramp;
 				local is_stair = my_basic_shape == df.tiletype_shape_basic.Stair;
-								
-				--local tiletype_shape = df.tiletype_shape
-				--local attrs = tiletype_shape.attrs
-								
-				--local tile_shape = tile_type._enum.shape
-				
-				--for j, m in ipairs(tiletype_shape) do
-				--	imgui.Text(tostring(j))
-				--end
-				
-				--imgui.Text(tostring(tiletype_shape))
-				
-				--dfhack.isOpenTerrain(tile_type)
-			
+							
 				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
 				--not the end of the world, need to collect a tile list and then filter
 				if selected == "Mine" and is_wall then
@@ -404,12 +391,12 @@ function render_designations()
 				end
 				
 				if selected == "Remove Up Stairs/Ramps" and (is_ramp or is_stair) then
-					tile.dig = df.tile_dig_designation.Dig
+					tile.dig = df.tile_dig_designation.Default
 				end
 				
 				--todo is_tree
 				if selected == "Chop Down Trees" then
-					tile.dig = df.tile_dig_designation.Dig
+					tile.dig = df.tile_dig_designation.Default
 				end
 				
 				--todo, is construction
