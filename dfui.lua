@@ -388,6 +388,7 @@ function render_designations()
 
 			if tile ~= nil then
 				local tile_type = dfhack.maps.getTileType(xyz2pos(v.x-1, v.y-1, v.z))
+				local tile_block = dfhack.maps.getTileBlock(xyz2pos(v.x - 1, v.y - 1, v.z))
 				
 				local tiletype_attrs = df.tiletype.attrs;
 				local my_shape = df.tiletype.attrs[tile_type].shape
@@ -396,8 +397,15 @@ function render_designations()
 				local tilematerials_attrs = df.tiletype_material.attrs;
 				
 				local basic_shape_attrs = df.tiletype_shape_basic;
-				--local my_basic_shape = basic_shape_attrs[my_shape]
 				local my_basic_shape = df.tiletype_shape.attrs[my_shape].basic_shape
+				
+				local is_hidden = true
+				
+				if tile_block ~= nil then
+					local desig = tile_block.designation[(v.x-1)&15][(v.y-1)&15]
+					
+					is_hidden = desig.hidden
+				end
 				
 				--tiletypes.h
 				local is_wall = my_basic_shape == df.tiletype_shape_basic.Wall;
@@ -409,7 +417,7 @@ function render_designations()
 							
 				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
 				--not the end of the world, need to collect a tile list and then filter
-				if selected == "Mine" and is_wall then
+				if selected == "Mine" and (is_wall or is_hidden) then
 					tile.dig = df.tile_dig_designation.Default
 				end
 
@@ -429,18 +437,18 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.UpDownStair
 				end
 				
-				if selected == "Up Ramp" and is_wall then
+				if selected == "Up Ramp" and (is_wall or is_hidden) then
 					tile.dig = df.tile_dig_designation.Ramp
 				end
 				
-				if selected == "Remove Up Stairs/Ramps" and (is_ramp or is_stair) then
+				if selected == "Remove Up Stairs/Ramps" and (is_ramp or is_stair) and not is_hidden then
 					tile.dig = df.tile_dig_designation.Default
 				end
 				
 				local all_plants = df.global.world.plants.all
 				
 				--this isn't that fast, probably because of all the meta methods
-				if selected == "Chop Down Trees" and is_tree then
+				if selected == "Chop Down Trees" and is_tree and not is_hidden then
 					for i=0,#all_plants-1 do
 						local plant = all_plants[i]
 						
@@ -458,10 +466,10 @@ function render_designations()
 								poccupancy.dig_marked = marker
 							end
 							
-							local tile_block = dfhack.maps.getTileBlock(dpos)
+							local ltile_block = dfhack.maps.getTileBlock(dpos)
 							
-							if tile_block ~= nil then
-								tile_block.flags.designated = true
+							if ltile_block ~= nil then
+								ltile_block.flags.designated = true
 							end
 							
 							goto skip
@@ -472,7 +480,7 @@ function render_designations()
 				end
 				
 				--todo, is construction
-				if selected == "Remove Construction" then				
+				if selected == "Remove Construction" and not is_hidden then				
 					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
 				end
 				
@@ -490,8 +498,6 @@ function render_designations()
 				end
 				
 				if (tile.dig > 0 or tile.smooth > 0) then
-					local tile_block = dfhack.maps.getTileBlock(xyz2pos(v.x - 1, v.y - 1, v.z))
-					
 					if tile_block ~= nil then
 						tile_block.flags.designated = true
 					end
