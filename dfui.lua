@@ -261,10 +261,6 @@ function find_job(filter)
 	return nil
 end
 
-function render_engravings()
-
-end
-
 --https://github.com/DFHack/scripts/blob/791748739ada792591995585a0c8218ea87402ec/internal/quickfort/dig.lua may have more accurate designation logic
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
@@ -282,7 +278,7 @@ function render_designations()
 				   {key="T", text="Carve Track"},
 				   {key="v", text="Toggle Engravings"},
 				   {key="M", text="Toggle Standard/Marking"},
-				   {key="n", text="Remove Construction"}, -- done, though untested
+				   {key="n", text="Remove Construction"}, -- partly done, though untested
 				   {key="x", text="Remove Designation"}, -- done
 				   {key="b", text="Set Building/Item Property"},
 				   {key="o", text="Set Traffic Areas"}}
