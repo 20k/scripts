@@ -353,6 +353,9 @@ function render_designations()
 				
 				local tiletype_attrs = df.tiletype.attrs;
 				local my_shape = df.tiletype.attrs[tile_type].shape
+				local my_material = df.tiletype.attrs[tile_type].material
+				
+				local tilematerials_attrs = df.tiletype_material.attrs;
 				
 				local basic_shape_attrs = df.tiletype_shape_basic;
 				--local my_basic_shape = basic_shape_attrs[my_shape]
@@ -363,6 +366,8 @@ function render_designations()
 				local is_floor = my_basic_shape == df.tiletype_shape_basic.Floor;
 				local is_ramp = my_basic_shape == df.tiletype_shape_basic.Ramp;
 				local is_stair = my_basic_shape == df.tiletype_shape_basic.Stair;
+				local is_tree = my_material == df.tiletype_material.TREE
+				local is_shrub = my_material == df.tiletype_material.SHRUB
 							
 				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
 				--not the end of the world, need to collect a tile list and then filter
@@ -395,7 +400,20 @@ function render_designations()
 				end
 				
 				--todo is_tree
-				if selected == "Chop Down Trees" then
+				if selected == "Chop Down Trees" and is_tree then
+				
+					--[[for i=0,#df.global.world.plants.all-1 do
+						local plant = df.global.world.plants.all[i]
+						
+						local ppos = plant.pos
+						
+						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z 
+						   and plant.flags.is_shrub == 0 then
+							is_tree = true
+							goto found
+						end
+					end]]--
+									
 					tile.dig = df.tile_dig_designation.Default
 				end
 				
