@@ -278,7 +278,7 @@ function render_designations()
 				   {key="p", text="Gather Plants"}, -- done
 				   {key="s", text="Smooth Stone"}, -- done
 				   {key="e", text="Engrave Stone"}, -- done
-				   {key="F", text="Carve Fortifications"},
+				   {key="F", text="Carve Fortifications"}, -- done
 				   {key="T", text="Carve Track"},
 				   {key="v", text="Toggle Engravings"},
 				   {key="M", text="Toggle Standard/Marking"},
@@ -513,6 +513,23 @@ function render_designations()
 					end
 					
 					tile.smooth = 2
+					tile.dig = df.tile_dig_designation.No
+				end
+				
+				if selected == "Carve Fortifications" and not is_hidden and is_smooth and is_wall then
+					if find_job(test_detail_job) ~= nil then
+						goto skip
+					end
+					
+					for _,e in ipairs(df.global.world.engravings) do
+						local pos = e.pos
+						
+						if pos.x == v.x-1 and pos.y == v.y-1 and pos.z == v.z then
+							goto skip
+						end
+					end
+					
+					tile.smooth = 1
 					tile.dig = df.tile_dig_designation.No
 				end
 				
