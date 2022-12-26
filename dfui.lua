@@ -486,16 +486,16 @@ function MyScreen:render()
 	--I really need to sort out the constants
 	imgui.Begin("Main")
 	
-	if state == "main" then
-		render_menu()
-	end
-	
 	if state == "View Announcements" then
 		render_announcements()
 	end
 	
 	if state == "Designations" then
 		render_designations()
+	end
+	
+	if state == "main" then
+		render_menu()
 	end
 	
 	imgui.End()
