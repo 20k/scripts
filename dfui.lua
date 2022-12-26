@@ -437,11 +437,12 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.Default
 				end
 				
-				--todo is_tree
-				if selected == "Chop Down Trees" and is_tree then
+				local all_plants = df.global.world.plants.all
 				
-					for i=0,#df.global.world.plants.all-1 do
-						local plant = df.global.world.plants.all[i]
+				--this isn't that fast, probably because of all the meta methods
+				if selected == "Chop Down Trees" and is_tree then
+					for i=0,#all_plants-1 do
+						local plant = all_plants[i]
 						
 						local ppos = plant.pos
 						
@@ -475,6 +476,7 @@ function render_designations()
 					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
 				end
 				
+				--tiles * jobs = bad
 				if selected == "Remove Designation" then
 					tile.dig = df.tile_dig_designation.No
 					
