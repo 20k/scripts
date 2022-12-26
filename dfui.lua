@@ -247,9 +247,9 @@ end
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
 				   {key="h", text="Channel"}, -- done
-				   {key="u", text="Up Stair"}, -- needs appropriateness checks. Must be built on wall
-				   {key="j", text="Down Stair"},  -- needs appropriateness checks. Ramp, wall, floor, ie not open
-				   {key="i", text="U/D Stair"},   -- needs appropriateness checks. See up stair
+				   {key="u", text="Up Stair"}, -- done. Must be built on wall
+				   {key="j", text="Down Stair"},  -- done. Ramp, wall, floor, ie not open
+				   {key="i", text="U/D Stair"},   -- done. See up stair
 				   {key="r", text="Up Ramp"}, -- done
 				   {key="z", text="Remove Up Stairs/Ramps"}, -- done
 				   {key="t", text="Chop Down Trees"}, -- done, or at least enough done
@@ -375,8 +375,11 @@ function render_designations()
 				local is_floor = my_basic_shape == df.tiletype_shape_basic.Floor
 				local is_ramp = my_basic_shape == df.tiletype_shape_basic.Ramp
 				local is_stair = my_basic_shape == df.tiletype_shape_basic.Stair
+				local is_open = my_basic_shape == df.tiletype_shape_basic.Open
 				local is_tree = my_material == df.tiletype_material.TREE
 				local is_shrub = my_material == df.tiletype_material.PLANT
+				
+				local is_solid = not is_open
 				
 				--imgui.Text(my_material)
 							
@@ -386,19 +389,19 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.Default
 				end
 
-				if selected == "Channel" and (my_basic_shape ~= df.tiletype_shape_basic.Open or is_hidden) then
+				if selected == "Channel" and (is_solid or is_hidden) then
 					tile.dig = df.tile_dig_designation.Channel
 				end
 
-				if selected == "Up Stair" then
+				if selected == "Up Stair" and (is_wall or is_hidden) then
 					tile.dig = df.tile_dig_designation.UpStair
 				end
 				
-				if selected == "Down Stair" then
+				if selected == "Down Stair" and (is_solid or is_hidden) then
 					tile.dig = df.tile_dig_designation.DownStair
 				end
 				
-				if selected == "U/D Stair" then
+				if selected == "U/D Stair" and (is_wall or is_hidden) then
 					tile.dig = df.tile_dig_designation.UpDownStair
 				end
 				
