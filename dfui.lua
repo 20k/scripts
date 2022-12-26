@@ -355,6 +355,7 @@ function render_designations()
 				local tiletype_attrs = df.tiletype.attrs;
 				local my_shape = df.tiletype.attrs[tile_type].shape
 				local my_material = df.tiletype.attrs[tile_type].material
+				local my_special = df.tiletype.attrs[tile_type].special
 				
 				local tilematerials_attrs = df.tiletype_material.attrs;
 				
@@ -370,12 +371,14 @@ function render_designations()
 				end
 				
 				--tiletypes.h
-				local is_wall = my_basic_shape == df.tiletype_shape_basic.Wall;
-				local is_floor = my_basic_shape == df.tiletype_shape_basic.Floor;
-				local is_ramp = my_basic_shape == df.tiletype_shape_basic.Ramp;
-				local is_stair = my_basic_shape == df.tiletype_shape_basic.Stair;
+				local is_wall = my_basic_shape == df.tiletype_shape_basic.Wall
+				local is_floor = my_basic_shape == df.tiletype_shape_basic.Floor
+				local is_ramp = my_basic_shape == df.tiletype_shape_basic.Ramp
+				local is_stair = my_basic_shape == df.tiletype_shape_basic.Stair
 				local is_tree = my_material == df.tiletype_material.TREE
-				local is_shrub = my_material == df.tiletype_material.SHRUB
+				local is_shrub = my_material == df.tiletype_material.PLANT
+				
+				--imgui.Text(my_material)
 							
 				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
 				--not the end of the world, need to collect a tile list and then filter
@@ -441,6 +444,20 @@ function render_designations()
 					end
 									
 					--tile.dig = df.tile_dig_designation.Default
+				end
+				
+				if selected == "Gather Plants" and is_shrub and my_special ~= df.tiletype_special.DEAD and not is_hidden then				
+					for i=0,#all_plants-1 do
+						local plant = all_plants[i]
+						
+						local ppos = plant.pos
+						
+						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z then
+							dfhack.designations.markPlant(plant)
+							
+							goto skip
+						end
+					end
 				end
 				
 				--todo, is construction
