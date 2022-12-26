@@ -244,18 +244,19 @@ function remove_jobs_for_tile(x, y, z, filter)
 	end
 end
 
+--https://github.com/DFHack/scripts/blob/791748739ada792591995585a0c8218ea87402ec/internal/quickfort/dig.lua may have more accurate designation logic
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
 				   {key="h", text="Channel"}, -- done
 				   {key="u", text="Up Stair"}, -- done. Must be built on wall
 				   {key="j", text="Down Stair"},  -- done. Ramp, wall, floor, ie not open
-				   {key="i", text="U/D Stair"},   -- done. See up stair
+				   {key="i", text="U/D Stair"},   -- done. See up stair. Need to down stair automatically
 				   {key="r", text="Up Ramp"}, -- done
 				   {key="z", text="Remove Up Stairs/Ramps"}, -- done
 				   {key="t", text="Chop Down Trees"}, -- done, or at least enough done
 				   {key="p", text="Gather Plants"}, -- done
-				   {key="s", text="Smooth Stone"},
-				   {key="e", text="Engrave Stone"},
+				   {key="s", text="Smooth Stone"}, -- done
+				   {key="e", text="Engrave Stone"}, -- done
 				   {key="F", text="Carve Fortifications"},
 				   {key="T", text="Carve Track"},
 				   {key="v", text="Toggle Engravings"},
@@ -338,6 +339,7 @@ function render_designations()
 
 	if should_trigger_mouse then
 		for k, v in ipairs(tiles) do
+			--tile_designation
 			local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(v.x - 1, v.y - 1, v.z))
 			
 			local selected = selected_designation
@@ -362,13 +364,9 @@ function render_designations()
 				local basic_shape_attrs = df.tiletype_shape_basic;
 				local my_basic_shape = df.tiletype_shape.attrs[my_shape].basic_shape
 				
-				local is_hidden = true
-				
-				if tile_block ~= nil then
-					local desig = tile_block.designation[(v.x-1)&15][(v.y-1)&15]
-					
-					is_hidden = desig.hidden
-				end
+				local is_hidden = tile.hidden
+			
+				local smooth_bits = tile.smooth
 				
 				--tiletypes.h
 				local is_wall = my_basic_shape == df.tiletype_shape_basic.Wall
@@ -376,8 +374,11 @@ function render_designations()
 				local is_ramp = my_basic_shape == df.tiletype_shape_basic.Ramp
 				local is_stair = my_basic_shape == df.tiletype_shape_basic.Stair
 				local is_open = my_basic_shape == df.tiletype_shape_basic.Open
+				
 				local is_tree = my_material == df.tiletype_material.TREE
 				local is_shrub = my_material == df.tiletype_material.PLANT
+				
+				local is_smooth = my_special == df.tiletype_special.SMOOTH
 				
 				local is_solid = not is_open
 				
@@ -449,7 +450,7 @@ function render_designations()
 					--tile.dig = df.tile_dig_designation.Default
 				end
 				
-				if selected == "Gather Plants" and is_shrub and my_special ~= df.tiletype_special.DEAD and not is_hidden then				
+				if selected == "Gather Plants" and is_shrub and my_special ~= df.tiletype_special.DEAD and not is_hidden then
 					for i=0,#all_plants-1 do
 						local plant = all_plants[i]
 						
@@ -463,6 +464,23 @@ function render_designations()
 					end
 				end
 				
+				if selected == "Smooth Stone" and not is_hidden and not is_smooth and (is_floor or is_wall) then
+					tile.smooth = 1
+					imgui.Text("Smoov")
+				end
+				
+				if selected == "Engrave Stone" and not is_hidden and is_smooth and (is_floor or is_wall) then
+					for _,e in ipairs(df.global.world.engravings) do
+						local pos = e.pos
+						
+						if pos.x == v.x-1 and pos.y == v.y-1 and pos.z == v.z then
+							goto skip
+						end
+					end
+					
+					tile.smooth = 2
+				end
+				
 				--todo, is construction
 				if selected == "Remove Construction" and not is_hidden then				
 					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
@@ -471,6 +489,7 @@ function render_designations()
 				--tiles * jobs = bad
 				if selected == "Remove Designation" then
 					tile.dig = df.tile_dig_designation.No
+					tile.smooth = 0
 					
 					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
 					
