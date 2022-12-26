@@ -246,14 +246,14 @@ end
 
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
-				   {key="h", text="Channel"}, -- needs appropriateness checks
-				   {key="u", text="Up Stair"}, -- needs appropriateness checks
-				   {key="j", text="Down Stair"},  -- needs appropriateness checks
-				   {key="i", text="U/D Stair"},   -- needs appropriateness checks
+				   {key="h", text="Channel"}, -- done
+				   {key="u", text="Up Stair"}, -- needs appropriateness checks. Must be built on wall
+				   {key="j", text="Down Stair"},  -- needs appropriateness checks. Ramp, wall, floor, ie not open
+				   {key="i", text="U/D Stair"},   -- needs appropriateness checks. See up stair
 				   {key="r", text="Up Ramp"}, -- done
 				   {key="z", text="Remove Up Stairs/Ramps"}, -- done
 				   {key="t", text="Chop Down Trees"}, -- done, or at least enough done
-				   {key="p", text="Gather Plants"},
+				   {key="p", text="Gather Plants"}, -- done
 				   {key="s", text="Smooth Stone"},
 				   {key="e", text="Engrave Stone"},
 				   {key="F", text="Carve Fortifications"},
@@ -386,7 +386,7 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.Default
 				end
 
-				if selected == "Channel" then
+				if selected == "Channel" and (my_basic_shape ~= df.tiletype_shape_basic.Open or is_hidden) then
 					tile.dig = df.tile_dig_designation.Channel
 				end
 
