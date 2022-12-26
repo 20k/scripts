@@ -442,29 +442,10 @@ function render_designations()
 				if selected == "Chop Down Trees" and is_tree and not is_hidden then
 					for i=0,#all_plants-1 do
 						local plant = all_plants[i]
-						
 						local ppos = plant.pos
 						
 						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z then
-							--[[local dpos = get_plant_designation_tile(plant)
-							--local dpos = ppos
-							
-							local ptile, poccupancy = dfhack.maps.getTileFlags(dpos)
-							
-							ptile.dig = df.tile_dig_designation.Default
-							
-							if poccupancy ~= nil then
-								poccupancy.dig_marked = marker
-							end
-							
-							local ltile_block = dfhack.maps.getTileBlock(dpos)
-							
-							if ltile_block ~= nil then
-								ltile_block.flags.designated = true
-							end]]--
-							
 							dfhack.designations.markPlant(plant)
-							
 							goto skip
 						end
 					end
@@ -475,12 +456,10 @@ function render_designations()
 				if selected == "Gather Plants" and is_shrub and my_special ~= df.tiletype_special.DEAD and not is_hidden then
 					for i=0,#all_plants-1 do
 						local plant = all_plants[i]
-						
 						local ppos = plant.pos
 						
 						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z then
 							dfhack.designations.markPlant(plant)
-							
 							goto skip
 						end
 					end
