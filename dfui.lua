@@ -283,14 +283,14 @@ end
 end]]--
 
 function render_designations()
-	local menus = {{key="d", text="Mine"},
-				   {key="h", text="Channel"},
-				   {key="u", text="Up Stair"},
-				   {key="j", text="Down Stair"},
-				   {key="i", text="U/D Stair"},
-				   {key="r", text="Up Ramp"},
-				   {key="z", text="Remove Up Stairs/Ramps"},
-				   {key="t", text="Chop Down Trees"},
+	local menus = {{key="d", text="Mine"}, -- done!
+				   {key="h", text="Channel"}, -- needs appropriateness checks
+				   {key="u", text="Up Stair"}, -- needs appropriateness checks
+				   {key="j", text="Down Stair"},  -- needs appropriateness checks
+				   {key="i", text="U/D Stair"},   -- needs appropriateness checks
+				   {key="r", text="Up Ramp"}, -- done
+				   {key="z", text="Remove Up Stairs/Ramps"}, -- done
+				   {key="t", text="Chop Down Trees"}, -- done, or at least enough done
 				   {key="p", text="Gather Plants"},
 				   {key="s", text="Smooth Stone"},
 				   {key="e", text="Engrave Stone"},
@@ -298,8 +298,8 @@ function render_designations()
 				   {key="T", text="Carve Track"},
 				   {key="v", text="Toggle Engravings"},
 				   {key="M", text="Toggle Standard/Marking"},
-				   {key="n", text="Remove Construction"},
-				   {key="x", text="Remove Designation"},
+				   {key="n", text="Remove Construction"}, -- done, though untested
+				   {key="x", text="Remove Designation"}, -- done
 				   {key="b", text="Set Building/Item Property"},
 				   {key="o", text="Set Traffic Areas"}}
 
