@@ -244,6 +244,27 @@ function remove_jobs_for_tile(x, y, z, filter)
 	end
 end
 
+function find_job(filter)
+	local link = df.global.world.jobs.list.next
+	
+	while link ~= nil do
+		local nxt = link.next
+		local job = link.item
+
+		if job ~= nil and filter(job) then
+			return job
+		end
+
+		link = nxt
+	end
+	
+	return nil
+end
+
+function render_engravings()
+
+end
+
 --https://github.com/DFHack/scripts/blob/791748739ada792591995585a0c8218ea87402ec/internal/quickfort/dig.lua may have more accurate designation logic
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
@@ -337,6 +358,7 @@ function render_designations()
 
 	local dirty_block = false
 
+	--todo: one pass job and tree searching
 	if should_trigger_mouse then
 		for k, v in ipairs(tiles) do
 			--tile_designation
@@ -383,7 +405,7 @@ function render_designations()
 				local is_solid = not is_open
 				
 				--imgui.Text(my_material)
-							
+
 				--so, default digs walls, removes stairs, deletes ramps, gathers plants, and fells trees
 				--not the end of the world, need to collect a tile list and then filter
 				if selected == "Mine" and (is_wall or is_hidden) then
@@ -464,12 +486,24 @@ function render_designations()
 					end
 				end
 				
+				function test_detail_job(j)
+					return (j.job_type == df.job_type.DetailWall or j.job_type == df.job_type.DetailFloor) and j.pos.x == v.x-1 and j.pos.y == v.y-1 and j.pos.z == v.z
+				end
+				
 				if selected == "Smooth Stone" and not is_hidden and not is_smooth and (is_floor or is_wall) then
+					if find_job(test_detail_job) ~= nil then
+						goto skip
+					end
+					
 					tile.smooth = 1
-					imgui.Text("Smoov")
+					tile.dig = df.tile_dig_designation.No
 				end
 				
 				if selected == "Engrave Stone" and not is_hidden and is_smooth and (is_floor or is_wall) then
+					if find_job(test_detail_job) ~= nil then
+						goto skip
+					end
+					
 					for _,e in ipairs(df.global.world.engravings) do
 						local pos = e.pos
 						
@@ -479,6 +513,7 @@ function render_designations()
 					end
 					
 					tile.smooth = 2
+					tile.dig = df.tile_dig_designation.No
 				end
 				
 				--todo, is construction
@@ -505,13 +540,13 @@ function render_designations()
 						tile_block.flags.designated = true
 					end
 				end
-				
-				::skip::
 			end
 
 			if occupancy ~= nil then
 				occupancy.dig_marked = marker
 			end
+			
+			::skip::
 		end
 	end
 end
