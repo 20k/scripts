@@ -1,3 +1,9 @@
+--@ module = true
+
+local render = reqscript('dfui_render')
+
+imgui = dfhack.imgui
+
 selected_designation = "None"
 selected_designation_filter = "walls"
 selected_designation_marker = false
@@ -6,6 +12,10 @@ mouse_click_start = {x=-1, y=-1, z=-1}
 mouse_click_end = {x=-1, y=-1, z=-1}
 mouse_has_drag = false
 mouse_which_clicked = 0
+
+function onLoad()
+    
+end
 
 function remove_jobs_for_tile(x, y, z, filter)
 	local link = df.global.world.jobs.list.next
@@ -41,6 +51,11 @@ function find_job(filter)
 	return nil
 end
 
+-- must be part of network api
+function get_camera()
+	return {x=df.global.window_x, y=df.global.window_y, z=df.global.window_z}
+end
+
 --https://github.com/DFHack/scripts/blob/791748739ada792591995585a0c8218ea87402ec/internal/quickfort/dig.lua may have more accurate designation logic
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
@@ -63,7 +78,7 @@ function render_designations()
 				   {key="b", text="Set Building/Item Property"},
 				   {key="o", text="Set Traffic Areas"}}
 
-	selected_designation = render_table_impl(menus, selected_designation)
+	selected_designation = render.render_table_impl(menus, selected_designation)
 
 	local top_left = get_camera()
 	
@@ -322,3 +337,5 @@ function render_designations()
 		end
 	end
 end
+
+--return _ENV
