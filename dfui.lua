@@ -244,6 +244,44 @@ function remove_jobs_for_tile(x, y, z, filter)
 	end
 end
 
+--[[function get_plant_designation_tile(plant)
+	if plant.tree_info == nil then
+		return plant.pos
+	end
+	
+	local dimx = plant.tree_info.dim_x
+	local dimy = plant.tree_info.dim_y
+	
+	local cx = math.floor(dimx/2)
+	local cy = math.floor(dimy/2)
+	
+	local x = cx
+	local y = cy
+	
+	imgui.Text(tostring(#plant.tree_info.body[0]))
+	imgui.Text(tostring(dimx))
+	imgui.Text(tostring(dimy))
+	
+	for k, v in ipairs(plant.tree_info.body[0]) do
+		imgui.Text("k "..tostring(k))
+		imgui.Text(tostring(v))
+	end
+	
+	while(x + 1 < dimx and y + 1 < dimy) do
+		if plant.tree_info.body[0][(y * dimx) + x + 1].trunk then
+			x = x + 1
+		elseif plant.tree_info.body[0][((y + 1) * dimx) + x].trunk then
+			y = y + 1
+		else
+			goto fin
+		end
+	end
+	
+	::fin::
+	
+	return {x=plant.pos.x - cx + x, y=plant.pos.y - cy + y, plant.pos.z}
+end]]--
+
 function render_designations()
 	local menus = {{key="d", text="Mine"},
 				   {key="h", text="Channel"},
@@ -347,7 +385,7 @@ function render_designations()
 				selected = "Remove Designation"
 				marker = false
 			end
-			
+
 			if tile ~= nil then
 				local tile_type = dfhack.maps.getTileType(xyz2pos(v.x-1, v.y-1, v.z))
 				
@@ -402,19 +440,34 @@ function render_designations()
 				--todo is_tree
 				if selected == "Chop Down Trees" and is_tree then
 				
-					--[[for i=0,#df.global.world.plants.all-1 do
+					for i=0,#df.global.world.plants.all-1 do
 						local plant = df.global.world.plants.all[i]
 						
 						local ppos = plant.pos
 						
-						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z 
-						   and plant.flags.is_shrub == 0 then
-							is_tree = true
-							goto found
+						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z then
+							--local dpos = get_plant_designation_tile(plant)
+							local dpos = ppos
+							
+							local ptile, poccupancy = dfhack.maps.getTileFlags(dpos)
+							
+							ptile.dig = df.tile_dig_designation.Default
+							
+							if poccupancy ~= nil then
+								poccupancy.dig_marked = marker
+							end
+							
+							local tile_block = dfhack.maps.getTileBlock(dpos)
+							
+							if tile_block ~= nil then
+								tile_block.flags.designated = true
+							end
+							
+							goto skip
 						end
-					end]]--
+					end
 									
-					tile.dig = df.tile_dig_designation.Default
+					--tile.dig = df.tile_dig_designation.Default
 				end
 				
 				--todo, is construction
@@ -441,6 +494,8 @@ function render_designations()
 						tile_block.flags.designated = true
 					end
 				end
+				
+				::skip::
 			end
 
 			if occupancy ~= nil then
