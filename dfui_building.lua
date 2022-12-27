@@ -346,7 +346,7 @@ function render_buildings()
 	end
 
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
-		if #render.get_menu_item() == 0 or render.get_menu_item() == nil then
+		if render.get_menu_item() == nil or #render.get_menu_item() == 0 then
 			render.pop_menu()
 		else
 			local pref = render.get_menu_item()
@@ -354,6 +354,6 @@ function render_buildings()
 			pref = string.sub(pref, 1, #pref - 1)
 			
 			render.set_menu_item(pref)
-		end
+	end
 	end
 end
