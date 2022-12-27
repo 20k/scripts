@@ -3,6 +3,7 @@
 imgui = dfhack.imgui
 quickfort = reqscript('internal/quickfort/build')
 render = reqscript('dfui_render')
+require('dfhack.buildings')
 
 local building_db = quickfort.get_building_db()
 
@@ -392,4 +393,17 @@ function render_make_building()
 			render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
 		end
 	end
+	
+	local is_clicked = (not imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(0)
+	
+	if not is_clicked then
+		return
+	end
+	
+	local pos = {x=top_left.x + mouse_pos.x-1, y=top_left.y + mouse_pos.y-1, top_left.z}
+	
+	dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=pos.x, y=pos.y, z=pos.z})
+	
+	--IF AND ONLY IF WE'RE NOT PRESSING SHIFT OK THANKS
+	render.pop_menu()
 end
