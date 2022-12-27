@@ -1050,3 +1050,7 @@ function do_undo(zlevel, grid, ctx)
         end
     end
 end
+
+function get_building_db()
+	return building_db
+end
