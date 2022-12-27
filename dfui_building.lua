@@ -219,6 +219,50 @@ local ml_cats = {
 	{"T"="Traps"}
 }
 
-function render()
+function is_prefix(str, check)
+	return string.sub(str, 1, #check) == check
+end
+
+function has_more_specialised_prefix_than(their_shortcut, my_prefix)
+	for k, v in pairs(ml_cats) do
+		if(is_prefix(their_shortcut, v) and my_prefix ~= v) then
+			return true
+		end
+	end
 	
+	return false
+end
+
+function render()
+	local to_render = {}
+	
+	local is_longest_prefix = true
+	
+	for k, v in pairs(ml_cats) do
+		--so, say prefix is "C"
+		--we check CS, and so condition pt 1 is C
+		--#k is 2, which means we aren't the longest prefix
+		if(string.sub(k, 1, #prefix) == prefix and #k > #prefix then
+			is_longest_prefix = false
+		end
+	end
+	
+	--ok so lets take a bed
+	--prefix is ""
+	--bed is b
+	--bed doesn't have a more specialised prefix in ml_cats
+	--so, bed needs to iterate over ml_cats
+	--if bed starts with anything in ml_cats
+	--and our prefix is not that thing in ml_cats
+	--return true
+	
+	for k, v in ipairs(ui_order) do
+		if has_more_specialised_prefix_than(v, prefix) then
+			imgui.Text("NO")
+		else
+			imgui.Text(v)
+		end
+	
+		--if(is_prefix(v, prefix) and is_longest_prefix
+	end
 end
