@@ -218,7 +218,7 @@ end
 
 function has_more_specialised_prefix_than(their_shortcut, my_prefix)
 	for k, v in pairs(ml_cats) do
-		if is_prefix(their_shortcut, k) and my_prefix ~= k then
+		if is_prefix(their_shortcut, k) and my_prefix ~= k and #k > #my_prefix then
 			return true
 		end
 	end
@@ -230,7 +230,7 @@ function get_all_longer_prefixes(their_shortcut, my_prefix)
 	local prefixes = {}
 
 	for k, v in pairs(ml_cats) do
-		if is_prefix(their_shortcut, k) and my_prefix ~= k then
+		if is_prefix(their_shortcut, k) and my_prefix ~= k and #k > #my_prefix  then
 			prefixes[#prefixes + 1] = k
 		end
 	end
@@ -256,14 +256,16 @@ function render_buildings()
 	
 	local next_prefix = prefix
 
+	imgui.Text("Prefix: " ..prefix)
+
 	for k, v in ipairs(ui_order) do
-		if #prefix > #v or (#prefix == #v and prefix ~= v) then
+		if not is_prefix(v, prefix) then
 			goto skip
 		end
 		
 		if has_more_specialised_prefix_than(v, prefix) then
 			local all_prefixes = get_all_longer_prefixes(v, prefix)
-			
+						
 			table.sort(all_prefixes)
 			
 			for m, l in ipairs(all_prefixes) do
