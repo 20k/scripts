@@ -354,6 +354,6 @@ function render_buildings()
 			pref = string.sub(pref, 1, #pref - 1)
 			
 			render.set_menu_item(pref)
-	end
+		end
 	end
 end
