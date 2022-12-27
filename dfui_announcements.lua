@@ -1,6 +1,7 @@
 --@ module = true
 
 imgui = dfhack.imgui
+render = reqscript('dfui_render')
 
 function onLoad() -- global variables are exported
     -- do initialization here
@@ -80,13 +81,6 @@ function centre_camera(x, y, z)
 	df.global.window_z = z
 end
 
--- ideally should be part of network api
-function render_absolute_text(str, fg, bg, pos)
-	local draw_list = imgui.GetForegroundDrawList()
-	
-	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, "X", pos)
-end
-
 function render_announcements()
 	local reports = df.global.world.status.reports
 	local count = #reports
@@ -120,7 +114,7 @@ function render_announcements()
 			
 			local pos = {x=lx+1, y=ly+1, z=lz}
 			
-			render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
+			render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
 			
 			if imgui.Shortcut("STRING_A122") and imgui.IsItemHovered() then
 				centre_camera(lx, ly, lz)

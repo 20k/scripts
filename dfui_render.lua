@@ -71,3 +71,10 @@ function render_table_impl(menus, old_state)
 
 	return state
 end
+
+-- ideally should be part of network api
+function render_absolute_text(str, fg, bg, pos)
+	local draw_list = imgui.GetForegroundDrawList()
+	
+	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, "X", pos)
+end
