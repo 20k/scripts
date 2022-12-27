@@ -208,7 +208,7 @@ local ml_cats = {
 	["e"]="Furnaces",
 	["i"]="Siege Engines",
 	["C"]="Constructions",
-	["CS"]="Track Stops",
+	--["CS"]="Track Stops",
 	["T"]="Traps"
 }
 
@@ -280,31 +280,45 @@ function render_buildings()
 		
 		::skip::
 	end
-		
+			
 	if imgui.BeginTable("Table", 2, (1 << 20)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 		
 		for k, v in ipairs(name_hotkey) do
-			--imgui.Text(v.value)
+			if v.is_cat then
+				if imgui.ButtonColored({fg=COLOR_YELLOW}, v.value) then
+					next_prefix = v.key
+				end
+			else
+				if imgui.Button(v.value) then
 				
-			if imgui.Button(v.value) and v.is_cat then
-				next_prefix = v.key
+				end
 			end
-				
+		
 			imgui.TableNextColumn();
 			
-			local pad = 0
+			local massaged_key = string.sub(v.key, #prefix+1, #v.key)
 			
-			if #v.key == 1 then
-				pad = 5
-			end
+			local pad = 6 - #massaged_key
 			
 			local spad = string.rep(' ', pad)
 			
+			local byt = tostring(string.byte(massaged_key))
+			
+			if #byt < 3 then
+				byt = "0"..byt
+			end
+			
+			local keyboard_key = "STRING_A"..byt
+			
+			if imgui.Shortcut(keyboard_key) and v.is_cat then
+				next_prefix = v.key
+			end
+		
 			imgui.Text(spad.."(")
 			imgui.SameLine(0,0)
-			imgui.TextColored({fg=COLOR_LIGHTGREEN}, v.key)
+			imgui.TextColored({fg=COLOR_LIGHTGREEN}, massaged_key)
 			imgui.SameLine(0,0)
 			imgui.Text(")")
 			
