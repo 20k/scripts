@@ -2,10 +2,9 @@
 
 imgui = dfhack.imgui
 quickfort = reqscript('internal/quickfort/build')
+render = reqscript('dfui_render')
 
 local building_db = quickfort.get_building_db()
-
-prefix = ""
 
 local ui_order = {
     -- basic building types
@@ -254,8 +253,16 @@ function render_buildings()
 	
 	local rendered = {}
 	
-	local next_prefix = prefix
-
+	local root_menu = render.get_menu()
+	
+	local prefix = ""
+	
+	if #render.menu_state > 2 then
+		for i=3,#render.menu_state do
+			prefix = prefix + render.menu_state[i]
+		end
+	end
+	
 	imgui.Text("Prefix: " ..prefix)
 
 	for k, v in ipairs(ui_order) do
@@ -286,9 +293,12 @@ function render_buildings()
 		imgui.TableNextColumn();
 		
 		for k, v in ipairs(name_hotkey) do
+			local extra_key = string.sub(v.key, #prefix+1, #v.key)
+		
 			if v.is_cat then
 				if imgui.ButtonColored({fg=COLOR_YELLOW}, v.value) then
-					next_prefix = v.key
+					--next_prefix = v.key
+					render.push_menu(extra_key)
 				end
 			else
 				if imgui.Button(v.value) then
@@ -297,14 +307,12 @@ function render_buildings()
 			end
 		
 			imgui.TableNextColumn();
-			
-			local massaged_key = string.sub(v.key, #prefix+1, #v.key)
-			
-			local pad = 6 - #massaged_key
+						
+			local pad = 6 - #extra_key
 			
 			local spad = string.rep(' ', pad)
 			
-			local byt = tostring(string.byte(massaged_key))
+			local byt = tostring(string.byte(extra_key))
 			
 			if #byt < 3 then
 				byt = "0"..byt
@@ -313,12 +321,12 @@ function render_buildings()
 			local keyboard_key = "STRING_A"..byt
 			
 			if imgui.Shortcut(keyboard_key) and v.is_cat then
-				next_prefix = v.key
+				render.push_menu(extra_key)
 			end
 		
 			imgui.Text(spad.."(")
 			imgui.SameLine(0,0)
-			imgui.TextColored({fg=COLOR_LIGHTGREEN}, massaged_key)
+			imgui.TextColored({fg=COLOR_LIGHTGREEN}, extra_key)
 			imgui.SameLine(0,0)
 			imgui.Text(")")
 			
@@ -328,12 +336,14 @@ function render_buildings()
 		
 		imgui.EndTable()
 	end
-	
-	prefix = next_prefix
-	
-	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+
+	--[[if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		if #prefix > 0 then
 			prefix = string.sub(prefix, 1, #prefix-1)
 		end
+	end]]--
+	
+	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
 	end
 end
