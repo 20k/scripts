@@ -254,7 +254,13 @@ function render_buildings()
 	
 	local rendered = {}
 	
+	local next_prefix = prefix
+
 	for k, v in ipairs(ui_order) do
+		if #prefix > #v or (#prefix == #v and prefix ~= v) then
+			goto skip
+		end
+		
 		if has_more_specialised_prefix_than(v, prefix) then
 			local all_prefixes = get_all_longer_prefixes(v, prefix)
 			
@@ -262,21 +268,27 @@ function render_buildings()
 			
 			for m, l in ipairs(all_prefixes) do
 				if #l == #all_prefixes[1] and not rendered[l] then				
-					name_hotkey[#name_hotkey+1] = {key=l, value=ml_cats[l]}
+					name_hotkey[#name_hotkey+1] = {key=l, value=ml_cats[l], is_cat=true}
 					rendered[l] = true
 				end
 			end
 		else
-			name_hotkey[#name_hotkey+1] = {key=v, value=building_db[v].label}
+			name_hotkey[#name_hotkey+1] = {key=v, value=building_db[v].label, is_cat=false}
 		end
+		
+		::skip::
 	end
-	
+		
 	if imgui.BeginTable("Table", 2, (1 << 20)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 		
 		for k, v in ipairs(name_hotkey) do
-			imgui.Text(v.value)
+			--imgui.Text(v.value)
+				
+			if imgui.Button(v.value) and v.is_cat then
+				next_prefix = v.key
+			end
 				
 			imgui.TableNextColumn();
 			
@@ -301,7 +313,9 @@ function render_buildings()
 		imgui.EndTable()
 	end
 	
-	if imgui.Button("Back") then
+	prefix = next_prefix
+	
+	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		if #prefix > 0 then
 			prefix = string.sub(prefix, 1, #prefix-1)
 		end
