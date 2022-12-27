@@ -225,9 +225,6 @@ end
 
 function has_more_specialised_prefix_than(their_shortcut, my_prefix)
 	for k, v in pairs(ml_cats) do
-		--imgui.Text("Them: ".. their_shortcut)
-		--imgui.Text("Against: " .. 
-	
 		if is_prefix(their_shortcut, k) and my_prefix ~= k then
 			return true
 		end
@@ -236,19 +233,20 @@ function has_more_specialised_prefix_than(their_shortcut, my_prefix)
 	return false
 end
 
-function render_buildings()
-	local to_render = {}
-	
-	local is_longest_prefix = true
-	
-	for k, v in pairs(ml_cats) do	
-		--so, say prefix is "C"
-		--we check CS, and so condition pt 1 is C
-		--#k is 2, which means we aren't the longest prefix
-		if string.sub(k, 1, #prefix) == prefix and #k > #prefix then
-			is_longest_prefix = false
+function get_all_longer_prefixes(their_shortcut, my_prefix) 
+	local prefixes = {}
+
+	for k, v in pairs(ml_cats) do
+		if is_prefix(their_shortcut, k) and my_prefix ~= k then
+			prefixes[#prefixes + 1] = k
 		end
 	end
+	
+	return prefixes
+end
+
+function render_buildings()
+	local to_render = {}
 	
 	--ok so lets take a bed
 	--prefix is ""
@@ -259,13 +257,30 @@ function render_buildings()
 	--and our prefix is not that thing in ml_cats
 	--return true
 	
+	local rendered = {}
+	
 	for k, v in ipairs(ui_order) do
 		if has_more_specialised_prefix_than(v, prefix) then
-			imgui.Text("NO")
+			local all_prefixes = get_all_longer_prefixes(v, prefix)
+			
+			table.sort(all_prefixes)
+			
+			for m, l in ipairs(all_prefixes) do
+				if #l == #all_prefixes[1] and not rendered[l] then
+					imgui.Text(ml_cats[l])
+					
+					rendered[l] = true
+				end
+			end
+			
 		else
 			imgui.Text(v)
 		end
+	end
 	
-		--if(is_prefix(v, prefix) and is_longest_prefix
+	if imgui.Button("Back") then
+		if #prefix > 0 then
+			prefix = string.sub(prefix, 1, #prefix-1)
+		end
 	end
 end
