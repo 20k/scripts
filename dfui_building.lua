@@ -225,7 +225,10 @@ end
 
 function has_more_specialised_prefix_than(their_shortcut, my_prefix)
 	for k, v in pairs(ml_cats) do
-		if(is_prefix(their_shortcut, v) and my_prefix ~= v) then
+		--imgui.Text("Them: ".. their_shortcut)
+		--imgui.Text("Against: " .. 
+	
+		if is_prefix(their_shortcut, k) and my_prefix ~= k then
 			return true
 		end
 	end
