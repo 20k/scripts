@@ -363,7 +363,20 @@ function render_make_building()
 	
 	imgui.Text(building)
 	
+	local mouse_pos = imgui.GetMousePos()
+	
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
 	end
+	
+	local top_left = render.get_camera()
+	
+	local mouse_pos = imgui.GetMousePos()
+	
+	local lx = top_left.x+mouse_pos.x
+	local ly = top_left.y+mouse_pos.y
+	
+	local pos = {x=lx, y=ly, z=top_left.z}
+	
+	render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
 end
