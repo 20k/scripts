@@ -132,7 +132,7 @@ function render_designations()
 		
 		for k, v in ipairs(tiles) do
 			if v.z == top_left.z then
-				render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, v)
+				render.render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, v)
 			end
 		end
 
