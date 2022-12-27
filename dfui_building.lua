@@ -361,7 +361,16 @@ end
 function render_make_building()
 	local building = render.get_menu_item()
 	
-	imgui.Text(building)
+	local quickfort_building = building_db[building]
+	
+	local label = quickfort_building.label
+	local build_type = quickfort_building.type --native df type, eg df.building_type.GrateWall
+	local build_subtype = quickfort_building.subtype
+	
+	imgui.Text(label)
+	
+	local width = (quickfort_building.min_width - 1)/2
+	local height = (quickfort_building.min_height - 1)/2
 	
 	local mouse_pos = imgui.GetMousePos()
 	
@@ -373,10 +382,14 @@ function render_make_building()
 	
 	local mouse_pos = imgui.GetMousePos()
 	
-	local lx = top_left.x+mouse_pos.x
-	local ly = top_left.y+mouse_pos.y
-	
-	local pos = {x=lx, y=ly, z=top_left.z}
-	
-	render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
+	for y=-height,height do
+		for x=-width,width do
+			local lx = top_left.x+mouse_pos.x + x
+			local ly = top_left.y+mouse_pos.y + y
+		
+			local pos = {x=lx, y=ly, z=top_left.z}
+		
+			render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
+		end
+	end
 end
