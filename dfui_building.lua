@@ -357,3 +357,13 @@ function render_buildings()
 		end
 	end
 end
+
+function render_make_building()
+	local building = render.get_menu_item()
+	
+	imgui.Text(building)
+	
+	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
+end
