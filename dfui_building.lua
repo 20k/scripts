@@ -1,7 +1,7 @@
 --@ module = true
 
 imgui = dfhack.imgui
-quickfort = require('internal/quickfort/build')
+quickfort = reqscript('internal/quickfort/build')
 
 local building_db = quickfort.get_building_db()
 
@@ -19,12 +19,12 @@ local ui_order = {
    "W",
    "G",
    "B",
-    ['{Alt}b'],
+   '{Alt}b',
    "f",
    "h",
    "r",
    "s",
-    ['{Alt}s'],
+   '{Alt}s',
    "t",
    "gs",
    "gw",
@@ -76,9 +76,9 @@ local ui_order = {
    "A",
    "R",
    "N",
-    ['{Alt}h'],
-    ['{Alt}a'],
-    ['{Alt}c'],
+   '{Alt}h',
+   '{Alt}a',
+   '{Alt}c',
    "F",
 
     -- basic building types with extents
@@ -209,14 +209,14 @@ local ui_order = {
 }
 
 local ml_cats = {
-	{"w"="Workshops"},
-	{"g"="Bridge"},
-	{"M"="Machines"},
-	{"e"="Furnaces"},
-	{"i"="Siege Engines"},
-	{"C"="Constructions"},
-	{"CS"="Track Stops"},
-	{"T"="Traps"}
+	["w"]="Workshops",
+	["g"]="Bridge",
+	["M"]="Machines",
+	["e"]="Furnaces",
+	["i"]="Siege Engines",
+	["C"]="Constructions",
+	["CS"]="Track Stops",
+	["T"]="Traps"
 }
 
 function is_prefix(str, check)
@@ -233,16 +233,16 @@ function has_more_specialised_prefix_than(their_shortcut, my_prefix)
 	return false
 end
 
-function render()
+function render_buildings()
 	local to_render = {}
 	
 	local is_longest_prefix = true
 	
-	for k, v in pairs(ml_cats) do
+	for k, v in pairs(ml_cats) do	
 		--so, say prefix is "C"
 		--we check CS, and so condition pt 1 is C
 		--#k is 2, which means we aren't the longest prefix
-		if(string.sub(k, 1, #prefix) == prefix and #k > #prefix then
+		if string.sub(k, 1, #prefix) == prefix and #k > #prefix then
 			is_longest_prefix = false
 		end
 	end
