@@ -4,6 +4,11 @@ imgui = dfhack.imgui
 menu_state = {"main"}
 menu_item = nil
 
+-- must be part of network api
+function get_camera()
+	return {x=df.global.window_x, y=df.global.window_y, z=df.global.window_z}
+end
+
 function reset_menu_to(st)
 	menu_state = {st}
 end

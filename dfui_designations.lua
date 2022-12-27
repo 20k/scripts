@@ -51,11 +51,6 @@ function find_job(filter)
 	return nil
 end
 
--- must be part of network api
-function get_camera()
-	return {x=df.global.window_x, y=df.global.window_y, z=df.global.window_z}
-end
-
 --https://github.com/DFHack/scripts/blob/791748739ada792591995585a0c8218ea87402ec/internal/quickfort/dig.lua may have more accurate designation logic
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
@@ -84,7 +79,7 @@ function render_designations()
 		render.pop_menu()
 	end
 
-	local top_left = get_camera()
+	local top_left = render.get_camera()
 	
 	local mouse_pos = imgui.GetMousePos()
 	
