@@ -22,19 +22,107 @@ local ui_order = {
    '{Alt}b',
    "f",
    "h",
+   "k",
+   "p",
    "r",
    "s",
    '{Alt}s',
    "t",
+   "o",
+   "O",
    "gs",
    "gw",
    "gd",
    "gx",
    "ga",
    "l",
+   -- siege engines
+   "ib",
+   "ic",
+   -- workshops
+   "we",
+   "wq",
+   "wM",
+   "wo",
+   "wk",
+   "wb",
+   "wc",
+   "wf",
+   "wv",
+   "wj",
+   "wm",
+   "wu",
+   "wn",
+   "wr",
+   "ws",
+   "wt",
+   "wl",
+   "ww",
+   "wz",
+   "wh",
+   "wy",
+   "wd",
+   "wS",
+   "wp",
+   -- furnaces
+   "ew",
+   "es",
+   "el",
+   "eg",
+   "ea",
+   "ek",
+   "en",
    "y",
    "Y",
+   -- constructions
+   "Cw",
+   "Cf",
+   "Cr",
+   "Cu",
+   "Cd",
+   "Cx",
+   "CF",
+    -- traps
+   "CS",
+   "CSa",
+   "CSaa",
+   "CSaaa",
+   "CSaaaa",
+   "CSd",
+   "CSda",
+   "CSdaa",
+   "CSdaaa",
+   "CSdaaaa",
+   "CSdd",
+   "CSdda",
+   "CSddaa",
+   "CSddaaa",
+   "CSddaaaa",
+   "CSddd",
+   "CSddda",
+   "CSdddaa",
+   "CSdddaaa",
+   "CSdddaaaa",
+   "CSdddd",
+   "CSdddda",
+   "CSddddaa",
+   "CSddddaaa",
+   "CSddddaaaa",
    "D",
+   "Ts",
+    -- TODO: by default a weapon trap is configured with a single weapon.
+    -- maybe add Tw1 through Tw10 for choosing how many weapons?
+    -- material preferences can help here for choosing weapon types.
+   "Tw",
+   "Tl",
+    -- TODO: lots of configuration here with no natural order. may need
+    -- special-case logic when we read the keys.
+   "Tp",
+   "Tc",
+    -- TODO: Same as weapon trap above
+   "TS",
+    -- tracks (CT...). there aren't any shortcut keys in the UI so we use the
+    -- aliases from python quickfort
    "Msu",
    "Msk",
    "Msm",
@@ -79,103 +167,8 @@ local ui_order = {
    '{Alt}h',
    '{Alt}a',
    '{Alt}c',
-   "F",
-
-    -- basic building types with extents
-    -- in the UI, these are required to be connected regions, which we could
-    -- easily enforce with a flood fill check. However, requiring connected
-    -- regions can make tested blueprints fail if, for example, you happen to
-    -- try to put a farm plot where there is some surface rock. There is no
-    -- technical issue with allowing disconnected regions, and so for player
-    -- convenience we allow them.
-   "p",
-   "o",
-   "O",
-    -- workshops
-   "k",
-   "we",
-   "wq",
-   "wM",
-   "wo",
-   "wk",
-   "wb",
-   "wc",
-   "wf",
-   "wv",
-   "wj",
-   "wm",
-   "wu",
-   "wn",
-   "wr",
-   "ws",
-   "wt",
-   "wl",
-   "ww",
-   "wz",
-   "wh",
-   "wy",
-   "wd",
-   "wS",
-   "wp",
-    -- furnaces
-   "ew",
-   "es",
-   "el",
-   "eg",
-   "ea",
-   "ek",
-   "en",
-    -- siege engines
-   "ib",
-   "ic",
-    -- constructions
-   "Cw",
-   "Cf",
-   "Cr",
-   "Cu",
-   "Cd",
-   "Cx",
-   "CF",
-    -- traps
-   "CS",
-   "CSa",
-   "CSaa",
-   "CSaaa",
-   "CSaaaa",
-   "CSd",
-   "CSda",
-   "CSdaa",
-   "CSdaaa",
-   "CSdaaaa",
-   "CSdd",
-   "CSdda",
-   "CSddaa",
-   "CSddaaa",
-   "CSddaaaa",
-   "CSddd",
-   "CSddda",
-   "CSdddaa",
-   "CSdddaaa",
-   "CSdddaaaa",
-   "CSdddd",
-   "CSdddda",
-   "CSddddaa",
-   "CSddddaaa",
-   "CSddddaaaa",
-   "Ts",
-    -- TODO: by default a weapon trap is configured with a single weapon.
-    -- maybe add Tw1 through Tw10 for choosing how many weapons?
-    -- material preferences can help here for choosing weapon types.
-   "Tw",
-   "Tl",
-    -- TODO: lots of configuration here with no natural order. may need
-    -- special-case logic when we read the keys.
-   "Tp",
-   "Tc",
-    -- TODO: Same as weapon trap above
-   "TS",
-    -- tracks (CT...). there aren't any shortcut keys in the UI so we use the
-    -- aliases from python quickfort
+   "F"--[[,
+   
    "trackN",
    "trackS",
    "trackE",
@@ -205,7 +198,7 @@ local ui_order = {
    "trackrampNSW",
    "trackrampNEW",
    "trackrampSEW",
-   "trackrampNSEW"
+   "trackrampNSEW"]]--
 }
 
 local ml_cats = {
@@ -267,7 +260,7 @@ function render_buildings()
 			
 			for m, l in ipairs(all_prefixes) do
 				if #l == #all_prefixes[1] and not rendered[l] then
-					imgui.Text(ml_cats[l])
+					imgui.Text(l)
 					
 					rendered[l] = true
 				end
