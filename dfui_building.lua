@@ -259,7 +259,9 @@ function render_buildings()
 	
 	if #render.menu_state > 2 then
 		for i=3,#render.menu_state do
-			prefix = prefix + render.menu_state[i]
+			imgui.Text("Menu State: " .. render.menu_state[i])
+		
+			prefix = prefix .. render.menu_state[i]
 		end
 	end
 	
@@ -337,12 +339,6 @@ function render_buildings()
 		imgui.EndTable()
 	end
 
-	--[[if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
-		if #prefix > 0 then
-			prefix = string.sub(prefix, 1, #prefix-1)
-		end
-	end]]--
-	
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
 	end
