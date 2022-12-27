@@ -250,6 +250,8 @@ function render_buildings()
 	--and our prefix is not that thing in ml_cats
 	--return true
 	
+	local name_hotkey = {}
+	
 	local rendered = {}
 	
 	for k, v in ipairs(ui_order) do
@@ -259,16 +261,44 @@ function render_buildings()
 			table.sort(all_prefixes)
 			
 			for m, l in ipairs(all_prefixes) do
-				if #l == #all_prefixes[1] and not rendered[l] then
-					imgui.Text(l)
-					
+				if #l == #all_prefixes[1] and not rendered[l] then				
+					name_hotkey[#name_hotkey+1] = {key=l, value=ml_cats[l]}
 					rendered[l] = true
 				end
 			end
-			
 		else
-			imgui.Text(v)
+			name_hotkey[#name_hotkey+1] = {key=v, value=building_db[v].label}
 		end
+	end
+	
+	if imgui.BeginTable("Table", 2, (1 << 20)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+		
+		for k, v in ipairs(name_hotkey) do
+			imgui.Text(v.value)
+				
+			imgui.TableNextColumn();
+			
+			local pad = 0
+			
+			if #v.key == 1 then
+				pad = 5
+			end
+			
+			local spad = string.rep(' ', pad)
+			
+			imgui.Text(spad.."(")
+			imgui.SameLine(0,0)
+			imgui.TextColored({fg=COLOR_LIGHTGREEN}, v.key)
+			imgui.SameLine(0,0)
+			imgui.Text(")")
+			
+			imgui.TableNextRow();
+			imgui.TableNextColumn();
+		end
+		
+		imgui.EndTable()
 	end
 	
 	if imgui.Button("Back") then
