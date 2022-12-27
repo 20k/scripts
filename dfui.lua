@@ -75,15 +75,8 @@ function MyScreen:render()
 	--I really need to sort out the constants
 	imgui.Begin("Main")
 	
-	local state = nil
-	
-	--todo, need to fix the menu traversal 
-	if #render.menu_state > 1 then
-		state = render.get_menu(2)
-	else
-		state = render.get_menu(1)
-	end
-	
+	local state = render.get_menu()
+
 	if state == nil then
 		self:dismiss()
 	end

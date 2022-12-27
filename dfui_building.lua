@@ -255,16 +255,12 @@ function render_buildings()
 	
 	local root_menu = render.get_menu()
 	
-	local prefix = ""
+	local prefix = render.get_menu_item()
 	
-	if #render.menu_state > 2 then
-		for i=3,#render.menu_state do
-			imgui.Text("Menu State: " .. render.menu_state[i])
-		
-			prefix = prefix .. render.menu_state[i]
-		end
+	if prefix == nil then
+		prefix = ""
 	end
-	
+
 	imgui.Text("Prefix: " ..prefix)
 
 	for k, v in ipairs(ui_order) do
@@ -289,27 +285,28 @@ function render_buildings()
 		
 		::skip::
 	end
-			
+
 	if imgui.BeginTable("Table", 2, (1 << 20)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 		
-		for k, v in ipairs(name_hotkey) do
+		for k, v in ipairs(name_hotkey) do		
 			local extra_key = string.sub(v.key, #prefix+1, #v.key)
-		
+
+			local start_building = false
+
 			if v.is_cat then
 				if imgui.ButtonColored({fg=COLOR_YELLOW}, v.value) then
 					--next_prefix = v.key
-					render.push_menu(extra_key)
+					--render.push_menu(extra_key)
+					render.set_menu_item(v.key)
 				end
 			else
-				if imgui.Button(v.value) then
-				
-				end
+				start_building = imgui.Button(v.value)
 			end
-		
+
 			imgui.TableNextColumn();
-						
+
 			local pad = 6 - #extra_key
 			
 			local spad = string.rep(' ', pad)
@@ -323,7 +320,16 @@ function render_buildings()
 			local keyboard_key = "STRING_A"..byt
 			
 			if imgui.Shortcut(keyboard_key) and v.is_cat then
-				render.push_menu(extra_key)
+				render.set_menu_item(v.key)
+			end
+			
+			if imgui.Shortcut(keyboard_key) and not v.is_cat then
+				start_building = true
+			end
+			
+			if start_building then
+				render.push_menu("make_building")
+				render.set_menu_item(v.key)
 			end
 		
 			imgui.Text(spad.."(")
@@ -340,6 +346,14 @@ function render_buildings()
 	end
 
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
-		render.pop_menu()
+		if #render.get_menu_item() == 0 or render.get_menu_item() == nil then
+			render.pop_menu()
+		else
+			local pref = render.get_menu_item()
+			
+			pref = string.sub(pref, 1, #pref - 1)
+			
+			render.set_menu_item(pref)
+		end
 	end
 end
