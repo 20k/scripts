@@ -7,7 +7,6 @@ local render = reqscript('dfui_render')
 MyScreen = defclass(MyScreen, gui.Screen)
 
 imgui = dfhack.imgui
-state = "main"
 last_hovered_announce_id = -1
 
 function render_menu()
@@ -42,19 +41,31 @@ function render_menu()
 				   {key="032", text="Resume"},
 				   {key="046", text="One-Step"}}
 
-	state = render.render_table_impl(menus, state)
+	local next_state = render.render_table_impl(menus, "main")
+	
+	if next_state ~= "main" then
+		render.push_menu(next_state)
+	end
+end
+
+function MyScreen:init()
+	render.reset_menu_to("main")
 end
 
 function MyScreen:render()
 	self:renderParent()
 	
-	if(imgui.IsKeyPressed(6) and state == "main") then
+	--[[if(imgui.IsKeyPressed(6) and state == "main") then
 		self:dismiss()
 	end
 	
 	if(imgui.IsKeyPressed(6)) then
 		state = "main"
 		--self:dismiss()
+	end]]--
+	
+	if imgui.IsKeyPressed(6) then
+		render.pop_menu()
 	end
 	
 	local text_style = imgui.StyleIndex("Text")
@@ -63,6 +74,13 @@ function MyScreen:render()
 	
 	--I really need to sort out the constants
 	imgui.Begin("Main")
+	
+	--root menu state
+	local state = render.get_menu()
+	
+	if state == nil then
+		self:dismiss()
+	end
 	
 	if state == "View Announcements" then
 		announcements.render_announcements()
