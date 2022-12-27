@@ -1,6 +1,46 @@
 --@ module = true
 
 imgui = dfhack.imgui
+menu_state = {"main"}
+menu_item = nil
+
+function reset_menu_to(st)
+	menu_state = {st}
+end
+
+function push_menu(st)
+	menu_state[#menu_state+1] = st
+	menu_item = nil
+end
+
+function pop_menu(st)
+	table.remove(menu_state, #menu_state)
+	menu_item = nil
+end
+
+function get_menu(which)
+	if #menu_state == 0 then
+		return nil
+	end
+		
+	if which ~= nil then
+		return menu_state[which]
+	end
+
+	return menu_state[#menu_state]
+end
+
+function set_menu_item(i)
+	menu_item = i
+end
+
+function get_menu_item()
+	return menu_item
+end
+
+function clear_menu_item(i)
+	menu_item = nil
+end
 
 function render_table_impl(menus, old_state)
 	local state = old_state
