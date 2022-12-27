@@ -126,6 +126,10 @@ function render_announcements()
 		end
 	end
 	
+	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
+	
 	if df_time ~= -1 then
 		local ymd = time_to_ymd(df_time)
 		

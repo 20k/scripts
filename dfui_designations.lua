@@ -79,6 +79,10 @@ function render_designations()
 				   {key="o", text="Set Traffic Areas"}}
 
 	selected_designation = render.render_table_impl(menus, selected_designation)
+	
+	if imgui.Button("Back") or (imgui.IsWindowHovered(0) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
 
 	local top_left = get_camera()
 	
