@@ -398,21 +398,37 @@ function render_make_building()
 	
 	imgui.Text(label)
 	
-	if imgui.Button("Wm") or imgui.Shortcut(get_key("j")) then
+	if imgui.Button("(-) ##w") or imgui.Shortcut(get_key("j")) then
 		building_w = building_w - 2
 	end
 	
-	if imgui.Button("Wp") or imgui.Shortcut(get_key("l")) then
+	imgui.SameLine(0,0)
+	imgui.Text(tostring(building_w))
+	imgui.SameLine(0,0)
+	
+	if imgui.Button(" (+)##w") or imgui.Shortcut(get_key("l")) then
 		building_w = building_w + 2
 	end
 	
-	if imgui.Button("Hm") or imgui.Shortcut(get_key("i")) then
+	imgui.SameLine()
+	
+	imgui.Text(" j l")
+	
+	if imgui.Button("(-) ##h") or imgui.Shortcut(get_key("i")) then
 		building_h = building_h - 2
 	end
 	
-	if imgui.Button("Hp") or imgui.Shortcut(get_key("m")) then
+	imgui.SameLine(0,0)
+	imgui.Text(tostring(building_h))
+	imgui.SameLine(0,0)
+	
+	if imgui.Button(" (+)##h") or imgui.Shortcut(get_key("m")) then
 		building_h = building_h + 2
 	end
+	
+	imgui.SameLine()
+	
+	imgui.Text(" i m")
 		
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
