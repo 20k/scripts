@@ -526,12 +526,11 @@ function render_make_building()
 end
 
 function render_stockpiles()
-
-
+	
 end
 
 function render_make_stockpile()
-	local building = render.get_menu_item()
+	local stockpile_type = render.get_menu_item()
 		
 	local label = "Stockpile"
 	local build_type = df.building_type.Stockpile
@@ -561,7 +560,33 @@ function render_make_stockpile()
 	local build_col = COLOR_RED
 	
 	function setup(fields, tiles)
+		local db_entry = stockpile_db[stockpile_type]
 	
+		if db_entry.want_barrels then
+			local max_barrels = db_entry.num_barrels or 99999
+			if max_barrels < 0 or max_barrels >= ntiles then
+				fields.max_barrels = ntiles
+			else
+				fields.max_barrels = max_barrels
+			end
+		end
+		if db_entry.want_bins then
+			local max_bins = db_entry.num_bins or 99999
+			if max_bins < 0 or max_bins >= ntiles then
+				fields.max_bins = ntiles
+			else
+				fields.max_bins = max_bins
+			end
+		end
+		if db_entry.want_wheelbarrows or db_entry.num_wheelbarrows then
+			local max_wb = db_entry.num_wheelbarrows or 99999
+			if max_wb < 0 then max_wb = 1 end
+			if max_wb >= ntiles - 1 then
+				fields.max_wheelbarrows = ntiles - 1
+			else
+				fields.max_wheelbarrows = max_wb
+			end
+		end
 	end
 	
 	if handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, true, setup) then
