@@ -480,9 +480,6 @@ function render_make_building()
 	local is_clicked = (not imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(0)
 	
 	if not is_clicked then
-		--if room.extents ~= nil then
-		--	df.delete(room.extents)
-		--end
 		return
 	end
 
