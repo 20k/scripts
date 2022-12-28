@@ -384,16 +384,12 @@ function render_make_building()
 	
 	local build_col = COLOR_RED
 		
-	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z}
-		
-	local construct_info = build_info
-	
-	construct_info.dryrun = true
-		
-	if dfhack.buildings.constructBuilding(construct_info) then
+	if dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, dryrun=true}) then
 		build_col = COLOR_GREEN
 	end
 
+	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z}
+	
 	for y=-height,height do
 		for x=-width,width do
 			local lx = top_left.x+mouse_pos.x + x
