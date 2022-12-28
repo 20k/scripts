@@ -51,6 +51,102 @@ function find_job(filter)
 	return nil
 end
 
+function check_start_mouse_drag()
+	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
+	
+	if window_blocked then
+		return
+	end
+
+	local top_left = render.get_camera()
+	
+	local mouse_pos = imgui.GetMousePos()
+	
+	local lx = top_left.x+mouse_pos.x-1
+	local ly = top_left.y+mouse_pos.y-1
+	
+	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
+	
+	if imgui.IsMouseClicked(0) or imgui.IsMouseClicked(1) then
+		mouse_click_start = current_world_mouse_pos
+		mouse_has_drag = true
+		
+		if imgui.IsMouseClicked(0) then
+			mouse_which_clicked = 0
+		else
+			mouse_which_clicked = 1
+		end
+	end
+end
+
+function check_end_mouse_drag()
+	if mouse_has_drag and imgui.IsMouseClicked((mouse_which_clicked + 1) % 2) then
+		mouse_has_drag = false
+	end
+end
+
+function get_dragged_tiles()
+	local tiles = {}
+	
+	if not mouse_has_drag then
+		return {}
+	end
+	
+	local top_left = render.get_camera()
+	
+	local mouse_pos = imgui.GetMousePos()
+	
+	local lx = top_left.x+mouse_pos.x-1
+	local ly = top_left.y+mouse_pos.y-1
+
+	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
+	
+	local min_pos_x = math.min(mouse_click_start.x, current_world_mouse_pos.x)
+	local min_pos_y = math.min(mouse_click_start.y, current_world_mouse_pos.y)
+	local min_pos_z = math.min(mouse_click_start.z, current_world_mouse_pos.z)
+	
+	local max_pos_x = math.max(mouse_click_start.x, current_world_mouse_pos.x)
+	local max_pos_y = math.max(mouse_click_start.y, current_world_mouse_pos.y)
+	local max_pos_z = math.max(mouse_click_start.z, current_world_mouse_pos.z)
+	
+	if mouse_has_drag then		
+		for z=min_pos_z,max_pos_z do
+			for y=min_pos_y,max_pos_y do
+				for x=min_pos_x,max_pos_x do
+					--this is the most lua line of code ever
+					tiles[#tiles+1] = {x=x, y=y, z=z}
+				end
+			end
+		end
+		
+		for k, v in ipairs(tiles) do
+			if v.z == top_left.z then
+				render.render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=v.x+1, y=v.y+1, z=v.z})
+			end
+		end
+	end
+	
+	return tiles
+end
+
+function check_trigger_mouse()
+	local should_trigger = false
+
+	if mouse_has_drag then
+		if imgui.IsMouseReleased(mouse_which_clicked) then
+			should_trigger = true
+			mouse_click_end = current_world_mouse_pos
+			mouse_has_drag = false
+		end
+	end
+
+	if not imgui.IsMouseDown(mouse_which_clicked) then
+		mouse_has_drag = false
+	end
+	
+	return should_trigger
+end
+
 --https://github.com/DFHack/scripts/blob/791748739ada792591995585a0c8218ea87402ec/internal/quickfort/dig.lua may have more accurate designation logic
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
@@ -79,72 +175,15 @@ function render_designations()
 		render.pop_menu()
 	end
 
-	local top_left = render.get_camera()
-	
-	local mouse_pos = imgui.GetMousePos()
-	
-	local lx = top_left.x+mouse_pos.x
-	local ly = top_left.y+mouse_pos.y
-	
-	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
-		
-	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
-		
-	if not window_blocked and selected_designation ~= "None" then
-		if imgui.IsMouseClicked(0) or imgui.IsMouseClicked(1) then
-			mouse_click_start = current_world_mouse_pos
-			mouse_has_drag = true
-			
-			if imgui.IsMouseClicked(0) then
-				mouse_which_clicked = 0
-			else
-				mouse_which_clicked = 1
-			end
-		end
+	if selected_designation ~= "None" then
+		check_start_mouse_drag()
 	end
 	
-	if mouse_has_drag and imgui.IsMouseClicked((mouse_which_clicked + 1) % 2) then
-		mouse_has_drag = false
-	end
+	local tiles = get_dragged_tiles()
 	
-	local tiles = {}
-	local should_trigger_mouse = false
-	local trigger_rmouse = false
-
-	local min_pos_x = math.min(mouse_click_start.x, current_world_mouse_pos.x)
-	local min_pos_y = math.min(mouse_click_start.y, current_world_mouse_pos.y)
-	local min_pos_z = math.min(mouse_click_start.z, current_world_mouse_pos.z)
+	check_end_mouse_drag()
 	
-	local max_pos_x = math.max(mouse_click_start.x, current_world_mouse_pos.x)
-	local max_pos_y = math.max(mouse_click_start.y, current_world_mouse_pos.y)
-	local max_pos_z = math.max(mouse_click_start.z, current_world_mouse_pos.z)
-	
-	if mouse_has_drag then		
-		for z=min_pos_z,max_pos_z do
-			for y=min_pos_y,max_pos_y do
-				for x=min_pos_x,max_pos_x do
-					--this is the most lua line of code ever
-					tiles[#tiles+1] = {x=x, y=y, z=z}
-				end
-			end
-		end
-		
-		for k, v in ipairs(tiles) do
-			if v.z == top_left.z then
-				render.render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, v)
-			end
-		end
-
-		if imgui.IsMouseReleased(mouse_which_clicked) then
-			should_trigger_mouse = true
-			mouse_click_end = current_world_mouse_pos
-			mouse_has_drag = false
-		end
-	end
-
-	if not imgui.IsMouseDown(mouse_which_clicked) then
-		mouse_has_drag = false
-	end
+	local should_trigger_mouse = check_trigger_mouse()
 
 	local dirty_block = false
 
@@ -152,7 +191,7 @@ function render_designations()
 	if should_trigger_mouse then
 		for k, v in ipairs(tiles) do
 			--tile_designation
-			local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(v.x - 1, v.y - 1, v.z))
+			local tile, occupancy = dfhack.maps.getTileFlags(xyz2pos(v.x, v.y, v.z))
 			
 			local selected = selected_designation
 			local marker = selected_designation_marker
@@ -163,8 +202,8 @@ function render_designations()
 			end
 
 			if tile ~= nil then
-				local tile_type = dfhack.maps.getTileType(xyz2pos(v.x-1, v.y-1, v.z))
-				local tile_block = dfhack.maps.getTileBlock(xyz2pos(v.x - 1, v.y - 1, v.z))
+				local tile_type = dfhack.maps.getTileType(xyz2pos(v.x, v.y, v.z))
+				local tile_block = dfhack.maps.getTileBlock(xyz2pos(v.x, v.y, v.z))
 				
 				local tiletype_attrs = df.tiletype.attrs;
 				local my_shape = df.tiletype.attrs[tile_type].shape
@@ -234,7 +273,7 @@ function render_designations()
 						local plant = all_plants[i]
 						local ppos = plant.pos
 						
-						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z then
+						if ppos.x == v.x and ppos.y == v.y and ppos.z == v.z then
 							dfhack.designations.markPlant(plant)
 							goto skip
 						end
@@ -248,7 +287,7 @@ function render_designations()
 						local plant = all_plants[i]
 						local ppos = plant.pos
 						
-						if ppos.x == v.x-1 and ppos.y == v.y-1 and ppos.z == v.z then
+						if ppos.x == v.x and ppos.y == v.y and ppos.z == v.z then
 							dfhack.designations.markPlant(plant)
 							goto skip
 						end
@@ -256,7 +295,7 @@ function render_designations()
 				end
 				
 				function test_detail_job(j)
-					return (j.job_type == df.job_type.DetailWall or j.job_type == df.job_type.DetailFloor) and j.pos.x == v.x-1 and j.pos.y == v.y-1 and j.pos.z == v.z
+					return (j.job_type == df.job_type.DetailWall or j.job_type == df.job_type.DetailFloor) and j.pos.x == v.x and j.pos.y == v.y and j.pos.z == v.z
 				end
 				
 				if selected == "Smooth Stone" and not is_hidden and not is_smooth and (is_floor or is_wall) then
@@ -276,7 +315,7 @@ function render_designations()
 					for _,e in ipairs(df.global.world.engravings) do
 						local pos = e.pos
 						
-						if pos.x == v.x-1 and pos.y == v.y-1 and pos.z == v.z then
+						if pos.x == v.x and pos.y == v.y and pos.z == v.z then
 							goto skip
 						end
 					end
@@ -293,7 +332,7 @@ function render_designations()
 					for _,e in ipairs(df.global.world.engravings) do
 						local pos = e.pos
 						
-						if pos.x == v.x-1 and pos.y == v.y-1 and pos.z == v.z then
+						if pos.x == v.x and pos.y == v.y and pos.z == v.z then
 							goto skip
 						end
 					end
@@ -304,7 +343,7 @@ function render_designations()
 				
 				--todo, is construction
 				if selected == "Remove Construction" and not is_hidden then				
-					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
+					dfhack.constructions.designateRemove(xyz2pos(v.x,v.y,v.z))
 				end
 				
 				--tiles * jobs = bad
@@ -312,13 +351,13 @@ function render_designations()
 					tile.dig = df.tile_dig_designation.No
 					tile.smooth = 0
 					
-					dfhack.constructions.designateRemove(xyz2pos(v.x-1,v.y-1,v.z))
+					dfhack.constructions.designateRemove(xyz2pos(v.x,v.y,v.z))
 					
 					function is_any(j)
 						return true
 					end
 					
-					remove_jobs_for_tile(v.x-1, v.y-1, v.z, is_any)
+					remove_jobs_for_tile(v.x, v.y, v.z, is_any)
 				end
 				
 				if (tile.dig > 0 or tile.smooth > 0) then
