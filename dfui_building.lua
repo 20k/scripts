@@ -4,6 +4,7 @@ imgui = dfhack.imgui
 quickfort = reqscript('internal/quickfort/build')
 quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
+place = reqscript('internal/quickforce/place')
 require('dfhack.buildings')
 
 building_db = quickfort.get_building_db()
@@ -387,7 +388,7 @@ function get_key(s)
 	return "STRING_A"..byt
 end
 
-function handle_construct(type, subtype, pos, size, use_extents, dry_run)
+function handle_construct(type, subtype, pos, size, use_extents, dry_run, init_fields)
 	local extent_grid = {}
 	
 	for x = 1, size.x do
@@ -399,19 +400,24 @@ function handle_construct(type, subtype, pos, size, use_extents, dry_run)
 	end
 	
 	local extents_interior = nil
+	local ntiles = 0
 	
 	if use_extents then
-		extents_interior = quickfort2.make_extents({width=size.x, height=size.y, extent_grid=extent_grid}, false)
+		extents_interior, ntiles = quickfort2.make_extents({width=size.x, height=size.y, extent_grid=extent_grid}, false)
 	end
 	
 	local room = {x=pos.x, y=pos.y, width=size.x, height=size.y, extents=extents_interior}
 	local size = {x=size.x, y=size.y}
 
+	local fields = {room=room}
+	
+	init_fields(fields, ntiles)
+
 	--if dfhack.buildings.checkFreeTiles(build_pos, size, room, false, false, false) then
 	--	build_col = COLOR_GREEN
 	--end
 	
-	return dfhack.buildings.constructBuilding({type=type, subtype=subtype, x=pos.x, y=pos.y, z=pos.z, width=size.x, height=size.y, fields={room=room}, dryrun=dry_run})
+	return dfhack.buildings.constructBuilding({type=type, subtype=subtype, x=pos.x, y=pos.y, z=pos.z, width=size.x, height=size.y, fields=fields, dryrun=dry_run})
 end
 
 function render_make_building()
@@ -484,7 +490,11 @@ function render_make_building()
 	
 	local build_col = COLOR_RED
 	
-	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true) then
+	function none(fields, tiles)
+	
+	end
+	
+	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, none) then
 		build_col = COLOR_GREEN
 	end
 	
@@ -502,7 +512,7 @@ function render_make_building()
 		return
 	end
 
-	local a, b = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false)
+	local a, b = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false, none)
 	
 	--imgui.Text(tostring(a))
 	--imgui.Text(tostring(b))

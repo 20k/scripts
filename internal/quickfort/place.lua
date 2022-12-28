@@ -55,7 +55,7 @@ local stockpile_template = {
     is_valid_extent_fn = is_valid_stockpile_extent
 }
 
-local stockpile_db = {
+stockpile_db = {
     a={label='Animal', indices={0}},
     f={label='Food', indices={1}, want_barrels=true},
     u={label='Furniture', indices={2}},
@@ -167,7 +167,7 @@ local function queue_stockpile_settings_init(s, db_entry, stockpile_query_grid)
             {cell='generated',text=get_stockpile_query_text(db_entry)}
 end
 
-local function init_containers(db_entry, ntiles, fields)
+function init_containers(db_entry, ntiles, fields)
     if db_entry.want_barrels then
         local max_barrels = db_entry.num_barrels or
                 quickfort_set.get_setting('stockpiles_max_barrels')
