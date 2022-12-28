@@ -399,7 +399,7 @@ function render_make_building()
 	imgui.Text(label)
 	
 	if imgui.Button("(-) ##w") or imgui.Shortcut(get_key("j")) then
-		building_w = building_w - 2
+		building_w = building_w - 1
 	end
 	
 	imgui.SameLine(0,0)
@@ -407,7 +407,7 @@ function render_make_building()
 	imgui.SameLine(0,0)
 	
 	if imgui.Button(" (+)##w") or imgui.Shortcut(get_key("l")) then
-		building_w = building_w + 2
+		building_w = building_w + 1
 	end
 	
 	imgui.SameLine()
@@ -415,7 +415,7 @@ function render_make_building()
 	imgui.Text(" j l")
 	
 	if imgui.Button("(-) ##h") or imgui.Shortcut(get_key("i")) then
-		building_h = building_h - 2
+		building_h = building_h - 1
 	end
 	
 	imgui.SameLine(0,0)
@@ -423,7 +423,7 @@ function render_make_building()
 	imgui.SameLine(0,0)
 	
 	if imgui.Button(" (+)##h") or imgui.Shortcut(get_key("m")) then
-		building_h = building_h + 2
+		building_h = building_h + 1
 	end
 	
 	imgui.SameLine()
@@ -482,12 +482,9 @@ function render_make_building()
 		build_col = COLOR_GREEN
 	end
 	
-	for y=-height,height do
-		for x=-width,width do
-			local lx = top_left.x+mouse_pos.x + x
-			local ly = top_left.y+mouse_pos.y + y
-		
-			local pos = {x=lx, y=ly, z=top_left.z}
+	for x=build_pos.x,(build_pos.x+building_w-1) do 
+		for y=build_pos.y,(build_pos.y+building_h-1) do 	
+			local pos = {x=x+1, y=y+1, z=top_left.z}
 		
 			render.render_absolute_text("X", build_col, COLOR_BLACK, pos)
 		end
