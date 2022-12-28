@@ -677,7 +677,7 @@ function render_stockpiles()
 
 	local should_trigger_mouse = render.check_trigger_mouse()
 	
-	if should_trigger_mouse and next_description ~= "Remove Designation" then
+	if should_trigger_mouse and next_description ~= "Remove Designation" and render.mouse_which_clicked == 0 then
 		local start_pos = render.mouse_click_start
 		local end_pos = render.mouse_click_end
 		
@@ -688,7 +688,7 @@ function render_stockpiles()
 		trigger_stockpile(start_pos, size, false)
 	end
 	
-	if should_trigger_mouse and next_description == "Remove Designation" then
+	if should_trigger_mouse and (next_description == "Remove Designation" or render.mouse_which_clicked == 1) then
 		for k, v in ipairs(tiles) do
 			local building = dfhack.buildings.findAtTile(xyz2pos(v.x, v.y, v.z))
 			
