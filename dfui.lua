@@ -83,6 +83,7 @@ function MyScreen:render()
 	end
 	
 	if state == "View Items In Buildings" then 
+		viewitems.handle_mouseover()
 		viewitems.render_viewitems()
 	end
 	
@@ -103,10 +104,9 @@ function MyScreen:render()
 	end
 	
 	if state == "main" then
+		viewitems.handle_mouseover()
 		render_menu()
 	end
-	
-	viewitems.handle_mouseover()
 	
 	imgui.End()
 	
