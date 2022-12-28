@@ -104,6 +104,14 @@ function render_viewitems()
 		
 			imgui.Text(name)
 		end
+		
+		imgui.Text("x: ")
+			
+		imgui.SameLine(0,0)
+		
+		if imgui.Button("Deconstruct") or imgui.Shortcut("STRING_A120") then
+			dfhack.buildings.deconstruct(building)
+		end
 	end
 	
 	if imgui.Button("Back") or imgui.IsMouseClicked(1) then
