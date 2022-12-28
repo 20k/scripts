@@ -2,9 +2,55 @@
 
 render = reqscript('dfui_render')
 imgui = dfhack.imgui
+utils = require('utils')
 
 selected_building_pos = {x=-1, y=-1, z=-1}
 
+--contains item?
+function items_in_thing(thing)
+	local items = df.global.world.items.other[df.items_other_id.IN_PLAY]
+	
+	local result = {}
+	
+	for i=0,#items-1 do
+		local item = items[i]
+		
+		local flags = item.flags
+		
+		if not(flags.in_inventory or flags.in_building or flags.container or flags.encased or flags.in_chest) then
+			goto continue
+		end
+		
+		for j=0,(#item.general_refs-1) do
+			local ref = item.general_refs[j]
+			
+			local t = ref:getType()
+			
+			local fthing = nil
+			
+			if t == df.general_ref_type.CONTAINED_IN_ITEM then
+				fthing = ref:getItem()
+			elseif t == df.general_ref_type.UNIT_HOLDER then
+				fthing = ref:getUnit()
+			elseif t == df.general_ref_type.BUILDING_HOLDER then
+				fthing = ref:getBuilding()
+			end
+			
+			if fthing == thing then
+				result[#result + 1] = item
+				goto continue
+			end
+		end
+		
+		::continue::
+	end
+	
+	return result
+end
+
+function item_name(item)
+	return utils.getItemDescription(item)
+end
 
 function render_viewitems()
 	local top_left = render.get_camera()
@@ -29,12 +75,15 @@ function render_viewitems()
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 	
 	if building ~= nil then	
-		local str = df.new("string")
-		building:getName(str)
+		local items_in_building = items_in_thing(building)
+	
+		local str = utils.getBuildingName(building)
 		
-		imgui.Text(str.value)
+		imgui.Text(str)
 		
-		str:delete()
+		for k, v in ipairs(items_in_building) do
+			imgui.Text(tostring(item_name(v)))
+		end
 	end
 	
 	if imgui.Button("Back") or imgui.IsMouseClicked(1) then
