@@ -2,10 +2,11 @@
 
 imgui = dfhack.imgui
 quickfort = reqscript('internal/quickfort/build')
+--quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
 require('dfhack.buildings')
 
-local building_db = quickfort.get_building_db()
+building_db = quickfort.get_building_db()
 
 local ui_order = {
     -- basic building types
@@ -378,9 +379,22 @@ function render_make_building()
 	end
 	
 	local top_left = render.get_camera()
-	
 	local mouse_pos = imgui.GetMousePos()
 	
+	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
+	
+	local build_col = COLOR_RED
+		
+	if dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, dryrun=true}) then
+		build_col = COLOR_GREEN
+	end
+
+	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z}
+
+	--if quickfort2.check_tiles_and_extents({}, build_info, building_db) then
+	--	build_col = COLOR_GREEN
+	--end
+		
 	for y=-height,height do
 		for x=-width,width do
 			local lx = top_left.x+mouse_pos.x + x
@@ -388,7 +402,7 @@ function render_make_building()
 		
 			local pos = {x=lx, y=ly, z=top_left.z}
 		
-			render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
+			render.render_absolute_text("X", build_col, COLOR_BLACK, pos)
 		end
 	end
 	
@@ -397,10 +411,8 @@ function render_make_building()
 	if not is_clicked then
 		return
 	end
-	
-	local pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
-	
-	local a, b = dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=pos.x, y=pos.y, z=pos.z})
+		
+	local a, b = dfhack.buildings.constructBuilding(build_info)
 	
 	--imgui.Text(tostring(a))
 	--imgui.Text(tostring(b))
