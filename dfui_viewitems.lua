@@ -22,4 +22,8 @@ function render_viewitems()
 		
 		str:delete()
 	end
+	
+	if imgui.Button("Back") or (imgui.IsWindowHovered(0) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
 end
