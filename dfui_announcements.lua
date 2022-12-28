@@ -70,17 +70,6 @@ function time_to_ymd(t)
 	return {year=fyear, month=fmonth, day=fday, hour=fhour}
 end
 
--- must be part of network api
-function centre_camera(x, y, z)
-	local sx = df.global.gps.dimx
-	local sy = df.global.gps.dimy
-
-	df.global.window_x = x - math.floor(sx/2)
-	df.global.window_y = y - math.floor(sy/2)
-	
-	df.global.window_z = z
-end
-
 function render_announcements()
 	local reports = df.global.world.status.reports
 	local count = #reports
@@ -117,12 +106,12 @@ function render_announcements()
 			render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
 			
 			if imgui.Shortcut("STRING_A122") and imgui.IsItemHovered() then
-				centre_camera(lx, ly, lz)
+				render.centre_camera(lx, ly, lz)
 			end
 		end
 		
 		if imgui.IsItemClicked(0) then 
-			centre_camera(lx, ly, lz)
+			render.centre_camera(lx, ly, lz)
 		end
 	end
 	
