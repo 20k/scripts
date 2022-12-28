@@ -48,6 +48,20 @@ function items_in_thing(thing)
 	return result
 end
 
+function get_slated_for_removal_job(building)
+	local jobs = building.jobs
+
+	for i=0,(#jobs-1) do
+		local job = jobs[i]
+		
+		if job.job_type == df.job_type.DestroyBuilding then
+			return job
+		end
+	end
+	
+	return nil
+end
+
 function item_name(item)
 	return utils.getItemDescription(item)
 end
@@ -87,30 +101,43 @@ function render_viewitems()
 	end
 	
 	if building ~= nil then	
-		local items_in_building = items_in_thing(building)
-	
 		local str = utils.getBuildingName(building)
-		
 		imgui.Text(str)
+	
+		local removal_job = get_slated_for_removal_job(building)
+	
+		if removal_job == nil then 
+			local items_in_building = items_in_thing(building)
 		
-		table.sort(items_in_building, item_sort)
-		
-		for k, v in ipairs(items_in_building) do	
-			local name = tostring(item_name(v))
+			table.sort(items_in_building, item_sort)
 			
-			if v.flags.in_building then 
-				name = name .. " [B]"
+			for k, v in ipairs(items_in_building) do	
+				local name = tostring(item_name(v))
+				
+				if v.flags.in_building then 
+					name = name .. " [B]"
+				end
+			
+				imgui.Text(name)
 			end
-		
-			imgui.Text(name)
-		end
-		
-		imgui.Text("x: ")
 			
-		imgui.SameLine(0,0)
-		
-		if imgui.Button("Deconstruct") or imgui.Shortcut("STRING_A120") then
-			dfhack.buildings.deconstruct(building)
+			imgui.Text("x: ")
+				
+			imgui.SameLine(0,0)
+
+			if imgui.Button("Deconstruct") or imgui.Shortcut("STRING_A120") then
+				dfhack.buildings.deconstruct(building)
+			end
+		else
+			imgui.Text("Slated for removal")
+			
+			imgui.Text("s: ")
+
+			imgui.SameLine(0,0)
+			
+			if imgui.Button("Stop Removal") or imgui.Shortcut("STRING_A115") then
+				dfhack.job.removeJob(removal_job)
+			end
 		end
 	end
 	
