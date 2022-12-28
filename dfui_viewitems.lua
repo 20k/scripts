@@ -81,8 +81,14 @@ function render_viewitems()
 		
 		imgui.Text(str)
 		
-		for k, v in ipairs(items_in_building) do
-			imgui.Text(tostring(item_name(v)))
+		for k, v in ipairs(items_in_building) do	
+			local name = tostring(item_name(v))
+			
+			if v.flags.in_building then 
+				name = name .. " [B]"
+			end
+		
+			imgui.Text(name)
 		end
 	end
 	
