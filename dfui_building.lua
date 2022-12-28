@@ -609,8 +609,8 @@ end
 
 function render_stockpiles()
 	local to_render = {}
-	local value_to_key = {None="a"}
-	local key_to_value = {}
+	local value_to_key = {None="a", ["Remove Designation"]="x"}
+	local key_to_value = {x="Remove Designation"}
 	
 	local render_order = {"a","f","u","n","y","r","s","w","e","b","h","l","z","S","g","p","d","c"}
 	
@@ -622,6 +622,10 @@ function render_stockpiles()
 	
 		to_render[#to_render + 1] = d
 	end
+	
+	render_order[#render_order+1] = "x"
+	
+	to_render[#to_render + 1] = {key="x", text="Remove Designation"}
 	
 	local current_state = render.get_menu_item()
 	
@@ -647,7 +651,7 @@ function render_stockpiles()
 
 	local should_trigger_mouse = render.check_trigger_mouse()
 	
-	if should_trigger_mouse then
+	if should_trigger_mouse and next_description ~= "Remove Designation" then
 		local start_pos = render.mouse_click_start
 		local end_pos = render.mouse_click_end
 		
