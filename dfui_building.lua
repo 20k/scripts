@@ -433,7 +433,7 @@ function render_make_building()
 	
 	local width = math.floor((building_w - 1) / 2)
 	local height = math.floor((building_h - 1) / 2)
-		
+
 	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
 	
 	local size = {x=building_w, y=building_h}
