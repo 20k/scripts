@@ -538,9 +538,9 @@ function trigger_stockpile(tl, size, dry_run)
 	local building_w = clamp(size.x, quickfort_building.min_width, quickfort_building.max_width)
 	local building_h = clamp(size.y, quickfort_building.min_height, quickfort_building.max_height)
 	
-	local build_pos = {x=tl.x, y=tl.y, z=top_left.z}
+	local build_pos = {x=tl.x, y=tl.y, z=tl.z}
 		
-	function setup(fields, tiles)
+	function setup(fields, ntiles)
 		local db_entry = place.stockpile_db[stockpile_type]
 	
 		if db_entry.want_barrels then
@@ -578,7 +578,7 @@ function trigger_stockpile(tl, size, dry_run)
 	
 	for x=build_pos.x,(build_pos.x+building_w-1) do 
 		for y=build_pos.y,(build_pos.y+building_h-1) do 	
-			local pos = {x=x+1, y=y+1, z=top_left.z}
+			local pos = {x=x+1, y=y+1, z=tl.z}
 		
 			render.render_absolute_text("X", build_col, COLOR_BLACK, pos)
 		end
@@ -593,6 +593,18 @@ function trigger_stockpile(tl, size, dry_run)
 	
 	--IF AND ONLY IF WE'RE NOT PRESSING SHIFT OK THANKS
 	--render.pop_menu()
+end
+
+function min3(v1, v2)
+	local min_pos_x = math.min(v1.x, v2.x)
+	local min_pos_y = math.min(v1.y, v2.y)
+	local min_pos_z = math.min(v1.z, v2.z)
+	
+	local max_pos_x = math.max(v1.x, v2.x)
+	local max_pos_y = math.max(v1.y, v2.y)
+	local max_pos_z = math.max(v1.z, v2.z)
+	
+	return {x=min_pos_x, y=min_pos_y, z=min_pos_z}, {x=max_pos_x, y=max_pos_y, z=max_pos_z}
 end
 
 function render_stockpiles()
@@ -634,5 +646,15 @@ function render_stockpiles()
 	render.check_end_mouse_drag()
 
 	local should_trigger_mouse = render.check_trigger_mouse()
-
+	
+	if should_trigger_mouse then
+		local start_pos = render.mouse_click_start
+		local end_pos = render.mouse_click_end
+		
+		start_pos, end_pos = min3(start_pos, end_pos)
+		
+		local size = {x=end_pos.x - start_pos.x + 1, y=end_pos.y-start_pos.y + 1}
+		
+		trigger_stockpile(start_pos, size, false)
+	end
 end

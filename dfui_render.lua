@@ -228,6 +228,15 @@ function get_dragged_tiles()
 end
 
 function check_trigger_mouse()
+	local top_left = get_camera()
+	
+	local mouse_pos = imgui.GetMousePos()
+	
+	local lx = top_left.x+mouse_pos.x-1
+	local ly = top_left.y+mouse_pos.y-1
+
+	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
+
 	local should_trigger = false
 
 	if mouse_has_drag then
