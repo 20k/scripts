@@ -4,7 +4,7 @@ imgui = dfhack.imgui
 quickfort = reqscript('internal/quickfort/build')
 quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
-place = reqscript('internal/quickforce/place')
+place = reqscript('internal/quickfort/place')
 require('dfhack.buildings')
 
 building_db = quickfort.get_building_db()
@@ -388,7 +388,7 @@ function get_key(s)
 	return "STRING_A"..byt
 end
 
-function handle_construct(type, subtype, pos, size, use_extents, dry_run, init_fields)
+function handle_construct(type, subtype, pos, size, use_extents, abstract, dry_run, init_fields)
 	local extent_grid = {}
 	
 	for x = 1, size.x do
@@ -417,7 +417,41 @@ function handle_construct(type, subtype, pos, size, use_extents, dry_run, init_f
 	--	build_col = COLOR_GREEN
 	--end
 	
-	return dfhack.buildings.constructBuilding({type=type, subtype=subtype, x=pos.x, y=pos.y, z=pos.z, width=size.x, height=size.y, fields=fields, dryrun=dry_run})
+	return dfhack.buildings.constructBuilding({type=type, subtype=subtype, x=pos.x, y=pos.y, z=pos.z, width=size.x, height=size.y, fields=fields, abstract=abstract, dryrun=dry_run})
+end
+
+function handle_resizable()
+	if imgui.Button("(-) ##w") or imgui.Shortcut(get_key("j")) then
+		building_w = building_w - 1
+	end
+	
+	imgui.SameLine(0,0)
+	imgui.Text(tostring(building_w))
+	imgui.SameLine(0,0)
+	
+	if imgui.Button(" (+)##w") or imgui.Shortcut(get_key("l")) then
+		building_w = building_w + 1
+	end
+	
+	imgui.SameLine()
+	
+	imgui.Text(" j l")
+	
+	if imgui.Button("(-) ##h") or imgui.Shortcut(get_key("i")) then
+		building_h = building_h - 1
+	end
+	
+	imgui.SameLine(0,0)
+	imgui.Text(tostring(building_h))
+	imgui.SameLine(0,0)
+	
+	if imgui.Button(" (+)##h") or imgui.Shortcut(get_key("m")) then
+		building_h = building_h + 1
+	end
+	
+	imgui.SameLine()
+	
+	imgui.Text(" i m")
 end
 
 function render_make_building()
@@ -434,37 +468,7 @@ function render_make_building()
 	imgui.Text(label)
 	
 	if use_extents then
-		if imgui.Button("(-) ##w") or imgui.Shortcut(get_key("j")) then
-			building_w = building_w - 1
-		end
-		
-		imgui.SameLine(0,0)
-		imgui.Text(tostring(building_w))
-		imgui.SameLine(0,0)
-		
-		if imgui.Button(" (+)##w") or imgui.Shortcut(get_key("l")) then
-			building_w = building_w + 1
-		end
-		
-		imgui.SameLine()
-		
-		imgui.Text(" j l")
-		
-		if imgui.Button("(-) ##h") or imgui.Shortcut(get_key("i")) then
-			building_h = building_h - 1
-		end
-		
-		imgui.SameLine(0,0)
-		imgui.Text(tostring(building_h))
-		imgui.SameLine(0,0)
-		
-		if imgui.Button(" (+)##h") or imgui.Shortcut(get_key("m")) then
-			building_h = building_h + 1
-		end
-		
-		imgui.SameLine()
-		
-		imgui.Text(" i m") 
+		handle_resizable()
 	end
 
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
@@ -494,7 +498,7 @@ function render_make_building()
 	
 	end
 	
-	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, none) then
+	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false, true, none) then
 		build_col = COLOR_GREEN
 	end
 	
@@ -512,7 +516,73 @@ function render_make_building()
 		return
 	end
 
-	local a, b = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false, none)
+	local a, b = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false, false, none)
+	
+	--imgui.Text(tostring(a))
+	--imgui.Text(tostring(b))
+	
+	--IF AND ONLY IF WE'RE NOT PRESSING SHIFT OK THANKS
+	--render.pop_menu()
+end
+
+function render_stockpiles()
+
+
+end
+
+function render_make_stockpile()
+	local building = render.get_menu_item()
+		
+	local label = "Stockpile"
+	local build_type = df.building_type.Stockpile
+	
+	local use_extents = true
+
+	imgui.Text(label)
+	
+	handle_resizable()
+
+	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
+	
+	local top_left = render.get_camera()
+	local mouse_pos = imgui.GetMousePos()
+
+	building_w = clamp(building_w, quickfort_building.min_width, quickfort_building.max_width)
+	building_h = clamp(building_h, quickfort_building.min_height, quickfort_building.max_height)
+	
+	local width = math.floor((building_w - 1) / 2)
+	local height = math.floor((building_h - 1) / 2)
+
+	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
+	local size = {x=building_w, y=building_h}
+	
+	local build_col = COLOR_RED
+	
+	function setup(fields, tiles)
+	
+	end
+	
+	if handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, true, setup) then
+		build_col = COLOR_GREEN
+	end
+	
+	for x=build_pos.x,(build_pos.x+building_w-1) do 
+		for y=build_pos.y,(build_pos.y+building_h-1) do 	
+			local pos = {x=x+1, y=y+1, z=top_left.z}
+		
+			render.render_absolute_text("X", build_col, COLOR_BLACK, pos)
+		end
+	end
+	
+	local is_clicked = (not imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse()
+	
+	if not is_clicked then
+		return
+	end
+
+	local a, b = handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
 	
 	--imgui.Text(tostring(a))
 	--imgui.Text(tostring(b))
