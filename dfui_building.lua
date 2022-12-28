@@ -607,6 +607,32 @@ function min3(v1, v2)
 	return {x=min_pos_x, y=min_pos_y, z=min_pos_z}, {x=max_pos_x, y=max_pos_y, z=max_pos_z}
 end
 
+function kill_ifempty_building(building)
+	if building == nil then
+		return
+	end
+		
+	if building.room == nil or building.room.extents == nil then
+		return
+	end
+
+	for lx=0,building.room.width-1 do
+		for ly=0,building.room.height-1 do
+			local idx = lx + ly * building.room.width
+			
+			if building.room.extents[idx] ~= df.building_extents_type.None then
+				return
+			end
+		end
+	end
+		
+	if dfhack.buildings.markedForRemoval(building) then
+		return
+	end
+
+	dfhack.buildings.deconstruct(building)
+end
+
 function render_stockpiles()
 	local to_render = {}
 	local value_to_key = {None="a", ["Remove Designation"]="x"}
@@ -684,6 +710,22 @@ function render_stockpiles()
 			local idx = lx + ly * building.room.width
 			
 			building.room.extents[idx] = df.building_extents_type.None
+			
+			local chunk = dfhack.maps.getTileBlock({x=v.x, y=v.y, z=v.z})
+			
+			local des = chunk.designation[(v.x)&15][(v.y)&15]
+			local occ = chunk.occupancy[(v.x)&15][(v.y)&15]
+
+			des.pile = false
+			occ.building = df.tile_building_occ.None
+			
+			kill_ifempty_building(building)
+			
+			--if count == 1 and building.room.extents[idx] ~= df.building_extents_type.None then
+			--	dfhack.buildings.deconstruct(building)
+			--else
+			--	building.room.extents[idx] = df.building_extents_type.None
+			--end
 			
 			::continue::
 		end
