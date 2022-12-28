@@ -709,6 +709,10 @@ function render_stockpiles()
 			
 			local idx = lx + ly * building.room.width
 			
+			if building.room.extents[idx] == df.building_extents_type.None then
+				goto continue
+			end
+			
 			building.room.extents[idx] = df.building_extents_type.None
 			
 			local chunk = dfhack.maps.getTileBlock({x=v.x, y=v.y, z=v.z})
