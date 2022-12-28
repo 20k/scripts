@@ -158,8 +158,8 @@ function handle_mouseover()
 	
 	local building = dfhack.buildings.findAtTile(xyz2pos(lx, ly, top_left.z))
 	
-	if building ~= nil then	
-		if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() then
+	if building ~= nil and not imgui.WantCaptureMouse() then	
+		if imgui.IsMouseClicked(0) then
 			selected_building_pos.x = lx
 			selected_building_pos.y = ly
 			selected_building_pos.z = top_left.z
