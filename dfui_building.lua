@@ -431,20 +431,39 @@ function render_make_building()
 		building_h = quickfort_building.min_height
 	end
 	
+	local extent_grid = {}
+	
+	for x = 1, building_w do
+		extent_grid[x] = {}
+	
+		for y = 1, building_h do
+			extent_grid[x][y] = true
+		end
+	end
+	
+	local extents_interior = nil
+	
+	if quickfort_building.has_extents then
+		extents_interior = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
+	end
+		
 	local width = math.floor((building_w - 1) / 2)
 	local height = math.floor((building_h - 1) / 2)
 
 	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
 	
-	local size = {x=building_w, y=building_h}
+	local room = {x=build_pos.x, y=build_pos.y, width=building_w, height=building_h, extents=extents_interior}
 	
+	local size = {x=building_w, y=building_h}
+		
 	local build_col = COLOR_RED
 	
-	if dfhack.buildings.checkFreeTiles(build_pos, size, nil, true, false, false) then
-		build_col = COLOR_GREEN
-	end
+	--if dfhack.buildings.checkFreeTiles(build_pos, size, room, true, false, false) then
+	--	build_col = COLOR_GREEN
+	--end
 
-	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z}
+	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, width=building_w, height=building_h}
+	build_info.fields = {room=room}
 	
 	for y=-height,height do
 		for x=-width,width do
@@ -460,6 +479,9 @@ function render_make_building()
 	local is_clicked = (not imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(0)
 	
 	if not is_clicked then
+		--if room.extents ~= nil then
+		--	df.delete(room.extents)
+		--end
 		return
 	end
 		
