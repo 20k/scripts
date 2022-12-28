@@ -525,67 +525,21 @@ function render_make_building()
 	--render.pop_menu()
 end
 
-function render_stockpiles()
-	local to_render = {}
-	local value_to_key = {None="a"}
-	local key_to_value = {}
-	
-	local render_order = {"a","f","u","n","y","r","s","w","e","b","h","l","z","S","g","p","d","c"}
-	
-	for k, v in ipairs(render_order) do
-		local d = {key=v, text=place.stockpile_db[v].label}
-		
-		value_to_key[d.text] = d.key
-		key_to_value[d.key] = d.text
-	
-		to_render[#to_render + 1] = d
-	end
-	
-	local current_state = render.get_menu_item()
-	
-	if current_state == nil then
-		current_state = 'a'
-	end
-		
-	local next_description = render.render_table_impl(to_render, key_to_value[current_state])
-	
-	render.set_menu_item(value_to_key[next_description])
-	
-	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
-		render.pop_menu()
-	end
-end
 
-function render_make_stockpile()
+function trigger_stockpile(tl, size, dry_run)
 	local stockpile_type = render.get_menu_item()
-		
+	local quickfort_building = place.stockpile_db[stockpile_type]
+
 	local label = "Stockpile"
 	local build_type = df.building_type.Stockpile
-	
+
 	local use_extents = true
 
-	imgui.Text(label)
+	local building_w = clamp(size.x, quickfort_building.min_width, quickfort_building.max_width)
+	local building_h = clamp(size.y, quickfort_building.min_height, quickfort_building.max_height)
 	
-	handle_resizable()
-
-	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
-		render.pop_menu()
-	end
-	
-	local top_left = render.get_camera()
-	local mouse_pos = imgui.GetMousePos()
-
-	building_w = clamp(building_w, quickfort_building.min_width, quickfort_building.max_width)
-	building_h = clamp(building_h, quickfort_building.min_height, quickfort_building.max_height)
-	
-	local width = math.floor((building_w - 1) / 2)
-	local height = math.floor((building_h - 1) / 2)
-
-	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
-	local size = {x=building_w, y=building_h}
-	
-	local build_col = COLOR_RED
-	
+	local build_pos = {x=tl.x, y=tl.y, z=top_left.z}
+		
 	function setup(fields, tiles)
 		local db_entry = place.stockpile_db[stockpile_type]
 	
@@ -616,6 +570,8 @@ function render_make_stockpile()
 		end
 	end
 	
+	local build_col = COLOR_RED
+	
 	if handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, true, setup) then
 		build_col = COLOR_GREEN
 	end
@@ -627,18 +583,56 @@ function render_make_stockpile()
 			render.render_absolute_text("X", build_col, COLOR_BLACK, pos)
 		end
 	end
-	
-	local is_clicked = (not imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse()
-	
-	if not is_clicked then
-		return
-	end
 
-	local a, b = handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
+	if not dry_run then
+		handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
+	end
 	
 	--imgui.Text(tostring(a))
 	--imgui.Text(tostring(b))
 	
 	--IF AND ONLY IF WE'RE NOT PRESSING SHIFT OK THANKS
 	--render.pop_menu()
+end
+
+function render_stockpiles()
+	local to_render = {}
+	local value_to_key = {None="a"}
+	local key_to_value = {}
+	
+	local render_order = {"a","f","u","n","y","r","s","w","e","b","h","l","z","S","g","p","d","c"}
+	
+	for k, v in ipairs(render_order) do
+		local d = {key=v, text=place.stockpile_db[v].label}
+		
+		value_to_key[d.text] = d.key
+		key_to_value[d.key] = d.text
+	
+		to_render[#to_render + 1] = d
+	end
+	
+	local current_state = render.get_menu_item()
+	
+	if current_state == nil then
+		current_state = 'a'
+	end
+		
+	local next_description = render.render_table_impl(to_render, key_to_value[current_state])
+	
+	render.set_menu_item(value_to_key[next_description])
+	
+	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
+	
+	if next_description ~= "None" then
+		render.check_start_mouse_drag()
+	end
+	
+	local tiles = render.get_dragged_tiles()
+
+	render.check_end_mouse_drag()
+
+	local should_trigger_mouse = render.check_trigger_mouse()
+
 end
