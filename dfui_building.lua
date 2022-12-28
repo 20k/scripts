@@ -637,7 +637,7 @@ function render_stockpiles()
 	
 	render.set_menu_item(value_to_key[next_description])
 	
-	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+	if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
 	end
 	
@@ -660,5 +660,32 @@ function render_stockpiles()
 		local size = {x=end_pos.x - start_pos.x + 1, y=end_pos.y-start_pos.y + 1}
 		
 		trigger_stockpile(start_pos, size, false)
+	end
+	
+	if should_trigger_mouse and next_description == "Remove Designation" then
+		for k, v in ipairs(tiles) do
+			local building = dfhack.buildings.findAtTile(xyz2pos(v.x, v.y, v.z))
+			
+			if building == nil then
+				goto continue
+			end
+			
+			if building.room == nil or building.room.extents == nil then
+				goto continue
+			end
+			
+			local lx = v.x - building.room.x
+			local ly = v.y - building.room.y
+			
+			if lx < 0 or ly < 0 or lx >= building.room.width or ly >= building.room.height then
+				goto continue
+			end
+			
+			local idx = lx + ly * building.room.width
+			
+			building.room.extents[idx] = df.building_extents_type.None
+			
+			::continue::
+		end
 	end
 end
