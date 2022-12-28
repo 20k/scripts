@@ -441,29 +441,30 @@ function render_make_building()
 		end
 	end
 	
-	local extents_interior = nil
+	local extents_interior1 = nil
 	
 	if quickfort_building.has_extents then
-		extents_interior = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
+		extents_interior1 = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
 	end
-		
+
 	local width = math.floor((building_w - 1) / 2)
 	local height = math.floor((building_h - 1) / 2)
 
 	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
 	
-	local room = {x=build_pos.x, y=build_pos.y, width=building_w, height=building_h, extents=extents_interior}
+	local room1 = {x=build_pos.x, y=build_pos.y, width=building_w, height=building_h, extents=extents_interior1}
 	
 	local size = {x=building_w, y=building_h}
 		
 	local build_col = COLOR_RED
 	
-	--if dfhack.buildings.checkFreeTiles(build_pos, size, room, true, false, false) then
+	--if dfhack.buildings.checkFreeTiles(build_pos, size, room, false, false, false) then
 	--	build_col = COLOR_GREEN
 	--end
-
-	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, width=building_w, height=building_h}
-	build_info.fields = {room=room}
+	
+	if dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, width=building_w, height=building_h, fields={room=room1}, dryrun=true}) then
+		build_col = COLOR_GREEN
+	end
 	
 	for y=-height,height do
 		for x=-width,width do
@@ -484,7 +485,18 @@ function render_make_building()
 		--end
 		return
 	end
-		
+
+	local extents_interior2 = nil
+
+	if quickfort_building.has_extents then
+		extents_interior2 = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
+	end
+
+	local room2 = {x=build_pos.x, y=build_pos.y, width=building_w, height=building_h, extents=extents_interior2}
+	
+	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, width=building_w, height=building_h}
+	build_info.fields = {room=room2}
+
 	local a, b = dfhack.buildings.constructBuilding(build_info)
 	
 	--imgui.Text(tostring(a))
