@@ -372,9 +372,7 @@ function render_make_building()
 	
 	local width = (quickfort_building.min_width - 1)/2
 	local height = (quickfort_building.min_height - 1)/2
-	
-	local mouse_pos = imgui.GetMousePos()
-	
+		
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
 	end
@@ -400,10 +398,13 @@ function render_make_building()
 		return
 	end
 	
-	local pos = {x=top_left.x + mouse_pos.x-1, y=top_left.y + mouse_pos.y-1, top_left.z}
+	local pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
 	
-	dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=pos.x, y=pos.y, z=pos.z})
+	local a, b = dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=pos.x, y=pos.y, z=pos.z})
+	
+	--imgui.Text(tostring(a))
+	--imgui.Text(tostring(b))
 	
 	--IF AND ONLY IF WE'RE NOT PRESSING SHIFT OK THANKS
-	render.pop_menu()
+	--render.pop_menu()
 end
