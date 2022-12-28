@@ -52,6 +52,14 @@ function item_name(item)
 	return utils.getItemDescription(item)
 end
 
+function b2n(b)
+	if b then
+		return 1
+	else
+		return 0
+	end
+end
+
 function render_viewitems()
 	local top_left = render.get_camera()
 
@@ -74,12 +82,18 @@ function render_viewitems()
 	
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 	
+	function item_sort(a, b)
+		return b2n(a.flags.in_building) > b2n(b.flags.in_building)
+	end
+	
 	if building ~= nil then	
 		local items_in_building = items_in_thing(building)
 	
 		local str = utils.getBuildingName(building)
 		
 		imgui.Text(str)
+		
+		table.sort(items_in_building, item_sort)
 		
 		for k, v in ipairs(items_in_building) do	
 			local name = tostring(item_name(v))
