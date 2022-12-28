@@ -112,11 +112,11 @@ function render_table_impl(menus, old_state)
 			end
 			
 			if imgui.Button(description) or imgui.Shortcut(keyboard_key) then
-				if state == description then
-					state = "None"
-				else
+				--if state == description then
+				--	state = "None"
+				--else
 					state = description
-				end
+				--end
 			end
 			
 			if pushed then
