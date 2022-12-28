@@ -2,10 +2,14 @@
 
 imgui = dfhack.imgui
 quickfort = reqscript('internal/quickfort/build')
+quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
 require('dfhack.buildings')
 
 building_db = quickfort.get_building_db()
+
+building_w = 3
+building_h = 3
 
 local ui_order = {
     -- basic building types
@@ -329,6 +333,8 @@ function render_buildings()
 			end
 			
 			if start_building then
+				building_w = 3
+				building_h = 3
 				render.push_menu("make_building")
 				render.set_menu_item(v.key)
 			end
@@ -359,6 +365,28 @@ function render_buildings()
 	end
 end
 
+function clamp(x, left, right)
+	if x < left then
+		return left
+	end
+
+	if x > right then
+		return right
+	end
+
+	return x
+end
+
+function get_key(s)	
+	local byt = tostring(string.byte(s))
+	
+	if #byt < 3 then
+		byt = "0"..byt
+	end
+		
+	return "STRING_A"..byt
+end
+
 function render_make_building()
 	local building = render.get_menu_item()
 	
@@ -370,8 +398,21 @@ function render_make_building()
 	
 	imgui.Text(label)
 	
-	local width = (quickfort_building.min_width - 1)/2
-	local height = (quickfort_building.min_height - 1)/2
+	if imgui.Button("Wm") or imgui.Shortcut(get_key("j")) then
+		building_w = building_w - 2
+	end
+	
+	if imgui.Button("Wp") or imgui.Shortcut(get_key("l")) then
+		building_w = building_w + 2
+	end
+	
+	if imgui.Button("Hm") or imgui.Shortcut(get_key("i")) then
+		building_h = building_h - 2
+	end
+	
+	if imgui.Button("Hp") or imgui.Shortcut(get_key("m")) then
+		building_h = building_h + 2
+	end
 		
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
@@ -380,15 +421,53 @@ function render_make_building()
 	local top_left = render.get_camera()
 	local mouse_pos = imgui.GetMousePos()
 	
+	local use_extents = quickfort_building.has_extents
+	
+	if quickfort_building.has_extents then
+		building_w = clamp(building_w, quickfort_building.min_width, quickfort_building.max_width)
+		building_h = clamp(building_h, quickfort_building.min_height, quickfort_building.max_height)
+	else
+		building_w = quickfort_building.min_width
+		building_h = quickfort_building.min_height
+	end
+	
+	local width = (building_w - 1) / 2
+	local height = (building_h - 1) / 2
+		
 	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
 	
+
+	--[[local extent_grid = {}
+	
+	for x = 1, building_w do
+		extent_grid[x] = {}
+	
+		for y = 1, building_h do
+			extent_grid[x][y] = true
+		end
+	end
+	
+	local extents_interior = nil
+	
+	if quickfort_building.has_extents then
+		extents = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
+	end]]--
+	
+	local size = {x=building_w, y=building_h}
+	
 	local build_col = COLOR_RED
-		
-	if dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, dryrun=true}) then
+	
+	if dfhack.buildings.checkFreeTiles(build_pos, size, nil, true, false, false) then
 		build_col = COLOR_GREEN
 	end
-
+	
+	--local room = {extents=extents}
+	
 	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z}
+	
+	--[[if quickfort_building.has_extents then
+		build_info.fields = {room=room}
+	end]]--
 	
 	for y=-height,height do
 		for x=-width,width do
