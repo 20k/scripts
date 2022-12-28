@@ -53,6 +53,9 @@ function MyScreen:init()
 	render.reset_menu_to("main")
 end
 
+last_camera = {x=0, y=0}
+has_last_camera = false
+
 function MyScreen:render()
 	self:renderParent()
 	
@@ -106,6 +109,25 @@ function MyScreen:render()
 	if state == "main" then
 		viewitems.handle_mouseover()
 		render_menu()
+	end
+	
+	if not imgui.IsMouseDragging(2) or not has_last_camera then
+		last_camera = render.get_camera()
+		has_last_camera = true
+	end
+	
+	if imgui.IsMouseDown(2) then
+		imgui.Text("Hello")
+	end
+	
+	if imgui.IsMouseDragging(2) then
+		local delta = imgui.GetMouseDragDelta(2)
+		
+		local next_camera = {x=last_camera.x - delta.x, y=last_camera.y - delta.y, z=render.get_camera().z}
+		
+		render.set_camera(next_camera.x, next_camera.y, next_camera.z)
+		
+		imgui.Text(tostring(delta.x))
 	end
 	
 	imgui.End()

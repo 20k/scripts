@@ -9,6 +9,24 @@ function get_camera()
 	return {x=df.global.window_x, y=df.global.window_y, z=df.global.window_z}
 end
 
+function set_camera(x, y, z)
+	df.global.window_x = x
+	df.global.window_y = y
+	df.global.window_z = z
+end
+
+-- must be part of network api
+function centre_camera(x, y, z)
+	local sx = df.global.gps.dimx
+	local sy = df.global.gps.dimy
+
+	df.global.window_x = x - math.floor(sx/2)
+	df.global.window_y = y - math.floor(sy/2)
+	
+	df.global.window_z = z
+end
+
+
 function reset_menu_to(st)
 	menu_state = {st}
 end
