@@ -387,6 +387,33 @@ function get_key(s)
 	return "STRING_A"..byt
 end
 
+function handle_construct(type, subtype, pos, size, use_extents, dry_run)
+	local extent_grid = {}
+	
+	for x = 1, size.x do
+		extent_grid[x] = {}
+
+		for y = 1, size.y do
+			extent_grid[x][y] = true
+		end
+	end
+	
+	local extents_interior = nil
+	
+	if use_extents then
+		extents_interior = quickfort2.make_extents({width=size.x, height=size.y, extent_grid=extent_grid}, false)
+	end
+	
+	local room = {x=pos.x, y=pos.y, width=size.x, height=size.y, extents=extents_interior}
+	local size = {x=size.x, y=size.y}
+
+	--if dfhack.buildings.checkFreeTiles(build_pos, size, room, false, false, false) then
+	--	build_col = COLOR_GREEN
+	--end
+	
+	return dfhack.buildings.constructBuilding({type=type, subtype=subtype, x=pos.x, y=pos.y, z=pos.z, width=size.x, height=size.y, fields={room=room}, dryrun=dry_run})
+end
+
 function render_make_building()
 	local building = render.get_menu_item()
 	
@@ -396,50 +423,52 @@ function render_make_building()
 	local build_type = quickfort_building.type --native df type, eg df.building_type.GrateWall
 	local build_subtype = quickfort_building.subtype
 	
+	local use_extents = quickfort_building.has_extents
+
 	imgui.Text(label)
 	
-	if imgui.Button("(-) ##w") or imgui.Shortcut(get_key("j")) then
-		building_w = building_w - 1
-	end
-	
-	imgui.SameLine(0,0)
-	imgui.Text(tostring(building_w))
-	imgui.SameLine(0,0)
-	
-	if imgui.Button(" (+)##w") or imgui.Shortcut(get_key("l")) then
-		building_w = building_w + 1
-	end
-	
-	imgui.SameLine()
-	
-	imgui.Text(" j l")
-	
-	if imgui.Button("(-) ##h") or imgui.Shortcut(get_key("i")) then
-		building_h = building_h - 1
-	end
-	
-	imgui.SameLine(0,0)
-	imgui.Text(tostring(building_h))
-	imgui.SameLine(0,0)
-	
-	if imgui.Button(" (+)##h") or imgui.Shortcut(get_key("m")) then
-		building_h = building_h + 1
-	end
-	
-	imgui.SameLine()
-	
-	imgui.Text(" i m")
+	if use_extents then
+		if imgui.Button("(-) ##w") or imgui.Shortcut(get_key("j")) then
+			building_w = building_w - 1
+		end
 		
+		imgui.SameLine(0,0)
+		imgui.Text(tostring(building_w))
+		imgui.SameLine(0,0)
+		
+		if imgui.Button(" (+)##w") or imgui.Shortcut(get_key("l")) then
+			building_w = building_w + 1
+		end
+		
+		imgui.SameLine()
+		
+		imgui.Text(" j l")
+		
+		if imgui.Button("(-) ##h") or imgui.Shortcut(get_key("i")) then
+			building_h = building_h - 1
+		end
+		
+		imgui.SameLine(0,0)
+		imgui.Text(tostring(building_h))
+		imgui.SameLine(0,0)
+		
+		if imgui.Button(" (+)##h") or imgui.Shortcut(get_key("m")) then
+			building_h = building_h + 1
+		end
+		
+		imgui.SameLine()
+		
+		imgui.Text(" i m") 
+	end
+
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
 	end
 	
 	local top_left = render.get_camera()
 	local mouse_pos = imgui.GetMousePos()
-	
-	local use_extents = quickfort_building.has_extents
-	
-	if quickfort_building.has_extents then
+
+	if use_extents then
 		building_w = clamp(building_w, quickfort_building.min_width, quickfort_building.max_width)
 		building_h = clamp(building_h, quickfort_building.min_height, quickfort_building.max_height)
 	else
@@ -447,38 +476,15 @@ function render_make_building()
 		building_h = quickfort_building.min_height
 	end
 	
-	local extent_grid = {}
-	
-	for x = 1, building_w do
-		extent_grid[x] = {}
-	
-		for y = 1, building_h do
-			extent_grid[x][y] = true
-		end
-	end
-	
-	local extents_interior1 = nil
-	
-	if quickfort_building.has_extents then
-		extents_interior1 = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
-	end
-
 	local width = math.floor((building_w - 1) / 2)
 	local height = math.floor((building_h - 1) / 2)
 
 	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
-	
-	local room1 = {x=build_pos.x, y=build_pos.y, width=building_w, height=building_h, extents=extents_interior1}
-	
 	local size = {x=building_w, y=building_h}
-		
+	
 	local build_col = COLOR_RED
 	
-	--if dfhack.buildings.checkFreeTiles(build_pos, size, room, false, false, false) then
-	--	build_col = COLOR_GREEN
-	--end
-	
-	if dfhack.buildings.constructBuilding({type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, width=building_w, height=building_h, fields={room=room1}, dryrun=true}) then
+	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true) then
 		build_col = COLOR_GREEN
 	end
 	
@@ -496,18 +502,7 @@ function render_make_building()
 		return
 	end
 
-	local extents_interior2 = nil
-
-	if quickfort_building.has_extents then
-		extents_interior2 = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
-	end
-
-	local room2 = {x=build_pos.x, y=build_pos.y, width=building_w, height=building_h, extents=extents_interior2}
-	
-	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z, width=building_w, height=building_h}
-	build_info.fields = {room=room2}
-
-	local a, b = dfhack.buildings.constructBuilding(build_info)
+	local a, b = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false)
 	
 	--imgui.Text(tostring(a))
 	--imgui.Text(tostring(b))
