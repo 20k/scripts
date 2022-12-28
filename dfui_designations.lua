@@ -8,11 +8,6 @@ selected_designation = "None"
 selected_designation_filter = "walls"
 selected_designation_marker = false
 
-mouse_click_start = {x=-1, y=-1, z=-1}
-mouse_click_end = {x=-1, y=-1, z=-1}
-mouse_has_drag = false
-mouse_which_clicked = 0
-
 function onLoad()
     
 end
@@ -51,102 +46,6 @@ function find_job(filter)
 	return nil
 end
 
-function check_start_mouse_drag()
-	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
-	
-	if window_blocked then
-		return
-	end
-
-	local top_left = render.get_camera()
-	
-	local mouse_pos = imgui.GetMousePos()
-	
-	local lx = top_left.x+mouse_pos.x-1
-	local ly = top_left.y+mouse_pos.y-1
-	
-	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
-	
-	if imgui.IsMouseClicked(0) or imgui.IsMouseClicked(1) then
-		mouse_click_start = current_world_mouse_pos
-		mouse_has_drag = true
-		
-		if imgui.IsMouseClicked(0) then
-			mouse_which_clicked = 0
-		else
-			mouse_which_clicked = 1
-		end
-	end
-end
-
-function check_end_mouse_drag()
-	if mouse_has_drag and imgui.IsMouseClicked((mouse_which_clicked + 1) % 2) then
-		mouse_has_drag = false
-	end
-end
-
-function get_dragged_tiles()
-	local tiles = {}
-	
-	if not mouse_has_drag then
-		return {}
-	end
-	
-	local top_left = render.get_camera()
-	
-	local mouse_pos = imgui.GetMousePos()
-	
-	local lx = top_left.x+mouse_pos.x-1
-	local ly = top_left.y+mouse_pos.y-1
-
-	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
-	
-	local min_pos_x = math.min(mouse_click_start.x, current_world_mouse_pos.x)
-	local min_pos_y = math.min(mouse_click_start.y, current_world_mouse_pos.y)
-	local min_pos_z = math.min(mouse_click_start.z, current_world_mouse_pos.z)
-	
-	local max_pos_x = math.max(mouse_click_start.x, current_world_mouse_pos.x)
-	local max_pos_y = math.max(mouse_click_start.y, current_world_mouse_pos.y)
-	local max_pos_z = math.max(mouse_click_start.z, current_world_mouse_pos.z)
-	
-	if mouse_has_drag then		
-		for z=min_pos_z,max_pos_z do
-			for y=min_pos_y,max_pos_y do
-				for x=min_pos_x,max_pos_x do
-					--this is the most lua line of code ever
-					tiles[#tiles+1] = {x=x, y=y, z=z}
-				end
-			end
-		end
-		
-		for k, v in ipairs(tiles) do
-			if v.z == top_left.z then
-				render.render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=v.x+1, y=v.y+1, z=v.z})
-			end
-		end
-	end
-	
-	return tiles
-end
-
-function check_trigger_mouse()
-	local should_trigger = false
-
-	if mouse_has_drag then
-		if imgui.IsMouseReleased(mouse_which_clicked) then
-			should_trigger = true
-			mouse_click_end = current_world_mouse_pos
-			mouse_has_drag = false
-		end
-	end
-
-	if not imgui.IsMouseDown(mouse_which_clicked) then
-		mouse_has_drag = false
-	end
-	
-	return should_trigger
-end
-
 --https://github.com/DFHack/scripts/blob/791748739ada792591995585a0c8218ea87402ec/internal/quickfort/dig.lua may have more accurate designation logic
 function render_designations()
 	local menus = {{key="d", text="Mine"}, -- done!
@@ -176,14 +75,14 @@ function render_designations()
 	end
 
 	if selected_designation ~= "None" then
-		check_start_mouse_drag()
+		render.check_start_mouse_drag()
 	end
 	
-	local tiles = get_dragged_tiles()
+	local tiles = render.get_dragged_tiles()
 	
-	check_end_mouse_drag()
+	render.check_end_mouse_drag()
 	
-	local should_trigger_mouse = check_trigger_mouse()
+	local should_trigger_mouse = render.check_trigger_mouse()
 
 	local dirty_block = false
 
