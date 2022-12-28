@@ -139,6 +139,8 @@ function render_viewitems()
 				dfhack.job.removeJob(removal_job)
 			end
 		end
+	else
+		render.set_menu_item(false)
 	end
 	
 	if imgui.Button("Back") or imgui.IsMouseClicked(1) then
@@ -162,7 +164,10 @@ function handle_mouseover()
 			selected_building_pos.y = ly
 			selected_building_pos.z = top_left.z
 			
-			render.push_menu("View Items In Buildings")
+			if render.get_menu() ~= "View Items In Buildings" then
+				render.push_menu("View Items In Buildings")
+			end
+			
 			render.set_menu_item(true)
 		end
 	
