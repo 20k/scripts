@@ -526,7 +526,31 @@ function render_make_building()
 end
 
 function render_stockpiles()
+	local to_render = {}
+	local value_to_key = {None:"a"}
+	local key_to_value = {}
 	
+	for k, v in pairs(stockpile_db) do
+		local d = {key=k, value=v.label}
+		
+		value_to_key[d.value] = d.key
+		key_to_value[d.key] = d.value
+	
+		to_render[#to_render + 1] = d
+	end
+	
+	local current_state = render.get_menu_item()
+	
+	if(current_state == nil)
+		current_state = 'a'
+		
+	local next_description = render.render_table_impl(to_render, key_to_value[current_state])
+	
+	render.set_menu_item(value_to_key[next_description])
+	
+	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
 end
 
 function render_make_stockpile()

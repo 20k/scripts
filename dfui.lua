@@ -106,6 +106,10 @@ function MyScreen:render()
 		designations.render_designations()
 	end
 	
+	if state == "Stockpiles" then
+		building.render_stockpiles()
+	end
+	
 	if state == "main" then
 		viewitems.handle_mouseover()
 		render_menu()
