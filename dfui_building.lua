@@ -527,22 +527,25 @@ end
 
 function render_stockpiles()
 	local to_render = {}
-	local value_to_key = {None:"a"}
+	local value_to_key = {None="a"}
 	local key_to_value = {}
 	
-	for k, v in pairs(stockpile_db) do
-		local d = {key=k, value=v.label}
+	local render_order = {"a","f","u","n","y","r","s","w","e","b","h","l","z","S","g","p","d","c"}
+	
+	for k, v in ipairs(render_order) do
+		local d = {key=v, text=place.stockpile_db[v].label}
 		
-		value_to_key[d.value] = d.key
-		key_to_value[d.key] = d.value
+		value_to_key[d.text] = d.key
+		key_to_value[d.key] = d.text
 	
 		to_render[#to_render + 1] = d
 	end
 	
 	local current_state = render.get_menu_item()
 	
-	if(current_state == nil)
+	if current_state == nil then
 		current_state = 'a'
+	end
 		
 	local next_description = render.render_table_impl(to_render, key_to_value[current_state])
 	
@@ -584,7 +587,7 @@ function render_make_stockpile()
 	local build_col = COLOR_RED
 	
 	function setup(fields, tiles)
-		local db_entry = stockpile_db[stockpile_type]
+		local db_entry = place.stockpile_db[stockpile_type]
 	
 		if db_entry.want_barrels then
 			local max_barrels = db_entry.num_barrels or 99999
