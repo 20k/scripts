@@ -106,6 +106,8 @@ function MyScreen:render()
 		render_menu()
 	end
 	
+	viewitems.handle_mouseover()
+	
 	imgui.End()
 	
 	imgui.PopStyleColor(1)
