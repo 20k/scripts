@@ -4,6 +4,11 @@ imgui = dfhack.imgui
 menu_state = {"main"}
 menu_item = nil
 
+mouse_click_start = {x=-1, y=-1, z=-1}
+mouse_click_end = {x=-1, y=-1, z=-1}
+mouse_has_drag = false
+mouse_which_clicked = 0
+
 -- must be part of network api
 function get_camera()
 	return {x=df.global.window_x, y=df.global.window_y, z=df.global.window_z}
@@ -32,7 +37,7 @@ function reset_menu_to(st)
 end
 
 function push_menu(st)
-	mouse_has_drag = true
+	mouse_has_drag = false
 	menu_state[#menu_state+1] = st
 	menu_item = nil
 end
@@ -144,11 +149,6 @@ function render_absolute_text(str, fg, bg, pos)
 	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, "X", pos)
 end
 
-mouse_click_start = {x=-1, y=-1, z=-1}
-mouse_click_end = {x=-1, y=-1, z=-1}
-mouse_has_drag = false
-mouse_which_clicked = 0
-
 function check_start_mouse_drag()
 	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
 	
@@ -156,7 +156,7 @@ function check_start_mouse_drag()
 		return
 	end
 
-	local top_left = render.get_camera()
+	local top_left = get_camera()
 	
 	local mouse_pos = imgui.GetMousePos()
 	
@@ -190,7 +190,7 @@ function get_dragged_tiles()
 		return {}
 	end
 	
-	local top_left = render.get_camera()
+	local top_left = get_camera()
 	
 	local mouse_pos = imgui.GetMousePos()
 	
@@ -219,7 +219,7 @@ function get_dragged_tiles()
 		
 		for k, v in ipairs(tiles) do
 			if v.z == top_left.z then
-				render.render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=v.x+1, y=v.y+1, z=v.z})
+				render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=v.x+1, y=v.y+1, z=v.z})
 			end
 		end
 	end
