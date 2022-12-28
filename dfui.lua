@@ -2,6 +2,7 @@ local gui = require('gui')
 local designations = reqscript('dfui_designations')
 local announcements = reqscript('dfui_announcements')
 local building = reqscript('dfui_building')
+local viewitems = reqscript('dfui_viewitems')
 local render = reqscript('dfui_render')
 
 MyScreen = defclass(MyScreen, gui.Screen)
@@ -79,6 +80,10 @@ function MyScreen:render()
 
 	if state == nil then
 		self:dismiss()
+	end
+	
+	if state == "View Items In Buildings" then 
+		viewitems.render_viewitems()
 	end
 	
 	if state == "View Announcements" then
