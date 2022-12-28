@@ -431,27 +431,10 @@ function render_make_building()
 		building_h = quickfort_building.min_height
 	end
 	
-	local width = (building_w - 1) / 2
-	local height = (building_h - 1) / 2
+	local width = math.floor((building_w - 1) / 2)
+	local height = math.floor((building_h - 1) / 2)
 		
 	local build_pos = {x=top_left.x + mouse_pos.x-1-width, y=top_left.y + mouse_pos.y-1-height, z=top_left.z}
-	
-
-	--[[local extent_grid = {}
-	
-	for x = 1, building_w do
-		extent_grid[x] = {}
-	
-		for y = 1, building_h do
-			extent_grid[x][y] = true
-		end
-	end
-	
-	local extents_interior = nil
-	
-	if quickfort_building.has_extents then
-		extents = quickfort2.make_extents({width=building_w, height=building_h, extent_grid=extent_grid}, false)
-	end]]--
 	
 	local size = {x=building_w, y=building_h}
 	
@@ -460,14 +443,8 @@ function render_make_building()
 	if dfhack.buildings.checkFreeTiles(build_pos, size, nil, true, false, false) then
 		build_col = COLOR_GREEN
 	end
-	
-	--local room = {extents=extents}
-	
+
 	local build_info = {type=build_type, subtype=build_subtype, x=build_pos.x, y=build_pos.y, z=build_pos.z}
-	
-	--[[if quickfort_building.has_extents then
-		build_info.fields = {room=room}
-	end]]--
 	
 	for y=-height,height do
 		for x=-width,width do
