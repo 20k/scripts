@@ -477,7 +477,7 @@ function render_make_building()
 		end
 	end
 	
-	local is_clicked = (not imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(0)
+	local is_clicked = (not imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse()
 	
 	if not is_clicked then
 		return
