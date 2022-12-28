@@ -17,9 +17,9 @@ function items_in_thing(thing)
 		
 		local flags = item.flags
 		
-		if not(flags.in_inventory or flags.in_building or flags.container or flags.encased or flags.in_chest) then
-			goto continue
-		end
+		--if not(flags.in_inventory or flags.in_building or flags.container or flags.encased or flags.in_chest) then
+		--	goto continue
+		--end
 		
 		for j=0,(#item.general_refs-1) do
 			local ref = item.general_refs[j]
