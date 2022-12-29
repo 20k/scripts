@@ -776,10 +776,10 @@ function render_zones()
 	local current_state = render.get_menu_item()
 	
 	if current_state == nil then
-		current_state = 'Place Zone'
+		current_state = {type='Place Zone', id=0}
 	end
 	
-	current_state = render.render_table_impl(to_render, current_state)
+	current_state.type = render.render_table_impl(to_render, current_state.type)
 	
 	render.set_menu_item(current_state)
 	
@@ -797,7 +797,7 @@ function render_zones()
 
 	local should_trigger_mouse = render.check_trigger_mouse()
 	
-	if should_trigger_mouse and current_state == "Place Zone" then
+	if should_trigger_mouse and current_state.type == "Place Zone" then
 		local start_pos = render.mouse_click_start
 		local end_pos = render.mouse_click_end
 		
