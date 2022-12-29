@@ -145,8 +145,8 @@ end
 -- ideally should be part of network api
 function render_absolute_text(str, fg, bg, pos)
 	local draw_list = imgui.GetForegroundDrawList()
-	
-	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, "X", pos)
+
+	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, str, pos)
 end
 
 function check_start_mouse_drag()
