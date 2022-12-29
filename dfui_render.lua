@@ -106,7 +106,7 @@ function render_table_impl(menus, old_state)
 			local description = v.text
 			
 			local pushed = false
-			if state == description then
+			if state == description or v.highlight then
 				pushed = true
 				imgui.PushStyleColor(imgui.StyleIndex("Text"), {fg=COLOR_WHITE})
 			end

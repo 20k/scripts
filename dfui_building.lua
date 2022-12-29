@@ -780,10 +780,18 @@ function handle_specific_zone_render(building)
 	
 	for _,v in ipairs(render_order) do
 		local elem = {key=v, text=zone_db[v].label}
-
-		to_render[#to_render+1] = elem
 		
 		label_to_key[elem.text] = elem.key
+		
+		local flag = zone_db[v].zone_flags
+		
+		for key,_ in pairs(flag) do
+			if building.zone_flags[key] then
+				elem.highlight = true
+			end
+		end
+		
+		to_render[#to_render+1] = elem
 	end
 	
 	local picked = render.render_table_impl(to_render, "None")
@@ -795,14 +803,14 @@ function handle_specific_zone_render(building)
 	
 		local flag = zone_db[key].zone_flags
 		
-		for key,name in pairs(flag) do	
+		for key,_ in pairs(flag) do	
 			building.zone_flags[key] = not building.zone_flags[key]
 		end
 	end
 end
 
 function render_zones()
-	local to_render = {{key="p", text="Place Zone"}, {key="x", text="Remove Zones"}}
+	local to_render = {{key="z", text="Place Zone"}, {key="x", text="Remove Zones"}}
 	
 	local current_state = render.get_menu_item()
 	
