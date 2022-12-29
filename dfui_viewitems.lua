@@ -66,6 +66,10 @@ function item_name(item)
 	return utils.getItemDescription(item)
 end
 
+function building_name(building)
+	return utils.getBuildingName(building)
+end
+
 function b2n(b)
 	if b then
 		return 1
@@ -170,12 +174,41 @@ function handle_mouseover()
 			
 			render.set_menu_item(true)
 		end
+		
+		local str = building_name(building)
+		
+		imgui.BeginTooltip()
+		imgui.Text(str)
+		imgui.EndTooltip()
+	end
 	
-		local str = df.new("string")
-		building:getName(str)
-		
-		imgui.SetTooltip(str.value)
-		
-		str:delete()
+	local civzones = dfhack.buildings.findCivzonesAt(xyz2pos(lx, ly, top_left.z))
+
+	if civzones ~= nil then
+		for _,civzone in ipairs(civzones) do
+			if civzone.type ~= df.civzone_type.ActivityZone then
+				goto skip
+			end
+			
+			if imgui.IsMouseClicked(0) then
+				selected_building_pos.x = lx
+				selected_building_pos.y = ly
+				selected_building_pos.z = top_left.z
+				
+				if render.get_menu() ~= "Zones" then
+					render.push_menu("Zones")
+				end
+				
+				render.set_menu_item(true)
+			end
+			
+			local str = building_name(civzone)
+			
+			imgui.BeginTooltip()
+			imgui.Text(str)
+			imgui.EndTooltip()
+			
+			::skip::
+		end
 	end
 end
