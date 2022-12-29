@@ -34,7 +34,7 @@ local zone_template = {
     is_valid_extent_fn = is_valid_zone_extent
 }
 
-local zone_db = {
+zone_db = {
     a={label='Inactive', zone_flags={active=false}},
     w={label='Water Source', zone_flags={water_source=true}},
     f={label='Fishing', zone_flags={fishing=true}},
