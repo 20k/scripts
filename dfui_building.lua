@@ -839,9 +839,12 @@ function render_zones()
 			imgui.Text(name)
 			
 			handle_specific_zone_render(building)
+		else
+			--reset ui
+			current_state.type = 'Place Zone'
 		end
 	end
-	
+
 	current_state.type = render.render_table_impl(to_render, current_state.type)
 	
 	render.set_menu_item(current_state)
