@@ -724,12 +724,6 @@ function render_stockpiles()
 			
 			kill_ifempty_building(building)
 			
-			--if count == 1 and building.room.extents[idx] ~= df.building_extents_type.None then
-			--	dfhack.buildings.deconstruct(building)
-			--else
-			--	building.room.extents[idx] = df.building_extents_type.None
-			--end
-			
 			::continue::
 		end
 	end
