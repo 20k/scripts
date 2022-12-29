@@ -730,8 +730,6 @@ function render_stockpiles()
 end
 
 function trigger_zone(tl, size, dry_run)
-	--local quickfort_building = zone.zone_db[stockpile_type]
-
 	local build_type = df.building_type.Civzone
 	local build_subtype = df.civzone_type.ActivityZone
 
