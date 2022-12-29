@@ -5,6 +5,7 @@ quickfort = reqscript('internal/quickfort/build')
 quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
 place = reqscript('internal/quickfort/place')
+zone = reqscript('internal/quickfort/zone')
 require('dfhack.buildings')
 
 building_db = quickfort.get_building_db()
@@ -525,12 +526,10 @@ function render_make_building()
 	--render.pop_menu()
 end
 
-
 function trigger_stockpile(tl, size, dry_run)
 	local stockpile_type = render.get_menu_item()
 	local quickfort_building = place.stockpile_db[stockpile_type]
 
-	local label = "Stockpile"
 	local build_type = df.building_type.Stockpile
 
 	local use_extents = true
@@ -539,10 +538,10 @@ function trigger_stockpile(tl, size, dry_run)
 	local building_h = clamp(size.y, quickfort_building.min_height, quickfort_building.max_height)
 	
 	local build_pos = {x=tl.x, y=tl.y, z=tl.z}
-		
+
 	function setup(fields, ntiles)
 		local db_entry = place.stockpile_db[stockpile_type]
-	
+
 		if db_entry.want_barrels then
 			local max_barrels = db_entry.num_barrels or 99999
 			if max_barrels < 0 or max_barrels >= ntiles then
@@ -733,5 +732,87 @@ function render_stockpiles()
 			
 			::continue::
 		end
+	end
+end
+
+function trigger_zone(tl, size, dry_run)
+	--local quickfort_building = zone.zone_db[stockpile_type]
+
+	local build_type = df.building_type.Civzone
+	local build_subtype = df.civzone_type.ActivityZone
+
+	local use_extents = true
+
+	local building_w = clamp(size.x, 1, 31)
+	local building_h = clamp(size.y, 1, 31)
+	
+	local build_pos = {x=tl.x, y=tl.y, z=tl.z}
+
+	function setup(fields, ntiles)
+		fields.is_room = true
+	end
+	
+	local build_col = COLOR_RED
+	
+	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, true, setup) then
+		build_col = COLOR_GREEN
+	end
+	
+	for x=build_pos.x,(build_pos.x+building_w-1) do 
+		for y=build_pos.y,(build_pos.y+building_h-1) do 	
+			local pos = {x=x+1, y=y+1, z=tl.z}
+		
+			render.render_absolute_text("X", build_col, COLOR_BLACK, pos)
+		end
+	end
+
+	if not dry_run then
+		local bld, err = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
+		
+		if bld then
+			bld.zone_flags.active = true
+			bld.gather_flags.pick_trees = true
+			bld.gather_flags.pick_shrubs = true
+			bld.gather_flags.gather_fallen = true
+		end
+	end
+end
+
+function render_zones()
+	local to_render = {{key="p", text="Place Zone"}, {key="x", text="Remove Zones"}}
+	
+	local current_state = render.get_menu_item()
+	
+	if current_state == nil then
+		current_state = 'Place Zone'
+	end
+	
+	current_state = render.render_table_impl(to_render, current_state)
+	
+	render.set_menu_item(current_state)
+	
+	if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then
+		render.pop_menu()
+	end
+	
+	if next_description ~= "None" then
+		render.check_start_mouse_drag()
+	end
+	
+	local tiles = render.get_dragged_tiles()
+
+	render.check_end_mouse_drag()
+
+	local should_trigger_mouse = render.check_trigger_mouse()
+	
+	if should_trigger_mouse and current_state == "Place Zone" then
+		local start_pos = render.mouse_click_start
+		local end_pos = render.mouse_click_end
+		
+		start_pos, end_pos = min3(start_pos, end_pos)
+		
+		local size = {x=end_pos.x - start_pos.x + 1, y=end_pos.y-start_pos.y + 1}
+		
+		trigger_zone(start_pos, size, false)
 	end
 end

@@ -110,6 +110,10 @@ function MyScreen:render()
 		building.render_stockpiles()
 	end
 	
+	if state == "Zones" then
+		building.render_zones()
+	end
+	
 	if state == "main" then
 		viewitems.handle_mouseover()
 		render_menu()
