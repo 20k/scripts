@@ -111,6 +111,7 @@ function MyScreen:render()
 	end
 	
 	if state == "Zones" then
+		viewitems.handle_mouseover()
 		building.render_zones()
 	end
 	
