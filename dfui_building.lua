@@ -771,6 +771,34 @@ function trigger_zone(tl, size, dry_run)
 	end
 end
 
+function handle_specific_zone_render(building)
+	local zone_db = zone.zone_db
+	local render_order = {"a", "w", "f", "g", "d", "n", "p", "s", "c", "m", "h", "t"}
+	local label_to_key = {}
+	
+	local to_render = {}
+	
+	for _,v in ipairs(render_order) do
+		local elem = {key=v, text=zone_db[v].label}
+
+		to_render[#to_render+1] = elem
+		
+		label_to_key[elem.text] = elem.key
+	end
+	
+	local picked = render.render_table_impl(to_render, "None")
+	
+	if picked ~= "None" then
+		local key = label_to_key[picked]
+	
+		local flag = zone_db[key].zone_flags
+		
+		for _,name in ipairs(flag) do
+			building.zone_flags[name] = ~building.zone_flags[name]
+		end
+	end
+end
+
 function render_zones()
 	local to_render = {{key="p", text="Place Zone"}, {key="x", text="Remove Zones"}}
 	
@@ -785,11 +813,15 @@ function render_zones()
 		
 		local building = df.building.find(zone_id)
 		
-		local name = utils.getBuildingName(building)
-		
-		imgui.Text("Selected Zone")
-		
-		imgui.Text(name)
+		if building ~= nil then
+			local name = utils.getBuildingName(building)
+			
+			imgui.Text("Selected Zone")
+			
+			imgui.Text(name)
+			
+			handle_specific_zone_render(building)
+		end
 	end
 	
 	current_state.type = render.render_table_impl(to_render, current_state.type)
