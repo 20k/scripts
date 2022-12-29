@@ -6,6 +6,7 @@ quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
 place = reqscript('internal/quickfort/place')
 zone = reqscript('internal/quickfort/zone')
+utils = require('utils')
 require('dfhack.buildings')
 
 building_db = quickfort.get_building_db()
@@ -776,7 +777,19 @@ function render_zones()
 	local current_state = render.get_menu_item()
 	
 	if current_state == nil then
-		current_state = {type='Place Zone', id=0}
+		current_state = {type='Place Zone', id=nil}
+	end
+	
+	if current_state.type == "Selected" then
+		local zone_id = current_state.id
+		
+		local building = df.building.find(zone_id)
+		
+		local name = utils.getBuildingName(building)
+		
+		imgui.Text("Selected Zone")
+		
+		imgui.Text(name)
 	end
 	
 	current_state.type = render.render_table_impl(to_render, current_state.type)
