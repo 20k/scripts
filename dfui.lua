@@ -56,6 +56,33 @@ end
 last_camera = {x=0, y=0}
 has_last_camera = false
 
+function render_stock()
+	local zones = df.global.world.buildings.other[df.buildings_other_id.ACTIVITY_ZONE]
+
+	local camera = render.get_camera()
+
+	for i=0,(#zones-1) do
+		local zone = zones[i]
+	
+		if not zone.room.extents then
+			goto continue
+		end
+	
+		local tl = {x=zone.room.x, y=zone.room.y}
+		local size = {x=zone.room.width, y=zone.room.height}
+
+		local br = {x=tl.x + size.x - 1, y=tl.y + size.y - 1}
+		
+		for x=tl.x,br.x do
+			for y=tl.y,br.y do
+				render.render_absolute_text("=", COLOR_GREY, COLOR_BLACK, {x=x+1, y=y+1, z=camera.z})
+			end
+		end
+		
+		::continue::
+	end
+end
+
 function MyScreen:render()
 	self:renderParent()
 	
@@ -111,6 +138,7 @@ function MyScreen:render()
 	end
 	
 	if state == "Zones" then
+		render_stock()
 		viewitems.handle_mouseover()
 		building.render_zones()
 	end
