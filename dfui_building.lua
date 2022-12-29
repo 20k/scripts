@@ -773,6 +773,9 @@ end
 
 function handle_specific_zone_render(building)
 	local zone_db = zone.zone_db
+	
+	zone_db.a.label = "Active"
+	
 	local render_order = {"w", "f", "g", "d", "n", "p", "s", "c", "m", "h", "t", "a"}
 	local label_to_key = {}
 	
