@@ -794,9 +794,17 @@ function handle_specific_zone_render(building)
 		to_render[#to_render+1] = elem
 	end
 	
+	to_render[#to_render+1] = {key="R", text="Delete Zone"}
+	
 	local picked = render.render_table_impl(to_render, "None")
 	
-	if picked ~= "None" then
+	if picked == "Delete Zone" then
+		if dfhack.buildings.markedForRemoval(building) then
+			return
+		end
+
+		dfhack.buildings.deconstruct(building)
+	elseif picked ~= "None" then
 		--imgui.Text("HI there")
 	
 		local key = label_to_key[picked]
