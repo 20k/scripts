@@ -773,7 +773,7 @@ end
 
 function handle_specific_zone_render(building)
 	local zone_db = zone.zone_db
-	local render_order = {"a", "w", "f", "g", "d", "n", "p", "s", "c", "m", "h", "t"}
+	local render_order = {"w", "f", "g", "d", "n", "p", "s", "c", "m", "h", "t", "a"}
 	local label_to_key = {}
 	
 	local to_render = {}
@@ -789,12 +789,14 @@ function handle_specific_zone_render(building)
 	local picked = render.render_table_impl(to_render, "None")
 	
 	if picked ~= "None" then
+		--imgui.Text("HI there")
+	
 		local key = label_to_key[picked]
 	
 		local flag = zone_db[key].zone_flags
 		
-		for _,name in ipairs(flag) do
-			building.zone_flags[name] = ~building.zone_flags[name]
+		for key,name in pairs(flag) do	
+			building.zone_flags[key] = not building.zone_flags[key]
 		end
 	end
 end
