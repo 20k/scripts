@@ -199,7 +199,9 @@ function handle_mouseover()
 					render.push_menu("Zones")
 				end
 				
-				render.set_menu_item("Selected")
+				local data = {type="Selected", id=civzone.id}
+				
+				render.set_menu_item(data)
 			end
 			
 			local str = building_name(civzone)
