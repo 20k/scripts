@@ -273,15 +273,19 @@ function render_titles()
 	local override = imgui.Get(override_noble_assignments)
 	
 	if menu_item == nil then 
-		for k,v in pairs(entity.positions.assignments) do		
+		for k,v in pairs(entity.positions.assignments) do
 			local current_assignment_id = v.id
 			
 			local position = position_id_to_position(assignment_to_position(current_assignment_id))
 
-			local is_valid_removable = not is_elected_position(position) or override
+			local is_valid_removable = (anyone_in_position(position.id) and not is_elected_position(position)) or override
 			local is_valid_appointable = can_appoint(position) or override
 			
 			local units = df.global.world.units.active
+			
+			if (not is_valid_removable) and (not is_valid_appointable) then
+				goto invalid
+			end
 			
 			imgui.Text(position.code)
 			
@@ -317,7 +321,7 @@ function render_titles()
 					end
 				end
 				::continue::
-			end		
+			end
 
 			if (not any_holders and is_valid_appointable) or override then
 				imgui.SameLine()
@@ -326,6 +330,8 @@ function render_titles()
 					render.set_menu_item(current_assignment_id)
 				end
 			end
+			
+			::invalid::
 		end
 	else
 		local units = df.global.world.units.active
