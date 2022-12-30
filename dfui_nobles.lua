@@ -178,6 +178,12 @@ function valid_unit(unit)
 	return true
 end
 
+function get_name(unit)
+	local name_type = dfhack.units.getVisibleName(unit)
+	
+	return dfhack.df2utf(dfhack.TranslateName(name_type, false, false))
+end
+
 function render_titles()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -212,9 +218,7 @@ function render_titles()
 					if aid == current_assignment_id then
 						any_holders = true
 					
-						local name_type = dfhack.units.getVisibleName(unit)
-						
-						local display = dfhack.df2utf(dfhack.TranslateName(name_type, false, false))
+						local display = get_name(unit)
 						
 						imgui.SameLine()
 						
@@ -240,7 +244,28 @@ function render_titles()
 			end
 		end
 	else
+		local units = df.global.world.units.active
 		
+		for i=0,#units-1 do
+			local unit = units[i]
+			
+			if not valid_unit(unit) then
+				goto continue
+			end
+			
+			local name = get_name(unit)
+			
+			if imgui.Button(name .. "##" .. tostring(unit.id)) then
+				add_or_transfer_fort_title_to(unit, menu_item)
+				render.set_menu_item(nil)
+				
+				goto done
+			end
+			
+			::continue::
+		end
+		
+		::done::
 		
 		if imgui.Button("Back") then	
 			render.set_menu_item(nil)
