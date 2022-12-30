@@ -273,75 +273,89 @@ function render_titles()
 	local override = imgui.Get(override_noble_assignments)
 	
 	if menu_item == nil then 
-		for k,v in pairs(entity.positions.assignments) do
-			local current_assignment_id = v.id
-			
-			local position = position_id_to_position(assignment_to_position(current_assignment_id))
-
-			local is_valid_removable = (anyone_in_position(position.id) and not is_elected_position(position)) or override
-			local is_valid_appointable = can_appoint(position) or override
-			
-			local units = df.global.world.units.active
-			
-			if (not is_valid_removable) and (not is_valid_appointable) then
-				goto invalid
-			end
-			
-			imgui.Text(position.name[0])
-			
-			local any_holders = false
-			
-			for i=0,#units-1 do
-				local unit = units[i]
+		if imgui.BeginTable("NobleTable", 3, (1<<13)) then
+			imgui.TableNextRow();
+			imgui.TableNextColumn();
+		
+			for k,v in pairs(entity.positions.assignments) do
+				local current_assignment_id = v.id
 				
-				if not valid_unit(unit) then
-					goto continue
+				local position = position_id_to_position(assignment_to_position(current_assignment_id))
+
+				local is_valid_removable = (anyone_in_position(position.id) and not is_elected_position(position)) or override
+				local is_valid_appointable = can_appoint(position) or override
+				
+				local units = df.global.world.units.active
+				
+				if (not is_valid_removable) and (not is_valid_appointable) then
+					goto invalid
 				end
 				
-				local titles = get_unit_title_assignment_ids(unit)
+				imgui.Text(position.name[0])
 				
-				for _,aid in ipairs(titles) do
-					if aid == current_assignment_id then
-						any_holders = true
+				imgui.TableNextColumn()
+				
+				local any_holders = false
+				
+				for i=0,#units-1 do
+					local unit = units[i]
 					
-						if is_valid_removable then
-							imgui.SameLine()
-							
-							if imgui.ButtonColored({fg=COLOR_RED}, "[R]##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
-								remove_fort_title(aid)
-								goto continue
-							end
-							
-							if imgui.IsItemHovered() then
-								imgui.SetTooltip("Remove Position")
-							end
-						end
-						
-						local display = get_name(unit)
-						imgui.SameLine()
-						imgui.Text(display)
-						
+					if not valid_unit(unit) then
+						goto continue
 					end
+					
+					local titles = get_unit_title_assignment_ids(unit)
+					
+					for _,aid in ipairs(titles) do
+						if aid == current_assignment_id then
+							any_holders = true
+						
+							if is_valid_removable then				
+								if imgui.ButtonColored({fg=COLOR_RED}, "[R]##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
+									remove_fort_title(aid)
+									goto continue
+								end
+								
+								if imgui.IsItemHovered() then
+									imgui.SetTooltip("Remove Position")
+								end
+							end
+							
+							imgui.TableNextColumn()
+							
+							local display = get_name(unit)
+							--imgui.SameLine()
+							imgui.Text(display)
+							
+						end
+					end
+					::continue::
 				end
-				::continue::
-			end
 
-			if (not any_holders and is_valid_appointable) or override then
-				imgui.SameLine()
-			
-				if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
-					render.set_menu_item(current_assignment_id)
+				if (not any_holders and is_valid_appointable) or override then
+					--imgui.SameLine()
+				
+					if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
+						render.set_menu_item(current_assignment_id)
+					end
+					
+					if imgui.IsItemHovered() then
+						imgui.SetTooltip("Appoint Position")
+					end
+					
+					imgui.TableNextColumn()
+					--imgui.TableNextColumn()
 				end
 				
-				if imgui.IsItemHovered() then
-					imgui.SetTooltip("Appoint Position")
-				end
+				imgui.TableNextRow();
+				imgui.TableNextColumn();
+				
+				::invalid::
 			end
 			
-			::invalid::
+			imgui.EndTable()
 		end
 		
-			
 		if imgui.Button("Back") then	
 			render.pop_menu()
 		end
