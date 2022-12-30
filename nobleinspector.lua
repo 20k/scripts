@@ -70,6 +70,7 @@ function entity_id_with_title(title)
 	local units = df.global.world.units.active
 	
 	for i=0,#units-1 do
+		--need to filter by civ ids?
 		local unit = units[i]
 
 		local histfig = df.historical_figure.find(unit.hist_figure_id)
@@ -131,38 +132,27 @@ function take_title(unit, titlename)
 	local entity_id = entity_id_with_title(titlename)
 	
 	if entity_id == nil then
-		--imgui.Text("Bad Eid")
 		return
 	end
 	
 	local my_entity = df.historical_entity.find(entity_id)
 	local title_id
-	
-	--imgui.Text("hello")
-	
+		
 	for k,v in pairs(my_entity.positions.own) do
-		--imgui.Text(v.code)
-	
 		if v.code == titlename then
 			title_id = v.id
 			break
 		end
 	end
-	
-	--imgui.Text("hi")
-	
+		
 	if not title_id then return end
-
-	--imgui.Text("Then")
 
 	local old_id
 	for pos_id,v in pairs(my_entity.positions.assignments) do
 		if v.position_id==title_id then
 			old_id=v.histfig
 			v.histfig=newfig.id
-			
-			--imgui.Text("Title Id")
-			
+						
 			local oldfig=df.historical_figure.find(old_id)
 
 			for k,v in pairs(oldfig.entity_links) do
@@ -175,6 +165,14 @@ function take_title(unit, titlename)
 				link_strength=100,assignment_id=pos_id,start_year=df.global.cur_year})
 			break
 		end
+	end
+end
+
+function dump_titles(eid)
+	local my_entity=df.historical_entity.find(eid)
+
+	for k,v in pairs(my_entity.positions.own) do
+		imgui.Text(v.code)
 	end
 end
 
@@ -212,6 +210,18 @@ function Inspector:render()
 		
 		::continue::
 	end
+	
+	imgui.Text("Civ Titles:")
+	
+	dump_titles(df.global.ui.civ_id)
+	
+	imgui.Text("Site Titles")
+	
+	dump_titles(df.global.ui.site_id)
+	
+	imgui.Text("Group Titles")
+	
+	dump_titles(df.global.ui.group_id)
 	
 	imgui.End()
 	
