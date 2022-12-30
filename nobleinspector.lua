@@ -71,114 +71,6 @@ function noble_position(unit)
 	end
 end
 
---[[function noble_position2(hist_figure_id)
-	local histfig = df.historical_figure.find(hist_figure_id)
-		
-	if histfig == nil then
-		imgui.Text("No noble")
-		return
-	end
-	
-	local entity_links = histfig.entity_links
-	
-	for i=0,#entity_links-1 do
-		local link = entity_links[i]
-		
-		if not df.is_instance(df.histfig_entity_link_positionst, link) then
-			imgui.Text("Not Instance: " .. tostring(link))
-			goto notnoble
-		end
-		
-		local epos = link
-		
-		local entity = df.historical_entity.find(epos.entity_id)
-		
-		if entity == nil then
-			imgui.Text("no noble 2")
-			goto notnoble
-		end
-
-		local assignment = fnd(entity.positions.assignments, "id", epos.assignment_id)
-		
-		if assignment == nil then
-			imgui.Text("no noble 3")
-			goto notnoble
-		end
-		
-		local position = fnd(entity.positions.own, "id", assignment.position_id)
-		
-		if position == nil then 
-			imgui.Text("no noble 4")
-			goto notnoble
-		end
-		
-		imgui.Text("Is noble")
-		imgui.Text(position.code)
-				
-		::notnoble::
-	end
-end]]--
-
---[[function entity_id_with_title(title)
-	local units = df.global.world.units.active
-	
-	for i=0,#units-1 do
-		--need to filter by civ ids?
-		local unit = units[i]
-
-		local histfig = df.historical_figure.find(unit.hist_figure_id)
-
-		if histfig == nil then
-			goto nextunit
-		end
-		
-		local entity_links = histfig.entity_links
-		
-		for i=0,#entity_links-1 do
-			local link = entity_links[i]
-			
-			if not df.is_instance(df.histfig_entity_link_positionst, link) then
-				goto notnoble
-			end
-			
-			local epos = link
-			
-			local entity = df.historical_entity.find(epos.entity_id)
-			
-			if entity == nil then
-				--imgui.Text("no noble 2")
-				goto notnoble
-			end
-					
-			local assignment = fnd(entity.positions.assignments, "id", epos.assignment_id)
-			
-			if assignment == nil then
-				--imgui.Text("no noble 3")
-				goto notnoble
-			end
-			
-			local position = fnd(entity.positions.own, "id", assignment.position_id)
-			
-			if position == nil then 
-				--imgui.Text("no noble 4")
-				goto notnoble
-			end
-			
-			--imgui.Text("TIT " .. position.code)
-			
-			if position.code == title then
-				return epos.entity_id, position.id, assignment.id
-			end
-			
-			::notnoble::
-		end
-		
-		::nextunit::
-	end
-	
-	return nil
-end]]--
-
 function get_unit_title_assignment_ids(unit)
 	local titles = {}
 
@@ -286,7 +178,6 @@ function remove_fort_title(assignment_id)
 				current_hist_fig.entity_links:erase(k)
 				
 				break
-				--return assignment_id
 			end
 		end
 	end
@@ -294,6 +185,28 @@ function remove_fort_title(assignment_id)
 	assignment.histfig = -1
 	
 	return nil
+end
+
+--doesn't work for eg monarch
+function add_or_transfer_fort_title_to(unit, assignment_id)	
+	local assignment = assignment_id_to_assignment(assignment_id)
+	
+	if assignment == nil then
+		return
+	end
+	
+	local newfig=dfhack.units.getNemesis(unit).figure
+	
+	if newfig == nil then
+		return
+	end
+	
+	remove_fort_title(assignment_id)
+	
+	newfig.entity_links:insert("#",{new=df.histfig_entity_link_positionst,entity_id=df.global.ui.group_id,
+				link_strength=100,assignment_id=assignment_id,start_year=df.global.cur_year})
+				
+	assignment.histfig=newfig.id
 end
 
 --[[function remove_title_from_anyone(titlename)
@@ -381,6 +294,15 @@ end
 	--end
 end]]--
 
+local function contains(table, val)
+   for i=1,#table do
+      if table[i] == val then 
+         return true
+      end
+   end
+   return false
+end
+
 function dump_titles(eid)
 	local my_entity=df.historical_entity.find(eid)
 	
@@ -398,6 +320,32 @@ function dump_titles(eid)
 		imgui.Text(position.code .. " position_id " .. position.id .. " ass_id " .. v.id .. " hist_fig " .. v.histfig)
 		
 		::borked::
+	end
+end
+
+function basic_title_selector(unit)
+	local codes = {"CHIEF_MEDICAL_DWARF", "EXPEDITION_LEADER"}
+
+	local assignments = {}
+	
+	local my_entity=df.historical_entity.find(df.global.ui.group_id)
+	
+	if my_entity == nil then
+		return
+	end
+	
+	for k,v in pairs(my_entity.positions.assignments) do 
+		local position = fnd(my_entity.positions.own, "id", v.position_id)
+		
+		if(contains(codes, position.code)) then
+			assignments[#assignments+1] = v.id
+		end
+	end
+	
+	for k,v in ipairs(assignments) do
+		if imgui.Button("Make " .. codes[k] .. "##" .. tostring(unit.id)) then
+			add_or_transfer_fort_title_to(unit, v)
+		end
 	end
 end
 
@@ -442,6 +390,8 @@ function Inspector:render()
 				remove_fort_title(v)
 			end
 		end
+		
+		basic_title_selector(unit)
 		
 		if imgui.Button("Make Expedition Leader##" .. tostring(unit.id)) then
 			take_title(unit, "EXPEDITION_LEADER")
