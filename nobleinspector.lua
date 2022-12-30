@@ -66,6 +66,54 @@ function noble_position(unit)
 	end
 end
 
+--[[function noble_position2(hist_figure_id)
+	local histfig = df.historical_figure.find(hist_figure_id)
+		
+	if histfig == nil then
+		imgui.Text("No noble")
+		return
+	end
+	
+	local entity_links = histfig.entity_links
+	
+	for i=0,#entity_links-1 do
+		local link = entity_links[i]
+		
+		if not df.is_instance(df.histfig_entity_link_positionst, link) then
+			imgui.Text("Not Instance: " .. tostring(link))
+			goto notnoble
+		end
+		
+		local epos = link
+		
+		local entity = df.historical_entity.find(epos.entity_id)
+		
+		if entity == nil then
+			imgui.Text("no noble 2")
+			goto notnoble
+		end
+
+		local assignment = fnd(entity.positions.assignments, "id", epos.assignment_id)
+		
+		if assignment == nil then
+			imgui.Text("no noble 3")
+			goto notnoble
+		end
+		
+		local position = fnd(entity.positions.own, "id", assignment.position_id)
+		
+		if position == nil then 
+			imgui.Text("no noble 4")
+			goto notnoble
+		end
+		
+		imgui.Text("Is noble")
+		imgui.Text(position.code)
+				
+		::notnoble::
+	end
+end]]--
+
 function entity_id_with_title(title)
 	local units = df.global.world.units.active
 	
@@ -137,7 +185,7 @@ function take_title(unit, titlename)
 	
 	local my_entity = df.historical_entity.find(entity_id)
 	local title_id
-		
+
 	for k,v in pairs(my_entity.positions.own) do
 		if v.code == titlename then
 			title_id = v.id
@@ -241,8 +289,10 @@ function Inspector:render()
 	--dump_titles(df.global.ui.site_id)
 	
 	imgui.Text("Group Titles")
-	
 	dump_titles(df.global.ui.group_id)
+	
+	--imgui.Text("Test?")
+	--noble_position2(df.global.ui.civ_id)
 	
 	--doesn't exist
 	--imgui.Text("Assigned group titles")
