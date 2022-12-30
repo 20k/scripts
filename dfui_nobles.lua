@@ -181,7 +181,7 @@ end
 function get_name(unit)
 	local name_type = dfhack.units.getVisibleName(unit)
 	
-	return dfhack.df2utf(dfhack.TranslateName(name_type, false, false))
+	return dfhack.df2utf(dfhack.TranslateName(name_type, false, false)) .. ", " .. dfhack.units.getProfessionName(unit, false, false)
 end
 
 local override_noble_assignments = imgui.Ref(false)
