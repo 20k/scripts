@@ -187,13 +187,26 @@ end
 local override_noble_assignments = imgui.Ref(false)
 
 function is_elected_position(position)
-	--I *think* this is correct
-	return #position.appointed_by == 0
+	for k,v in pairs(position.flags) do
+		if tostring(k) == "ELECTED" and v then
+			return true
+		end
+	end
+	
+	return false
 end
 
 function can_appoint(position)
+	if is_elected_position(position) then
+		return false
+	end
+
+	for k,v in pairs(position.appointed_by) do
+		--local 
+		
+	end
 	
-	return true
+	return false
 end
 
 function render_titles()
