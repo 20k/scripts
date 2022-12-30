@@ -61,6 +61,8 @@ function noble_position(unit)
 		
 		imgui.Text("Is noble")
 		imgui.Text(position.code .. " pid " .. tostring(assignment.position_id) .. " aid " .. epos.assignment_id)
+		
+		imgui.Text("Dbg pid " .. tostring(get_title_id(position.code, entity.id)) .. " aid " .. tostring(get_assignment_id(position.code, get_title_id(position.code, entity.id), entity.id)))
 				
 		::notnoble::
 	end
@@ -179,8 +181,9 @@ end
 --df.global.ui.civ_id will return civ titles like MONARCH
 --don't use this on dorfs, because their 'own' data seems to be the same as the group id data
 function get_title_id(titlename, lookup_entity_id)	
-	local my_entity = df.historical_entity.find(lookup_entity)
+	local my_entity = df.historical_entity.find(lookup_entity_id)
 
+	--position ids aren't unique , assignments are. This isn't that useful
 	for k,v in pairs(my_entity.positions.own) do
 		if v.code == titlename then
 			return v.id
@@ -190,13 +193,28 @@ function get_title_id(titlename, lookup_entity_id)
 	return nil
 end
 
-function remove_title_from(titlename, lookup_entity_id)
-	local title_id = get_title_id(titlename, lookup_entity_id)
+function get_assignment_id(titlename, position_id, lookup_entity_id)
+	local my_entity = df.historical_entity.find(lookup_entity_id)
+
+	--position ids aren't unique , assignments are. This isn't that useful
+	for k,v in pairs(my_entity.positions.assignments) do
+		if v.position_id == position_id then
+			return v.id
+		end
+	end
 	
-	if title_id == nil then
+	return nil
+end
+
+function remove_title_from(titlename, lookup_entity_id)
+	local my_entity = df.historical_entity.find(lookup_entity_id)
+	
+	if my_entity == nil then
 		return
 	end
 	
+	local position_id = get_title_id(titlename, lookup_entity_id)
+	local assignment_id = get_assignment_id(titlename, lookup_entity_id)
 	
 end
 
