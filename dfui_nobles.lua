@@ -287,7 +287,7 @@ function render_titles()
 				goto invalid
 			end
 			
-			imgui.Text(position.code)
+			imgui.Text(position.name[0])
 			
 			local any_holders = false
 			
@@ -304,20 +304,23 @@ function render_titles()
 					if aid == current_assignment_id then
 						any_holders = true
 					
-						local display = get_name(unit)
-						
-						imgui.SameLine()
-						
-						imgui.Text(display)
-						
 						if is_valid_removable then
 							imgui.SameLine()
 							
-							if imgui.Button("Remove?##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
+							if imgui.ButtonColored({fg=COLOR_RED}, "[R]##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
 								remove_fort_title(aid)
 								goto continue
 							end
+							
+							if imgui.IsItemHovered() then
+								imgui.SetTooltip("Remove Position")
+							end
 						end
+						
+						local display = get_name(unit)
+						imgui.SameLine()
+						imgui.Text(display)
+						
 					end
 				end
 				::continue::
@@ -326,12 +329,21 @@ function render_titles()
 			if (not any_holders and is_valid_appointable) or override then
 				imgui.SameLine()
 			
-				if imgui.Button("Appoint?##" .. tostring(current_assignment_id)) then
+				if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
 					render.set_menu_item(current_assignment_id)
+				end
+				
+				if imgui.IsItemHovered() then
+					imgui.SetTooltip("Appoint Position")
 				end
 			end
 			
 			::invalid::
+		end
+		
+			
+		if imgui.Button("Back") then	
+			render.pop_menu()
 		end
 	else
 		local units = df.global.world.units.active
