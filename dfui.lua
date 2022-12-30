@@ -4,6 +4,7 @@ local announcements = reqscript('dfui_announcements')
 local building = reqscript('dfui_building')
 local viewitems = reqscript('dfui_viewitems')
 local render = reqscript('dfui_render')
+local nobles = reqscript('dfui_nobles')
 
 MyScreen = defclass(MyScreen, gui.Screen)
 
@@ -32,6 +33,7 @@ function render_menu()
 				   {key="118", text="View Units"},
 				   {key="072", text="Hot Keys"},
 				   {key="108", text="Locations and Occupations"},
+				   {key="n",   text="Nobles and Administrators"},
 				   {key="122", text="Status"},
 				   {key="107", text="Look"},
 				   {key="009", text="Move this menu/map"},
@@ -141,6 +143,10 @@ function MyScreen:render()
 		render_stock()
 		viewitems.handle_mouseover()
 		building.render_zones()
+	end
+	
+	if state == "Nobles and Administrators" then
+		nobles.render_titles()
 	end
 	
 	if state == "main" then
