@@ -272,8 +272,14 @@ function render_titles()
 	
 	local override = imgui.Get(override_noble_assignments)
 	
+	local count = 3
+	
+	if override then
+		count = 4
+	end
+	
 	if menu_item == nil then 
-		if imgui.BeginTable("NobleTable", 3, (1<<13)) then
+		if imgui.BeginTable("NobleTable", count, (1<<13)) then
 			imgui.TableNextRow();
 			imgui.TableNextColumn();
 		
@@ -295,7 +301,23 @@ function render_titles()
 				
 				imgui.TableNextColumn()
 				
-				local any_holders = false
+				local extra_info = nil
+								
+				local table_count = 0
+				
+				if (not anyone_in_position(position.id) and is_valid_appointable) or override then		
+					table_count = table_count+1
+				
+					if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
+						render.set_menu_item(current_assignment_id)
+					end
+					
+					if imgui.IsItemHovered() then
+						imgui.SetTooltip("Appoint Position")
+					end
+					
+					imgui.TableNextColumn()
+				end
 				
 				for i=0,#units-1 do
 					local unit = units[i]
@@ -308,9 +330,9 @@ function render_titles()
 					
 					for _,aid in ipairs(titles) do
 						if aid == current_assignment_id then
-							any_holders = true
-						
-							if is_valid_removable then				
+							if is_valid_removable then
+								table_count = table_count+1
+							
 								if imgui.ButtonColored({fg=COLOR_RED}, "[R]##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
 									remove_fort_title(aid)
 									goto continue
@@ -323,28 +345,18 @@ function render_titles()
 							
 							imgui.TableNextColumn()
 							
-							local display = get_name(unit)
-							--imgui.SameLine()
-							imgui.Text(display)
-							
+							extra_info = get_name(unit)
 						end
 					end
 					::continue::
 				end
 
-				if (not any_holders and is_valid_appointable) or override then
-					--imgui.SameLine()
+				if extra_info ~= nil then
+					if table_count == 1 and override then
+						imgui.TableNextColumn()
+					end
 				
-					if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
-						render.set_menu_item(current_assignment_id)
-					end
-					
-					if imgui.IsItemHovered() then
-						imgui.SetTooltip("Appoint Position")
-					end
-					
-					imgui.TableNextColumn()
-					--imgui.TableNextColumn()
+					imgui.Text(extra_info)
 				end
 				
 				imgui.TableNextRow();
