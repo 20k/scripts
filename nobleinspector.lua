@@ -325,7 +325,9 @@ function dump_titles(eid)
 			end
 		end
 		
-		imgui.Text("Pop required " .. position.requires_population)
+		if position.requires_population > 0 then
+			imgui.Text("Pop required " .. position.requires_population)
+		end
 		
 		::borked::
 	end
