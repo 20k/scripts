@@ -38,7 +38,7 @@ function noble_position(unit)
 		
 		local epos = link
 		
-		-local entity = df.historical_entity.find(epos.entity_id)
+		local entity = df.historical_entity.find(epos.entity_id)
 		
 		if entity == nil then
 			imgui.Text("no noble 2")
