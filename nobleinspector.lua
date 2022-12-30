@@ -60,7 +60,7 @@ function noble_position(unit)
 		end
 		
 		imgui.Text("Is noble")
-		imgui.Text(position.code)
+		imgui.Text(position.code .. " pid " .. tostring(assignment.position_id) .. " aid " .. epos.assignment_id)
 				
 		::notnoble::
 	end
@@ -174,6 +174,32 @@ function entity_id_with_title(title)
 	return nil
 end
 
+--df.global.ui.group_id for lookup entity will return
+--useful noble titles
+--df.global.ui.civ_id will return civ titles like MONARCH
+--don't use this on dorfs, because their 'own' data seems to be the same as the group id data
+function get_title_id(titlename, lookup_entity_id)	
+	local my_entity = df.historical_entity.find(lookup_entity)
+
+	for k,v in pairs(my_entity.positions.own) do
+		if v.code == titlename then
+			return v.id
+		end
+	end
+	
+	return nil
+end
+
+function remove_title_from(titlename, lookup_entity_id)
+	local title_id = get_title_id(titlename, lookup_entity_id)
+	
+	if title_id == nil then
+		return
+	end
+	
+	
+end
+
 function take_title(unit, titlename)
 	local newfig=dfhack.units.getNemesis(unit).figure
 	
@@ -216,16 +242,19 @@ function take_title(unit, titlename)
 	end
 end
 
-function dump_titles(eid)
+--[[function dump_titles(eid)
 	local my_entity=df.historical_entity.find(eid)
 
-	for k,v in pairs(my_entity.positions.own) do
-		imgui.Text(v.code)
+	for k, v in pairs(my_entity.positions.assignments) do
+		imgui.Text(" Ass_id " .. v.id)
 	end
-end
 
---the assignments array appears to be backing storage, not useful
---[[function dump_assigned_titles(eid)
+	--for k,v in pairs(my_entity.positions.own) do
+	--	imgui.Text(v.code .. " position_id " .. v.id)
+	--end
+end]]--
+
+function dump_titles(eid)
 	local my_entity=df.historical_entity.find(eid)
 	
 	if my_entity == nil then
@@ -239,11 +268,11 @@ end
 			goto borked
 		end
 		
-		imgui.Text("Assigned: "..position.code)
+		imgui.Text(position.code .. " position_id " .. position.id .. " ass_id " .. v.id)
 		
 		::borked::
 	end
-end--]]
+end
 
 function Inspector:render()
 	self:renderParent()
