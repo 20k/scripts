@@ -38,13 +38,13 @@ function noble_position(unit)
 		
 		local epos = link
 		
-		local entity = df.historical_entity.find(epos.entity_id)
+		-local entity = df.historical_entity.find(epos.entity_id)
 		
 		if entity == nil then
 			imgui.Text("no noble 2")
 			goto notnoble
 		end
-				
+
 		local assignment = fnd(entity.positions.assignments, "id", epos.assignment_id)
 		
 		if assignment == nil then
@@ -61,7 +61,7 @@ function noble_position(unit)
 		
 		imgui.Text("Is noble")
 		imgui.Text(position.code)
-		
+				
 		::notnoble::
 	end
 end
@@ -176,6 +176,27 @@ function dump_titles(eid)
 	end
 end
 
+--the assignments array appears to be backing storage, not useful
+--[[function dump_assigned_titles(eid)
+	local my_entity=df.historical_entity.find(eid)
+	
+	if my_entity == nil then
+		return
+	end
+	
+	for k,v in pairs(my_entity.positions.assignments) do 
+		local position = fnd(my_entity.positions.own, "id", v.position_id)
+		
+		if position == nil then 
+			goto borked
+		end
+		
+		imgui.Text("Assigned: "..position.code)
+		
+		::borked::
+	end
+end--]]
+
 function Inspector:render()
 	self:renderParent()
 	
@@ -211,17 +232,21 @@ function Inspector:render()
 		::continue::
 	end
 	
-	imgui.Text("Civ Titles:")
+	--imgui.Text("Civ Titles:")
 	
-	dump_titles(df.global.ui.civ_id)
+	--dump_titles(df.global.ui.civ_id)
 	
-	imgui.Text("Site Titles")
+	--imgui.Text("Site Titles")
 	
-	dump_titles(df.global.ui.site_id)
+	--dump_titles(df.global.ui.site_id)
 	
 	imgui.Text("Group Titles")
 	
 	dump_titles(df.global.ui.group_id)
+	
+	--doesn't exist
+	--imgui.Text("Assigned group titles")
+	--dump_assigned_titles(df.global.ui.group_id)
 	
 	imgui.End()
 	
