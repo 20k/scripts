@@ -116,7 +116,7 @@ end
 	end
 end]]--
 
-function entity_id_with_title(title)
+--[[function entity_id_with_title(title)
 	local units = df.global.world.units.active
 	
 	for i=0,#units-1 do
@@ -174,9 +174,117 @@ function entity_id_with_title(title)
 	end
 	
 	return nil
+end]]--
+
+function get_unit_title_assignment_ids(unit)
+	local titles = {}
+
+	local histfig = df.historical_figure.find(unit.hist_figure_id)
+
+	if histfig == nil then
+		return titles
+	end
+	
+	local entity_links = histfig.entity_links
+	
+	for i=0,#entity_links-1 do
+		local link = entity_links[i]
+		
+		if not df.is_instance(df.histfig_entity_link_positionst, link) then
+			goto notnoble
+		end
+		
+		local epos = link
+		
+		local entity = df.historical_entity.find(epos.entity_id)
+		
+		if entity == nil then
+			--imgui.Text("no noble 2")
+			goto notnoble
+		end
+				
+		local assignment = fnd(entity.positions.assignments, "id", epos.assignment_id)
+		
+		if assignment == nil then
+			--imgui.Text("no noble 3")
+			goto notnoble
+		end
+		
+		local position = fnd(entity.positions.own, "id", assignment.position_id)
+		
+		if position == nil then 
+			--imgui.Text("no noble 4")
+			goto notnoble
+		end
+		
+		titles[#titles+1] = assignment.id
+		
+		::notnoble::
+	end
+		
+	return titles
 end
 
-function remove_title_from_anyone(titlename)
+function assignment_to_position(assignment_id)
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	if entity == nil then
+		return nil
+	end
+	
+	local assignment = fnd(entity.positions.assignments, "id", assignment_id)
+	
+	if assignment == nil then
+		return nil
+	end
+	
+	return assignment.position_id
+end
+
+function assignment_id_to_assignment(assignment_id)
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	if entity == nil then
+		return nil
+	end
+	
+	return fnd(entity.positions.assignments, "id", assignment_id)
+end
+
+function position_id_to_position(id)
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	if entity == nil then
+		return nil
+	end
+	
+	return fnd(entity.positions.own, "id", id)
+end
+
+--won't remove eg monarch
+function remove_fort_title(assignment_id)
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	if entity == nil then
+		return nil
+	end
+	
+	local assignment = fnd(entity.positions.assignments, "id", assignment_id)
+	
+	local current_hist_fig = df.historical_figure.find(assignment.histfig)
+	
+	for k,v in pairs(current_hist_fig.entity_links) do
+		if df.histfig_entity_link_positionst:is_instance(v) and v.assignment_id==assignment_id and v.entity_id==entity_id then --hint:df.histfig_entity_link_positionst
+			current_hist_fig.entity_links:erase(k)
+			
+			return assignment_id
+		end
+	end
+	
+	return nil
+end
+
+--[[function remove_title_from_anyone(titlename)
 	local entity_id, position_id, assignment_id = entity_id_with_title(titlename)
 	
 	if entity_id == nil then
@@ -199,6 +307,12 @@ function remove_title_from_anyone(titlename)
 			break
 		end
 	end
+	
+	return position_id, assignment_id
+end
+
+function add_title(position_id, assignment_id)
+
 end
 
 function take_title(unit, titlename)
@@ -301,7 +415,17 @@ function Inspector:render()
 		
 		imgui.Text("Race: " .. race_name .. " : Name:" .. first_name) 
 		
-		noble_position(unit)
+		--noble_position(unit)
+		
+		local unit_assignment_ids = get_unit_title_assignment_ids(unit)
+		
+		for k,v in ipairs(unit_assignment_ids) do
+			local position_id = assignment_id_to_assignment(v).position_id
+			
+			local position = position_id_to_position(position_id)
+			
+			imgui.Text("Assignment: " .. position.code)
+		end 
 		
 		if imgui.Button("Make Expedition Leader##" .. tostring(unit.id)) then
 			take_title(unit, "EXPEDITION_LEADER")
