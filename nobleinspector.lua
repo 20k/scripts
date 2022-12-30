@@ -164,7 +164,7 @@ function entity_id_with_title(title)
 			--imgui.Text("TIT " .. position.code)
 			
 			if position.code == title then
-				return epos.entity_id
+				return epos.entity_id, position.id, assignment.id
 			end
 			
 			::notnoble::
@@ -176,46 +176,29 @@ function entity_id_with_title(title)
 	return nil
 end
 
---df.global.ui.group_id for lookup entity will return
---useful noble titles
---df.global.ui.civ_id will return civ titles like MONARCH
---don't use this on dorfs, because their 'own' data seems to be the same as the group id data
-function get_title_id(titlename, lookup_entity_id)	
-	local my_entity = df.historical_entity.find(lookup_entity_id)
+function remove_title_from_anyone(titlename)
+	local entity_id, position_id, assignment_id = entity_id_with_title(titlename)
+	
+	if entity_id == nil then
+		return nil
+	end
+	
+	local my_entity = df.historical_entity.find(entity_id)
+	
+	local assignment = fnd(my_entity.positions.assignments, "id", assignment_id)
+	local position = fnd(my_entity.positions.own, "id", position_id)
+		
+	local current_hist_fig = df.historical_figure.find(assignment.histfig)
+	
+	---modify state
+	assignment.histfig = -1
 
-	--position ids aren't unique , assignments are. This isn't that useful
-	for k,v in pairs(my_entity.positions.own) do
-		if v.code == titlename then
-			return v.id
+	for k,v in pairs(current_hist_fig.entity_links) do
+		if df.histfig_entity_link_positionst:is_instance(v) and v.assignment_id==assignment_id and v.entity_id==entity_id then --hint:df.histfig_entity_link_positionst
+			current_hist_fig.entity_links:erase(k)
+			break
 		end
 	end
-	
-	return nil
-end
-
-function get_assignment_id(titlename, position_id, lookup_entity_id)
-	local my_entity = df.historical_entity.find(lookup_entity_id)
-
-	--position ids aren't unique , assignments are. This isn't that useful
-	for k,v in pairs(my_entity.positions.assignments) do
-		if v.position_id == position_id then
-			return v.id
-		end
-	end
-	
-	return nil
-end
-
-function remove_title_from(titlename, lookup_entity_id)
-	local my_entity = df.historical_entity.find(lookup_entity_id)
-	
-	if my_entity == nil then
-		return
-	end
-	
-	local position_id = get_title_id(titlename, lookup_entity_id)
-	local assignment_id = get_assignment_id(titlename, lookup_entity_id)
-	
 end
 
 function take_title(unit, titlename)
@@ -286,7 +269,7 @@ function dump_titles(eid)
 			goto borked
 		end
 		
-		imgui.Text(position.code .. " position_id " .. position.id .. " ass_id " .. v.id)
+		imgui.Text(position.code .. " position_id " .. position.id .. " ass_id " .. v.id .. " hist_fig " .. v.histfig)
 		
 		::borked::
 	end
@@ -334,6 +317,10 @@ function Inspector:render()
 	--imgui.Text("Site Titles")
 	
 	--dump_titles(df.global.ui.site_id)
+	
+	if imgui.Button("No medical dwarves!!") then
+		remove_title_from_anyone("CHIEF_MEDICAL_DWARF")
+	end
 	
 	imgui.Text("Group Titles")
 	dump_titles(df.global.ui.group_id)
