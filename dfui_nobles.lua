@@ -184,6 +184,18 @@ function get_name(unit)
 	return dfhack.df2utf(dfhack.TranslateName(name_type, false, false))
 end
 
+local override_noble_assignments = imgui.Ref(false)
+
+function is_elected_position(position)
+	--I *think* this is correct
+	return #position.appointed_by == 0
+end
+
+function can_appoint(position)
+	
+	return true
+end
+
 function render_titles()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -193,11 +205,16 @@ function render_titles()
 	
 	local menu_item = render.get_menu_item()
 	
+	local override = imgui.Get(override_noble_assignments)
+	
 	if menu_item == nil then 
-		for k,v in pairs(entity.positions.assignments) do 
+		for k,v in pairs(entity.positions.assignments) do		
 			local current_assignment_id = v.id
 			
 			local position = position_id_to_position(assignment_to_position(current_assignment_id))
+
+			local is_valid_removable = not is_elected_position(position) or override
+			local is_valid_appointable = can_appoint(position) or override
 			
 			local units = df.global.world.units.active
 			
@@ -224,18 +241,20 @@ function render_titles()
 						
 						imgui.Text(display)
 						
-						imgui.SameLine()
-						
-						if imgui.Button("Remove?##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
-							remove_fort_title(aid)
-							goto continue
+						if is_valid_removable then
+							imgui.SameLine()
+							
+							if imgui.Button("Remove?##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
+								remove_fort_title(aid)
+								goto continue
+							end
 						end
 					end
 				end
 				::continue::
 			end		
 
-			if not any_holders then
+			if (not any_holders and is_valid_appointable) or override then
 				imgui.SameLine()
 			
 				if imgui.Button("Appoint?##" .. tostring(current_assignment_id)) then
@@ -271,4 +290,6 @@ function render_titles()
 			render.set_menu_item(nil)
 		end
 	end
+
+	imgui.Checkbox("Dev: Override noble assignments", override_noble_assignments)
 end
