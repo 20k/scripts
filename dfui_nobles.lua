@@ -226,7 +226,7 @@ function render_titles()
 						
 						imgui.SameLine()
 						
-						if imgui.Button("Remove?##" .. tostring(unit.id)) then
+						if imgui.Button("Remove?##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
 							remove_fort_title(aid)
 							goto continue
 						end
@@ -255,7 +255,7 @@ function render_titles()
 			
 			local name = get_name(unit)
 			
-			if imgui.Button(name .. "##" .. tostring(unit.id)) then
+			if imgui.Button(name .. "##" .. tostring(unit.id) .. "_" .. tostring(menu_item)) then
 				add_or_transfer_fort_title_to(unit, menu_item)
 				render.set_menu_item(nil)
 				
