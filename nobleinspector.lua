@@ -317,7 +317,13 @@ function dump_titles(eid)
 			goto borked
 		end
 		
-		imgui.Text(position.code .. " position_id " .. position.id .. " ass_id " .. v.id .. " hist_fig " .. v.histfig)
+		imgui.Text(position.code .. " position_id " .. position.id .. " ass_id " .. v.id .. " hist_fig " .. v.histfig )
+		
+		if #position.appointed_by > 0 then
+			for i,j in pairs(position.appointed_by) do
+				imgui.Text("Appointed by " .. tostring(j))
+			end
+		end
 		
 		::borked::
 	end
