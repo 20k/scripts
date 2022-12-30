@@ -62,7 +62,10 @@ function noble_position(unit)
 		imgui.Text("Is noble")
 		imgui.Text(position.code .. " pid " .. tostring(assignment.position_id) .. " aid " .. epos.assignment_id)
 		
-		imgui.Text("Dbg pid " .. tostring(get_title_id(position.code, entity.id)) .. " aid " .. tostring(get_assignment_id(position.code, get_title_id(position.code, entity.id), entity.id)))
+		--imgui.Text("Dbg pid " .. tostring(get_title_id(position.code, entity.id)) .. " aid " .. tostring(get_assignment_id(position.code, get_title_id(position.code, entity.id), entity.id)))
+		
+		imgui.Text("Eid: " .. tostring(epos.entity_id))
+		imgui.Text("Fid: " .. tostring(df.global.ui.group_id))
 				
 		::notnoble::
 	end
@@ -271,15 +274,24 @@ function remove_fort_title(assignment_id)
 	
 	local assignment = fnd(entity.positions.assignments, "id", assignment_id)
 	
+	if assignment == nil then
+		return
+	end
+
 	local current_hist_fig = df.historical_figure.find(assignment.histfig)
-	
-	for k,v in pairs(current_hist_fig.entity_links) do
-		if df.histfig_entity_link_positionst:is_instance(v) and v.assignment_id==assignment_id and v.entity_id==entity_id then --hint:df.histfig_entity_link_positionst
-			current_hist_fig.entity_links:erase(k)
-			
-			return assignment_id
+		
+	if current_hist_fig ~= nil then
+		for k,v in pairs(current_hist_fig.entity_links) do
+			if df.histfig_entity_link_positionst:is_instance(v) and v.assignment_id==assignment_id and v.entity_id==entity.id then --hint:df.histfig_entity_link_positionst
+				current_hist_fig.entity_links:erase(k)
+				
+				break
+				--return assignment_id
+			end
 		end
 	end
+	
+	assignment.histfig = -1
 	
 	return nil
 end
@@ -425,7 +437,11 @@ function Inspector:render()
 			local position = position_id_to_position(position_id)
 			
 			imgui.Text("Assignment: " .. position.code)
-		end 
+			
+			if imgui.Button("Remove This Title##" .. tostring(unit.id)) then
+				remove_fort_title(v)
+			end
+		end
 		
 		if imgui.Button("Make Expedition Leader##" .. tostring(unit.id)) then
 			take_title(unit, "EXPEDITION_LEADER")
