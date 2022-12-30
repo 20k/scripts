@@ -196,17 +196,69 @@ function is_elected_position(position)
 	return false
 end
 
+function anyone_in_position(position_id)
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	if entity == nil then
+		return false
+	end
+	
+	for k,v in pairs(entity.positions.assignments) do
+		local assignment = v
+		
+		if assignment ~= nil then
+			if assignment.position_id == position_id and assignment.histfig ~= -1 then
+				return true
+			end
+		end
+	end
+	
+	return false
+end
+
+function get_valid_units()
+	local result = {}
+	
+	local units = df.global.world.units.active
+	
+	for i=0,#units-1 do
+		local unit = units[i]
+
+		if not valid_unit(unit) then
+			goto continue
+		end
+		
+		result[#result+1] = unit
+		
+		::continue::
+	end
+	
+	return result
+end
+
 function can_appoint(position)
 	if is_elected_position(position) then
 		return false
 	end
 
-	for k,v in pairs(position.appointed_by) do
-		--local 
-		
+	local appoint_satisfied = false
+
+	for k,v in ipairs(position.appointed_by) do
+		if anyone_in_position(v) then
+			appoint_satisfied = true
+			break
+		end
 	end
 	
-	return false
+	if not appoint_satisfied then
+		return false
+	end
+	
+	if position.requires_population == 0 then
+		return appoint_satisfied
+	end
+
+	return #get_valid_units() >= position.requires_population
 end
 
 function render_titles()
