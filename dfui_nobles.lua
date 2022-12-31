@@ -200,24 +200,28 @@ function is_elected_position(position)
 	return false
 end
 
-function anyone_in_position(position_id)
+function number_in_position(position_id)
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
+	local count = 0
+	
 	if entity == nil then
-		return false
+		return count
 	end
 	
-	for k,v in pairs(entity.positions.assignments) do
-		local assignment = v
-		
+	for k,assignment in pairs(entity.positions.assignments) do	
 		if assignment ~= nil then
 			if assignment.position_id == position_id and assignment.histfig ~= -1 then
-				return true
+				count = count + 1
 			end
 		end
 	end
 	
-	return false
+	return count
+end
+
+function anyone_in_position(position_id)
+	return number_in_position(position_id) > 0
 end
 
 function get_valid_units()
@@ -276,14 +280,106 @@ function push_new_assignment(position_id)
 	
 	local next_assignment = df.entity_position_assignment:new()
 	
-	--next_assignment.id = 
+	next_assignment.id = next_assignment_id
+	next_assignment.histfig = -1
+	next_assignment.histfig2 = -1
+	next_assignment.position_id = position_id
+	next_assignment.flags = 1
+	next_assignment.squad_id = -1	
 	
 	next_assignment.unk_1 = -1
 	next_assignment.unk_2 = -1
 	next_assignment.unk_3 = -1
 	next_assignment.unk_4 = -1
 	next_assignment.unk_6 = 0
+	
+	entity.assignments:insert("#", next_assignment)
+	
+	--?
+	entity.positions.next_assignment_id = entity.positions.next_assignment_id + 1
+	
+	return next_assignment.id
 end
+
+function collect_commander_position_ids()
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	local result = {}
+	
+	if entity == nil then
+		return result
+	end
+	
+	for k,v in ipairs(entity.positions) do
+		for j,k in ipairs(v.commander_id) do
+			result[#result+1] = k
+		end
+	end
+	
+	return result
+end
+
+function render_commander_positions(override)
+	local position_ids = collect_commander_position_ids()
+	
+	for k, v in ipairs(position_ids) do	
+		local position = position_id_to_position(v)
+		
+		local is_valid = can_appoint(position) or override
+		
+		if not is_valid then
+			goto nope
+		end
+		
+		imgui.Text(position.name[0])
+		
+		imgui.TableNextColumn()
+		
+		if imgui.Button("New##" .. position.id) then
+			push_new_assignment(position.id)
+		end
+		
+		imgui.TableNextColumn()
+		
+		
+		imgui.TableNextRow();
+		imgui.TableNextColumn();	
+		
+		::nope::
+	end
+end
+
+function histfig_to_unit(histfig_id)
+	if histfig_id < 0 or histfig_id == nil then
+		return nil
+	end
+		
+	local units = df.global.world.units.active
+	
+	for i=0,#units-1 do
+		local unit = units[i]
+
+		local nemesis = dfhack.units.getNemesis(unit)
+		
+		if nemesis == nil then
+			goto continue
+		end
+
+		local fig = nemesis.figure
+			
+		if fig == nil then
+			goto continue
+		end
+		
+		if fig.id == histfig_id then
+			return unit
+		end
+		
+		::continue::
+	end
+	
+	return nil
+end	
 
 function render_titles()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
@@ -302,7 +398,7 @@ function render_titles()
 		count = 4
 	end
 	
-	if menu_item == nil then 
+	if menu_item == nil then 	
 		if imgui.BeginTable("NobleTable", count, (1<<13)) then
 			imgui.TableNextRow();
 			imgui.TableNextColumn();
@@ -312,7 +408,7 @@ function render_titles()
 				
 				local position = position_id_to_position(assignment_to_position(current_assignment_id))
 
-				local is_valid_removable = (anyone_in_position(position.id) and not is_elected_position(position)) or override
+				local is_valid_removable = (not is_elected_position(position)) or override
 				local is_valid_appointable = can_appoint(position) or override
 				
 				local units = df.global.world.units.active
@@ -326,12 +422,8 @@ function render_titles()
 				imgui.TableNextColumn()
 				
 				local extra_info = nil
-								
-				local table_count = 0
-				
-				if (not anyone_in_position(position.id) and is_valid_appointable) or override then		
-					table_count = table_count+1
-				
+
+				if is_valid_appointable or override then					
 					if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
 						render.set_menu_item(current_assignment_id)
 					end
@@ -343,43 +435,13 @@ function render_titles()
 					imgui.TableNextColumn()
 				end
 				
-				for i=0,#units-1 do
-					local unit = units[i]
-					
-					if not valid_unit(unit) then
-						goto continue
-					end
-					
-					local titles = get_unit_title_assignment_ids(unit)
-					
-					for _,aid in ipairs(titles) do
-						if aid == current_assignment_id then
-							if is_valid_removable then
-								table_count = table_count+1
-							
-								if imgui.ButtonColored({fg=COLOR_RED}, "[R]##" .. tostring(unit.id) .. "_" .. tostring(current_assignment_id)) then
-									remove_fort_title(aid)
-									goto continue
-								end
-								
-								if imgui.IsItemHovered() then
-									imgui.SetTooltip("Remove Position")
-								end
-							end
-							
-							imgui.TableNextColumn()
-							
-							extra_info = get_name(unit)
-						end
-					end
-					::continue::
+				local unit_opt = histfig_to_unit(v.histfig)
+
+				if unit_opt ~= nil then
+					extra_info = get_name(unit_opt)
 				end
 
 				if extra_info ~= nil then
-					if table_count == 1 and override then
-						imgui.TableNextColumn()
-					end
-				
 					imgui.Text(extra_info)
 				end
 				
@@ -389,6 +451,8 @@ function render_titles()
 				::invalid::
 			end
 			
+			render_commander_positions(override)
+			
 			imgui.EndTable()
 		end
 		
@@ -397,6 +461,12 @@ function render_titles()
 		end
 	else
 		local units = df.global.world.units.active
+		
+		if imgui.Button("Leave Vacant##-1") then
+			remove_fort_title(menu_item)
+			render.set_menu_item(nil)
+			goto done
+		end
 		
 		for i=0,#units-1 do
 			local unit = units[i]
