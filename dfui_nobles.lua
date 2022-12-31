@@ -368,7 +368,7 @@ function render_titles()
 			imgui.EndTable()
 		end
 		
-		if imgui.Button("Back") then	
+		if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then	
 			render.pop_menu()
 		end
 	else
@@ -395,7 +395,7 @@ function render_titles()
 		
 		::done::
 		
-		if imgui.Button("Back") then	
+		if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then	
 			render.set_menu_item(nil)
 		end
 	end

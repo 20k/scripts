@@ -401,7 +401,7 @@ function Inspector:render()
 			end
 		end
 		
-		basic_title_selector(unit)
+		--basic_title_selector(unit)
 		
 		if imgui.Button("Make Expedition Leader##" .. tostring(unit.id)) then
 			take_title(unit, "EXPEDITION_LEADER")
