@@ -284,7 +284,13 @@ function push_new_assignment(position_id)
 	next_assignment.histfig = -1
 	next_assignment.histfig2 = -1
 	next_assignment.position_id = position_id
-	next_assignment.flags = 1
+	
+	for i,j in pairs(next_assignment.flags) do
+		j = 0
+	end
+	
+	next_assignment.flags[0] = 1
+	
 	next_assignment.squad_id = -1	
 	
 	next_assignment.unk_1 = -1
@@ -293,7 +299,7 @@ function push_new_assignment(position_id)
 	next_assignment.unk_4 = -1
 	next_assignment.unk_6 = 0
 	
-	entity.assignments:insert("#", next_assignment)
+	entity.positions.assignments:insert("#", next_assignment)
 	
 	--?
 	entity.positions.next_assignment_id = entity.positions.next_assignment_id + 1
@@ -310,9 +316,11 @@ function collect_commander_position_ids()
 		return result
 	end
 	
-	for k,v in ipairs(entity.positions) do
-		for j,k in ipairs(v.commander_id) do
-			result[#result+1] = k
+	for i=0,(#entity.positions.own)-1 do
+		local position = entity.positions.own[i]
+	
+		for j=0,#position.commander_id-1 do
+			result[#result+1] = position.commander_id[j]
 		end
 	end
 	
@@ -321,7 +329,7 @@ end
 
 function render_commander_positions(override)
 	local position_ids = collect_commander_position_ids()
-	
+				
 	for k, v in ipairs(position_ids) do	
 		local position = position_id_to_position(v)
 		
@@ -335,7 +343,7 @@ function render_commander_positions(override)
 		
 		imgui.TableNextColumn()
 		
-		if imgui.Button("New##" .. position.id) then
+		if imgui.ButtonColored({fg=COLOR_GREEN}, "[New]##" .. position.id) then
 			push_new_assignment(position.id)
 		end
 		
