@@ -22,7 +22,7 @@ function add_job(building, job)
 		ji.unk_v43_2 = -1
 		ji.unk_v43_3 = -1
 		ji.unk_v43_4 = 0
-		ji.has_tool_use = false
+		ji.has_tool_use = 0
 		
 		for m,n in pairs(v) do
 			ji[m] = n
@@ -30,6 +30,9 @@ function add_job(building, job)
 		
 		ji_array[#ji_array+1] = ji
 	end
+	
+	--imgui.Text("Mat_type: " .. ji.mat_type)
+	--imgui.Text("mat_index: " .. ji.mat_index)
 	
 	local gr = df.general_ref_building_holderst:new()
 	gr.building_id = building.id
@@ -41,8 +44,8 @@ function add_job(building, job)
 		out_job[k] = v
 	end
 	
-	out_job.pos.x = building.centrex
-	out_job.pos.y = building.centrey
+	out_job.pos.x = building.centerx
+	out_job.pos.y = building.centery
 	out_job.pos.z = building.z
 	
 	for _,v in ipairs(ji_array) do
@@ -55,7 +58,11 @@ function add_job(building, job)
 	
 	dfhack.job.linkIntoWorld(out_job)
 	
-	render.set_menu_item(nil)
+	local existing_item = render.get_menu_item();
+	
+	existing_item.screen = "base"
+	
+	render.set_menu_item(existing_item)
 end
 
 function display_jobs(building, jobs)
@@ -70,11 +77,19 @@ function display_jobs(building, jobs)
 	::done::
 end
 
+function get_job_name(j)	
+	if #j.reaction_name > 0 then
+		return j.reaction_name
+	end
+	
+	return df.job_type.attrs[j.job_type].caption
+end
+
 function display_existing_jobs(building)
 	local jobs = building.jobs
 	
 	for _,j in ipairs(jobs) do
-		imgui.Text(df.job_type.attrs[j.job_type].caption)
+		imgui.Text(get_job_name(j))
 	end
 end
 
