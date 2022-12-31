@@ -142,7 +142,7 @@ function MyScreen:render()
 	end
 	
 	if state == "View Items In Buildings" then 
-		viewitems.handle_mouseover()
+		viewitems.handle_building_mouseover()
 		viewitems.render_viewitems()
 	end
 	
@@ -168,7 +168,7 @@ function MyScreen:render()
 	
 	if state == "Zones" then
 		render_stock()
-		viewitems.handle_mouseover()
+		viewitems.handle_building_mouseover()
 		building.render_zones()
 	end
 	
@@ -177,7 +177,8 @@ function MyScreen:render()
 	end
 	
 	if state == "main" then
-		viewitems.handle_mouseover()
+		viewitems.handle_building_mouseover()
+		viewitems.handle_unit_mouseover()
 		render_menu()
 	end
 	

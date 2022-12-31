@@ -182,12 +182,6 @@ function valid_unit(unit)
 	return true
 end
 
-function get_name(unit)
-	local name_type = dfhack.units.getVisibleName(unit)
-	
-	return dfhack.df2utf(dfhack.TranslateName(name_type, false, false)) .. ", " .. dfhack.units.getProfessionName(unit, false, false)
-end
-
 local override_noble_assignments = imgui.Ref(false)
 
 function is_elected_position(position)
@@ -471,7 +465,7 @@ function render_titles()
 					local unit_opt = histfig_to_unit(v.histfig)
 
 					if unit_opt ~= nil then
-						imgui.Text(get_name(unit_opt))
+						imgui.Text(render.get_user_facing_name(unit_opt))
 					end
 					
 					imgui.TableNextRow();
@@ -521,7 +515,7 @@ function render_titles()
 				goto continue
 			end
 			
-			local name = get_name(unit)
+			local name = render.get_user_facing_name(unit)
 			
 			if imgui.Button(name .. "##" .. tostring(unit.id) .. "_" .. tostring(menu_item)) then
 				add_or_transfer_fort_title_to(unit, menu_item)

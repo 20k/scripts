@@ -72,6 +72,23 @@ function clear_menu_item(i)
 	menu_item = nil
 end
 
+function get_mouse_world_coordinates()
+	local top_left = get_camera()
+
+	local mouse_pos = imgui.GetMousePos()
+	
+	local lx = top_left.x+mouse_pos.x - 1
+	local ly = top_left.y+mouse_pos.y - 1
+	
+	return {x=lx, y=ly, z=top_left.z}
+end
+
+function get_user_facing_name(unit)
+	local name_type = dfhack.units.getVisibleName(unit)
+	
+	return dfhack.df2utf(dfhack.TranslateName(name_type, false, false)) .. ", " .. dfhack.units.getProfessionName(unit, false, false)
+end
+
 function render_table_impl(menus, old_state)
 	local state = old_state
 		

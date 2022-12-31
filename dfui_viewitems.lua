@@ -152,7 +152,7 @@ function render_viewitems()
 	end
 end
 
-function handle_mouseover()
+function handle_building_mouseover()
 	local top_left = render.get_camera()
 
 	local mouse_pos = imgui.GetMousePos()
@@ -211,6 +211,22 @@ function handle_mouseover()
 			imgui.EndTooltip()
 			
 			::skip::
+		end
+	end
+end
+
+function handle_unit_mouseover()
+	local mouse_pos = render.get_mouse_world_coordinates()
+	
+	local units = df.global.world.units.active
+	
+	for _,v in ipairs(units) do
+		local px, py, pz = dfhack.units.getPosition(v)
+				
+		if px == mouse_pos.x and py == mouse_pos.y and pz == mouse_pos.z then
+			imgui.BeginTooltip()
+			imgui.Text(render.get_user_facing_name(v))
+			imgui.EndTooltip()
 		end
 	end
 end
