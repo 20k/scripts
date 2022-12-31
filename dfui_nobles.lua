@@ -403,15 +403,9 @@ function render_titles()
 	local menu_item = render.get_menu_item()
 	
 	local override = imgui.Get(override_noble_assignments)
-	
-	local count = 3
-	
-	if override then
-		count = 4
-	end
-	
+
 	if menu_item == nil then 	
-		if imgui.BeginTable("NobleTable", count, (1<<13)) then
+		if imgui.BeginTable("NobleTable", 3, (1<<13)) then
 			imgui.TableNextRow();
 			imgui.TableNextColumn();
 		
@@ -473,12 +467,24 @@ function render_titles()
 	else
 		local units = df.global.world.units.active
 		
+		local position_id = assignment_to_position(menu_item)
+		
+		local position = position_id_to_position(position_id)
+		
+		imgui.Text("Currently Choosing: " .. position.name[0])
+		
+		if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then	
+			render.set_menu_item(nil)
+		end
+				
 		if imgui.Button("Leave Vacant##-1") then
 			remove_fort_title(menu_item)
 			render.set_menu_item(nil)
 			goto done
 		end
 		
+		imgui.NewLine()
+	
 		for i=0,#units-1 do
 			local unit = units[i]
 			
@@ -499,10 +505,6 @@ function render_titles()
 		end
 		
 		::done::
-		
-		if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then	
-			render.set_menu_item(nil)
-		end
 	end
 
 	imgui.Checkbox("Dev: Override noble assignments", override_noble_assignments)
