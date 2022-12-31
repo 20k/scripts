@@ -405,31 +405,31 @@ function render_titles()
 		
 			for k,v in pairs(entity.positions.assignments) do
 				local current_assignment_id = v.id
-				
+								
 				local position = position_id_to_position(assignment_to_position(current_assignment_id))
+				
+				--local all_positions_filled = (position.number == number_in_position(v.id)) and not position.number < 0
 
-				local is_valid_removable = (not is_elected_position(position)) or override
-				local is_valid_appointable = can_appoint(position) or override
+				--local is_valid_removable = (not is_elected_position(position)) or override
+				--local is_valid_appointable = (can_appoint(position) and not all_positions_filled) or override
 				
-				local units = df.global.world.units.active
-				
-				if (not is_valid_removable) and (not is_valid_appointable) then
-					goto invalid
-				end
-				
+				local position_filled = v.histfig ~= -1
+								
 				imgui.Text(position.name[0])
 				
 				imgui.TableNextColumn()
 				
-				local extra_info = nil
-
-				if is_valid_appointable or override then					
+				if (can_appoint(position) or position_filled) or override then					
 					if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
 						render.set_menu_item(current_assignment_id)
 					end
 					
 					if imgui.IsItemHovered() then
-						imgui.SetTooltip("Appoint Position")
+						if not position_filled then 
+							imgui.SetTooltip("Appoint Position")
+						else
+							imgui.SetTooltip("Replace Position")
+						end
 					end
 					
 					imgui.TableNextColumn()
@@ -438,11 +438,7 @@ function render_titles()
 				local unit_opt = histfig_to_unit(v.histfig)
 
 				if unit_opt ~= nil then
-					extra_info = get_name(unit_opt)
-				end
-
-				if extra_info ~= nil then
-					imgui.Text(extra_info)
+					imgui.Text(get_name(unit_opt))
 				end
 				
 				imgui.TableNextRow();
