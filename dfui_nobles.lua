@@ -393,6 +393,16 @@ function histfig_to_unit(histfig_id)
 	return nil
 end	
 
+function shallow_copy_to_array(t)
+	local result = {}
+	
+	for k,v in pairs(t) do
+		result[#result+1] = v
+	end
+	
+	return result
+end
+
 function render_titles()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -404,12 +414,23 @@ function render_titles()
 	
 	local override = imgui.Get(override_noble_assignments)
 
+	local sorted_assignments = shallow_copy_to_array(entity.positions.assignments)
+	
+	function comp(a, b)
+		local p1 = position_id_to_position(assignment_to_position(a.id))
+		local p2 = position_id_to_position(assignment_to_position(b.id))
+
+		return p1.precedence < p2.precedence
+	end
+	
+	table.sort(sorted_assignments, comp)
+
 	if menu_item == nil then 	
 		if imgui.BeginTable("NobleTable", 3, (1<<13)) then
 			imgui.TableNextRow();
 			imgui.TableNextColumn();
 		
-			for k,v in pairs(entity.positions.assignments) do
+			for k,v in ipairs(sorted_assignments) do
 				local current_assignment_id = v.id
 
 				local position = position_id_to_position(assignment_to_position(current_assignment_id))
