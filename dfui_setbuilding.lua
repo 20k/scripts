@@ -5,10 +5,20 @@ render = reqscript('dfui_render')
 
 imgui = dfhack.imgui
 
+function add_job(building, job)
+
+end
+
 function display_jobs(building, jobs)
 	for i,v in ipairs(jobs) do
-		imgui.Button(v.name .. "##" .. tostring(i))
+		if imgui.Button(v.name .. "##" .. tostring(i)) then
+			add_job(building, v)
+			
+			goto done
+		end
 	end
+	
+	::done::
 end
 
 function display_existing_jobs(building)
