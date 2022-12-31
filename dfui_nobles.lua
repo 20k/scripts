@@ -365,7 +365,7 @@ function histfig_to_unit(histfig_id)
 	if histfig_id < 0 or histfig_id == nil then
 		return nil
 	end
-		
+
 	local units = df.global.world.units.active
 	
 	for i=0,#units-1 do
@@ -514,6 +514,10 @@ function render_titles()
 			local unit = units[i]
 			
 			if not valid_unit(unit) then
+				goto continue
+			end
+			
+			if dfhack.units.isChild(unit) or dfhack.units.isBaby(unit) then
 				goto continue
 			end
 			
