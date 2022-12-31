@@ -432,6 +432,10 @@ function render_titles()
 		
 			for k,v in ipairs(sorted_assignments) do
 				local current_assignment_id = v.id
+				
+				if v.flags[0] == false and not override then
+					goto invalid 
+				end
 
 				local position = position_id_to_position(assignment_to_position(current_assignment_id))
 				
