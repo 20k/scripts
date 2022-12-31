@@ -329,7 +329,7 @@ function dump_titles(eid)
 			imgui.Text("Pop required " .. position.requires_population)
 		end
 		
-		imgui.Text("histfig2 " .. tostring(v.histfig2)) 
+		--imgui.Text("histfig2 " .. tostring(v.histfig2)) 
 		
 		--unk1-4 seem to be -1, unk 6 is 0
 		--imgui.Text("Unk_1 " .. tostring(v.unk_1))
@@ -343,7 +343,11 @@ function dump_titles(eid)
 			imgui.Text("Commanderid " .. tostring(k))
 		end
 		
-		--[[for j,k in pairs(v.flags) do
+		--imgui.Text("Number: " .. tostring(position.number))
+		
+		--imgui.Text("Sid " .. tostring(v.squad_id))
+		
+		for j,k in pairs(v.flags) do
 			if k then 
 				imgui.Text("Flag " .. tostring(j) .. " " .. tostring(k))
 			end
@@ -351,10 +355,17 @@ function dump_titles(eid)
 		
 		if imgui.Button("Toggle Bottom Bit" .. tostring(v.id)) then
 			v.flags[0] = not v.flags[0]
-		end]]--
+		end
 		
 		::borked::
 	end
+	
+	--unk 3 appears to have a length of 4, but it doesn't expand when adding new militia captains
+	--[[imgui.Text("Unklen1 " .. tostring(#my_entity.positions.unk_v40_1))
+	imgui.Text("Unklen2 " .. tostring(#my_entity.positions.unk_v40_2))
+	imgui.Text("Unklen3 " .. tostring(#my_entity.positions.unk_v40_3))
+	imgui.Text("Unklen4 " .. tostring(#my_entity.positions.unk_v40_4))
+	imgui.Text("Unklen5 " .. tostring(#my_entity.positions.unk_v40_5))]]--
 end
 
 function basic_title_selector(unit)

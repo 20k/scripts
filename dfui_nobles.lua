@@ -441,41 +441,43 @@ function render_titles()
 				
 				local position_filled = v.histfig ~= -1
 
-				imgui.Text(position.name[0])
+				if (can_appoint(position) or position_filled) or override then	
+					imgui.Text(position.name[0])
+					
+					imgui.TableNextColumn()
 				
-				imgui.TableNextColumn()
-			
-				local str = "[Set]"
-				local col = COLOR_GREEN
-				
-				if position_filled then
-					str = "[Replace]"
-					col = COLOR_BROWN
-				end
-			
-				if imgui.ButtonColored({fg=col}, str .. "##" .. tostring(current_assignment_id)) then
-					render.set_menu_item(current_assignment_id)
-				end
-				
-				if imgui.IsItemHovered() then
-					if not position_filled then 
-						imgui.SetTooltip("Appoint Position")
-					else
-						imgui.SetTooltip("Replace Position")
+					local str = "[Set]"
+					local col = COLOR_GREEN
+					
+					if position_filled then
+						str = "[Replace]"
+						col = COLOR_BROWN
 					end
-				end
 				
-				imgui.TableNextColumn()
-				
-				local unit_opt = histfig_to_unit(v.histfig)
+					if imgui.ButtonColored({fg=col}, str .. "##" .. tostring(current_assignment_id)) then
+						render.set_menu_item(current_assignment_id)
+					end
+					
+					if imgui.IsItemHovered() then
+						if not position_filled then 
+							imgui.SetTooltip("Appoint Position")
+						else
+							imgui.SetTooltip("Replace Position")
+						end
+					end
+					
+					imgui.TableNextColumn()
 
-				if unit_opt ~= nil then
-					imgui.Text(get_name(unit_opt))
+					local unit_opt = histfig_to_unit(v.histfig)
+
+					if unit_opt ~= nil then
+						imgui.Text(get_name(unit_opt))
+					end
+					
+					imgui.TableNextRow();
+					imgui.TableNextColumn();
 				end
-				
-				imgui.TableNextRow();
-				imgui.TableNextColumn();
-				
+
 				::invalid::
 			end
 			
