@@ -329,6 +329,8 @@ function dump_titles(eid)
 			imgui.Text("Pop required " .. position.requires_population)
 		end
 		
+		imgui.Text("histfig2 " .. tostring(v.histfig2)) 
+		
 		--unk1-4 seem to be -1, unk 6 is 0
 		--imgui.Text("Unk_1 " .. tostring(v.unk_1))
 		--imgui.Text("Unk_2 " .. tostring(v.unk_2))
