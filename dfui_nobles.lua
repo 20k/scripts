@@ -344,11 +344,15 @@ function render_commander_positions(override)
 		imgui.TableNextColumn()
 		
 		if imgui.ButtonColored({fg=COLOR_GREEN}, "[New]##" .. position.id) then
-			push_new_assignment(position.id)
+			local id = push_new_assignment(position.id)
+			render.set_menu_item(id)
+		end
+		
+		if imgui.IsItemHovered() then
+			imgui.SetTooltip("Create New Assignment")
 		end
 		
 		imgui.TableNextColumn()
-		
 		
 		imgui.TableNextRow();
 		imgui.TableNextColumn();	
@@ -413,22 +417,25 @@ function render_titles()
 		
 			for k,v in pairs(entity.positions.assignments) do
 				local current_assignment_id = v.id
-								
+
 				local position = position_id_to_position(assignment_to_position(current_assignment_id))
 				
-				--local all_positions_filled = (position.number == number_in_position(v.id)) and not position.number < 0
-
-				--local is_valid_removable = (not is_elected_position(position)) or override
-				--local is_valid_appointable = (can_appoint(position) and not all_positions_filled) or override
-				
 				local position_filled = v.histfig ~= -1
-								
+
 				imgui.Text(position.name[0])
 				
 				imgui.TableNextColumn()
 				
-				if (can_appoint(position) or position_filled) or override then					
-					if imgui.ButtonColored({fg=COLOR_GREEN}, "[Set]##" .. tostring(current_assignment_id)) then
+				if (can_appoint(position) or position_filled) or override then	
+					local str = "[Set]"
+					local col = COLOR_GREEN
+					
+					if position_filled then
+						str = "[Replace]"
+						col = COLOR_BROWN
+					end
+				
+					if imgui.ButtonColored({fg=col}, str .. "##" .. tostring(current_assignment_id)) then
 						render.set_menu_item(current_assignment_id)
 					end
 					
