@@ -204,6 +204,12 @@ function MyScreen:render()
 	imgui.PopStyleColor(1)
 end
 
+function MyScreen:onIdle()
+	if self._native and self._native.parent then
+		self._native.parent:logic()
+	end
+end
+
 function MyScreen:onDismiss()
 	state = "main"
     view = nil
