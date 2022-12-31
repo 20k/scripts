@@ -3,6 +3,7 @@
 render = reqscript('dfui_render')
 imgui = dfhack.imgui
 utils = require('utils')
+jobinspector = require('jobinspector')
 
 selected_building_pos = {x=-1, y=-1, z=-1}
 
@@ -105,6 +106,8 @@ function render_viewitems()
 	end
 	
 	if building ~= nil then	
+		jobinspector.inspect_workshop(building)
+	
 		local str = utils.getBuildingName(building)
 		imgui.Text(str)
 	
