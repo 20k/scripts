@@ -329,6 +329,18 @@ function dump_titles(eid)
 			imgui.Text("Pop required " .. position.requires_population)
 		end
 		
+		--unk1-4 seem to be -1, unk 6 is 0
+		--imgui.Text("Unk_1 " .. tostring(v.unk_1))
+		--imgui.Text("Unk_2 " .. tostring(v.unk_2))
+		--imgui.Text("Unk_3 " .. tostring(v.unk_3))
+		--imgui.Text("Unk_4 " .. tostring(v.unk_4))
+		--imgui.Text("Unk_6 " .. tostring(v.unk_6))
+		--imgui.Text("Unk5 " .. tostring(#v.unk_5))
+		
+		for j,k in pairs(position.commander_id) do
+			imgui.Text("Commanderid " .. tostring(k))
+		end
+		
 		::borked::
 	end
 end
