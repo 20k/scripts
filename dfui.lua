@@ -115,11 +115,6 @@ end
 function MyScreen:render()
 	self:renderParent()
 	
-	if one_step then
-		one_step = false
-		dfhack.world.SetPauseState(true)
-	end
-	
 	--[[if(imgui.IsKeyPressed(6) and state == "main") then
 		self:dismiss()
 	end
@@ -207,6 +202,11 @@ end
 function MyScreen:onIdle()
 	if self._native and self._native.parent then
 		self._native.parent:logic()
+	end
+
+	if one_step then
+		one_step = false
+		dfhack.world.SetPauseState(true)
 	end
 end
 
