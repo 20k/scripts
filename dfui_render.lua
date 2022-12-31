@@ -91,6 +91,60 @@ function get_user_facing_name(unit)
 	--lots of things don't appear to have a proper name, and instead have a profession
 	local profession = dfhack.units.getProfessionName(unit, false, false)
 	
+	local tag = ""
+	
+	if dfhack.units.isUndead(unit) then
+		tag = tag.."[undead] "
+	end
+	
+	if dfhack.units.isNightCreature(unit) then
+		tag = tag.."[nightcreature] "
+	end
+	
+	if dfhack.units.isSemiMegabeast(unit) then
+		tag = tag.."[semimegabeast] "
+	end
+	
+	if dfhack.units.isMegabeast(unit) then
+		tag = tag.."[megabeast] "
+	end
+	
+	if dfhack.units.isTitan(unit) then
+		tag = tag.."[titan] "
+	end
+	
+	if dfhack.units.isDemon(unit) then
+		tag = tag.."[demon] "
+	end
+	
+	if unit.flags3.ghostly then
+		tag = tag.."[ghost] "
+	end
+	
+	if (unit.curse.add_tags1.OPPOSED_TO_LIFE or unit.curse.add_tags1.NOT_LIVING) and not unit.curse.add_tags1.BLOODSUCKER then
+		tag = tag.."[zombie] "
+	end
+	
+	if not unit.curse.add_tags1.NOT_LIVING and unit.curse.add_tags1.NO_EAT and unit.curse.add_tags1.NO_DRINK and unit.curse.add_tags2.NO_AGING then
+		tag = tag.."[necromancer] "
+	end
+	
+	if dfhack.units.isInvader(unit) then
+		tag = tag.."[invader] "
+	end
+	
+	if dfhack.units.isVisitor(unit) and not dfhack.units.isInvader(unit) then
+		tag = tag.."[visitor] "
+	end
+	
+	if dfhack.units.isMerchant(unit) then
+		tag = tag.."[merchant] "
+	end
+	
+	if #tag > 0 then
+		profession = profession .. " " .. tag
+	end
+	
 	if #main_name == 0 then
 		return profession
 	else
@@ -98,8 +152,17 @@ function get_user_facing_name(unit)
 	end
 end
 
+function check_hostile(unit)
+	return dfhack.units.isCrazed(unit) or 
+		   dfhack.units.isInvader(unit) or 
+		   dfhack.units.isUndead(unit, false) or 
+		   dfhack.units.isSemiMegabeast(unit) or
+		   dfhack.units.isNightCreature(unit) or
+		   dfhack.units.isGreatDanger(unit)
+end
+
 function TextColoredUnit(unit)
-	local is_hostile = dfhack.units.isDanger(unit)
+	local is_hostile = check_hostile(unit)
 	local is_forts = dfhack.units.isFortControlled(unit)
 		
 	local col = COLOR_GREY
