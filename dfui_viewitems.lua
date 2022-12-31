@@ -3,7 +3,7 @@
 render = reqscript('dfui_render')
 imgui = dfhack.imgui
 utils = require('utils')
-jobinspector = require('jobinspector')
+jobinspector = reqscript('jobinspector')
 
 selected_building_pos = {x=-1, y=-1, z=-1}
 
