@@ -12,6 +12,31 @@ function dump_flags(f)
 	end
 end
 
+function dump_general_ref(gr)
+	local type = gr:getType()
+	local id = gr:getID()
+	
+	--dump_flags(df.general_ref)
+	
+	--imgui.Text(df.general_ref_type._identity)
+	
+	--dump_flags(df.general_ref_type)
+	
+	--local type_name = df.general_ref_type.attrs[type].key_table
+	
+	imgui.Text("Type: " .. df.general_ref_type[type])
+	
+	--[[local str = df.new('string')
+	
+	gr:getDescription(str)
+	
+	imgui.Text("Desc: " .. str.value)
+	
+	df.delete(str)]]--
+	
+	
+end
+
 function dump_job(j)
 	imgui.BeginTooltip()
 
@@ -24,7 +49,7 @@ function dump_job(j)
 	--imgui.Text("Type: " .. tostring(j.job_type))
 	
 	--surgery only apparently
-	if j.job_subtype ~= -1
+	if j.job_subtype ~= -1 then
 		imgui.Text("Subtype: " .. tostring(j.job_subtype))
 	end
 	
@@ -55,6 +80,11 @@ function dump_job(j)
 	imgui.Text("#items: " .. tostring(#j.items))
 	imgui.Text("#specific_refs: " .. tostring(#j.specific_refs))
 	imgui.Text("#general_refs: " .. tostring(#j.general_refs))
+	
+	for k,v in pairs(j.general_refs) do
+		dump_general_ref(v)
+	end
+	
 	imgui.Text("#job_items: " .. tostring(#j.job_items))
 	
 	imgui.EndTooltip()
