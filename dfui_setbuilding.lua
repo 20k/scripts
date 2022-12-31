@@ -6,7 +6,56 @@ render = reqscript('dfui_render')
 imgui = dfhack.imgui
 
 function add_job(building, job)
+	--so
+	--need a general_ref which is a building holder
+	--general_ref_building_holderst
+	
+	--then need a job_item, the flags for which are all set by the job up above
 
+	local ji_array = {}
+	
+	for k,v in ipairs(job.items) do
+		local ji = df.job_item:new()
+	
+		ji.vector_id = 0
+		ji.unk_v43_1 = 0
+		ji.unk_v43_2 = -1
+		ji.unk_v43_3 = -1
+		ji.unk_v43_4 = 0
+		ji.has_tool_use = false
+		
+		for m,n in pairs(v) do
+			ji[m] = n
+		end
+		
+		ji_array[#ji_array+1] = ji
+	end
+	
+	local gr = df.general_ref_building_holderst:new()
+	gr.building_id = building.id
+	
+	local out_job = df.job:new()
+	
+	--sets job_type
+	for k,v in pairs(job.job_fields) do
+		out_job[k] = v
+	end
+	
+	out_job.pos.x = building.centrex
+	out_job.pos.y = building.centrey
+	out_job.pos.z = building.z
+	
+	for _,v in ipairs(ji_array) do
+		out_job.job_items:insert('#', v)
+	end
+	
+	out_job.general_refs:insert('#', gr)
+	
+	building.jobs:insert('#', out_job)
+	
+	dfhack.job.linkIntoWorld(out_job)
+	
+	render.set_menu_item(nil)
 end
 
 function display_jobs(building, jobs)
