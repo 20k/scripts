@@ -343,6 +343,16 @@ function dump_titles(eid)
 			imgui.Text("Commanderid " .. tostring(k))
 		end
 		
+		--[[for j,k in pairs(v.flags) do
+			if k then 
+				imgui.Text("Flag " .. tostring(j) .. " " .. tostring(k))
+			end
+		end
+		
+		if imgui.Button("Toggle Bottom Bit" .. tostring(v.id)) then
+			v.flags[0] = not v.flags[0]
+		end]]--
+		
 		::borked::
 	end
 end
@@ -384,7 +394,7 @@ function Inspector:render()
 	
 	local units = df.global.world.units.active
 	
-	for i=0,#units-1 do
+	--[[for i=0,#units-1 do
 		local unit = units[i]
 		
 		local race_name = dfhack.df2utf(dfhack.units.getRaceName(unit))
@@ -422,7 +432,7 @@ function Inspector:render()
 		end
 		
 		::continue::
-	end
+	end]]--
 	
 	--imgui.Text("Civ Titles:")
 	

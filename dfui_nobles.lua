@@ -102,6 +102,9 @@ function add_or_transfer_fort_title_to(unit, assignment_id)
 	newfig.entity_links:insert("#",{new=df.histfig_entity_link_positionst,entity_id=df.global.ui.group_id,
 				link_strength=100,assignment_id=assignment_id,start_year=df.global.cur_year})
 
+	--as far as I can tell, histfig2 is never any different to histfig
+	--tested using a vampire bookkeeper
+	--the game also doesn't set histfig or histfgi2 any differently to how I'm doing it in that case either
 	assignment.histfig=newfig.id
 	assignment.histfig2=newfig.id
 end
