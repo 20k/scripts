@@ -6,8 +6,8 @@ function dump_flags(f)
 	local test = f
 
 	for k,v in pairs(f) do
-		if v then
-			imgui.Text("Flag: " .. tostring(k))
+		if v and v ~= 0 then
+			imgui.Text("Flag: " .. tostring(k) .. " : " .. tostring(v))
 		end
 	end
 end
@@ -101,6 +101,8 @@ function dump_job(j)
 	
 	--imgui.Text("Flags: " .. tostring(j.flags))
 	
+	imgui.Text("Job flags")
+	
 	dump_flags(j.flags)
 	
 	--apparently garbage
@@ -112,6 +114,8 @@ function dump_job(j)
 	
 	--always -1
 	--imgui.Text("unk5: " .. tostring(j.unk5))
+	
+	imgui.Text("Material Cat")
 	
 	dump_flags(j.material_category)
 	
