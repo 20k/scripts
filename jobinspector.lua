@@ -43,6 +43,46 @@ function dump_general_ref(gr)
 	
 end
 
+--job.job_items
+function dump_job_item(ji)
+	imgui.Text("Type: " .. df.item_type[ji.item_type])
+	imgui.Text("Subtype: " .. ji.item_subtype)
+	imgui.Text("Mat_type: " .. ji.mat_type)
+	imgui.Text("mat_index: " .. ji.mat_index)
+	
+	imgui.Text("flags1")
+	
+	dump_flags(ji.flags1)
+	
+	imgui.Text("Quantity: " .. ji.quantity)
+	imgui.Text("Vector_id: " .. df.job_item_vector_id[ji.vector_id])
+	
+	imgui.Text("flags2")
+	
+	dump_flags(ji.flags2)
+	
+	imgui.Text("flags3")
+	
+	dump_flags(ji.flags3)
+	
+	imgui.Text("flags4 ".. tostring(ji.flags4))
+	imgui.Text("flags5 ".. tostring(ji.flags5))
+	
+	imgui.Text("metal_ore ".. tostring(ji.metal_ore))
+	
+	imgui.Text("reaction_class ".. tostring(ji.reaction_class))
+	imgui.Text("has_product ".. tostring(ji.has_material_reaction_product))
+	
+	imgui.Text("mindim ".. tostring(ji.min_dimension))
+	
+	imgui.Text("has_tool_use ".. tostring(ji.min_dimension))
+	
+	imgui.Text("unk_v43_1 ".. tostring(ji.unk_v43_1))
+	imgui.Text("unk_v43_2 ".. tostring(ji.unk_v43_2))
+	imgui.Text("unk_v43_3 ".. tostring(ji.unk_v43_3))
+	imgui.Text("unk_v43_4 ".. tostring(ji.unk_v43_4))
+end
+
 function dump_job(j)
 	imgui.BeginTooltip()
 
@@ -92,6 +132,10 @@ function dump_job(j)
 	end
 	
 	imgui.Text("#job_items: " .. tostring(#j.job_items))
+	
+	for k,v in pairs(j.job_items) do
+		dump_job_item(v)
+	end
 	
 	imgui.EndTooltip()
 end
