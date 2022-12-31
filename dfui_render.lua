@@ -86,7 +86,41 @@ end
 function get_user_facing_name(unit)
 	local name_type = dfhack.units.getVisibleName(unit)
 	
-	return dfhack.df2utf(dfhack.TranslateName(name_type, false, false)) .. ", " .. dfhack.units.getProfessionName(unit, false, false)
+	local main_name = dfhack.df2utf(dfhack.TranslateName(name_type, false, false))
+	
+	--lots of things don't appear to have a proper name, and instead have a profession
+	local profession = dfhack.units.getProfessionName(unit, false, false)
+	
+	if #main_name == 0 then
+		return profession
+	else
+		return main_name .. ", " .. profession
+	end
+end
+
+function TextColoredUnit(unit)
+	local is_hostile = dfhack.units.isDanger(unit)
+	local is_forts = dfhack.units.isFortControlled(unit)
+		
+	local col = COLOR_GREY
+	
+	if is_forts then
+		col = COLOR_WHITE
+	end
+	
+	if dfhack.units.isAnimal(unit) then
+		col = COLOR_GREY
+	end
+	
+	if is_hostile then
+		col = COLOR_LIGHTRED
+	end
+	
+	if is_hostile and dfhack.units.isAnimal(unit) then
+		col = COLOR_RED
+	end
+	
+	imgui.TextColored({fg=col}, get_user_facing_name(unit))
 end
 
 function render_table_impl(menus, old_state)

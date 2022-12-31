@@ -224,30 +224,10 @@ function handle_unit_mouseover()
 		local px, py, pz = dfhack.units.getPosition(v)
 				
 		if px == mouse_pos.x and py == mouse_pos.y and pz == mouse_pos.z then
-			local is_hostile = dfhack.units.isDanger(v)
-			local is_forts = dfhack.units.isFortControlled(v)
-		
 			imgui.BeginTooltip()
+
+			render.TextColoredUnit(v)
 			
-			local col = COLOR_GREY
-			
-			if is_forts then
-				col = COLOR_WHITE
-			end
-			
-			if dfhack.units.isAnimal(v) then
-				col = COLOR_GREY
-			end
-			
-			if is_hostile then
-				col = COLOR_LIGHTRED
-			end
-			
-			if is_hostile and dfhack.units.isAnimal(v) then
-				col = COLOR_RED
-			end
-			
-			imgui.TextColored({fg=col}, render.get_user_facing_name(v))
 			imgui.EndTooltip()
 		end
 	end
