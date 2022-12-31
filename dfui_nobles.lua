@@ -444,30 +444,28 @@ function render_titles()
 				imgui.Text(position.name[0])
 				
 				imgui.TableNextColumn()
+			
+				local str = "[Set]"
+				local col = COLOR_GREEN
 				
-				if (can_appoint(position) or position_filled) or override then	
-					local str = "[Set]"
-					local col = COLOR_GREEN
-					
-					if position_filled then
-						str = "[Replace]"
-						col = COLOR_BROWN
-					end
-				
-					if imgui.ButtonColored({fg=col}, str .. "##" .. tostring(current_assignment_id)) then
-						render.set_menu_item(current_assignment_id)
-					end
-					
-					if imgui.IsItemHovered() then
-						if not position_filled then 
-							imgui.SetTooltip("Appoint Position")
-						else
-							imgui.SetTooltip("Replace Position")
-						end
-					end
-					
-					imgui.TableNextColumn()
+				if position_filled then
+					str = "[Replace]"
+					col = COLOR_BROWN
 				end
+			
+				if imgui.ButtonColored({fg=col}, str .. "##" .. tostring(current_assignment_id)) then
+					render.set_menu_item(current_assignment_id)
+				end
+				
+				if imgui.IsItemHovered() then
+					if not position_filled then 
+						imgui.SetTooltip("Appoint Position")
+					else
+						imgui.SetTooltip("Replace Position")
+					end
+				end
+				
+				imgui.TableNextColumn()
 				
 				local unit_opt = histfig_to_unit(v.histfig)
 
