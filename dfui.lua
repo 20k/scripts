@@ -10,6 +10,7 @@ MyScreen = defclass(MyScreen, gui.Screen)
 
 imgui = dfhack.imgui
 last_hovered_announce_id = -1
+one_step = false
 
 function render_menu()
 	local menus = {{key="097", text="View Announcements"},
@@ -40,11 +41,37 @@ function render_menu()
 				   {key="063", text="Help"},
 				   {key="027", text="Options"},
 				   {key="059", text="Movies"},
-				   {key="068", text="Depot Access"},
-				   {key="032", text="Resume"},
-				   {key="046", text="One-Step"}}
+				   {key="068", text="Depot Access"}}
+				   
+	local is_paused = dfhack.world.ReadPauseState()
+	
+	if is_paused then
+		menus[#menus + 1] = {key="032", text="Resume"}
+		menus[#menus + 1] = {key="046", text="One-Step"}
+	else
+		menus[#menus + 1] = {key="032", text="Pause"}
+	end
 
 	local next_state = render.render_table_impl(menus, "main")
+	
+	if next_state == "Resume" then
+		next_state = "main"
+		
+		dfhack.world.SetPauseState(false)
+	end
+	
+	if next_state == "One-Step" then
+		next_state = "main"
+		one_step = true
+		
+		dfhack.world.SetPauseState(false)
+	end
+	
+	if next_state == "Pause" then
+		next_state = "main"
+		
+		dfhack.world.SetPauseState(true)
+	end
 	
 	if next_state ~= "main" then
 		render.push_menu(next_state)
@@ -87,6 +114,11 @@ end
 
 function MyScreen:render()
 	self:renderParent()
+	
+	if one_step then
+		one_step = false
+		dfhack.world.SetPauseState(true)
+	end
 	
 	--[[if(imgui.IsKeyPressed(6) and state == "main") then
 		self:dismiss()
