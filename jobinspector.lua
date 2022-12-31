@@ -12,6 +12,8 @@ function dump_flags(f)
 	end
 end
 
+--so, the building_holder's general ref id *is* simply the buildings id, good good
+--think thats its only real propery, other than type, which is general_ref_building_holderst
 function dump_general_ref(gr)
 	local type = gr:getType()
 	local id = gr:getID()
@@ -25,6 +27,10 @@ function dump_general_ref(gr)
 	--local type_name = df.general_ref_type.attrs[type].key_table
 	
 	imgui.Text("Type: " .. df.general_ref_type[type])
+	
+	if df.general_ref_building:is_instance(gr) then
+		imgui.Text("Building id: " .. tostring(gr.building_id))
+	end
 	
 	--[[local str = df.new('string')
 	
@@ -92,6 +98,10 @@ end
 
 function inspect_workshop(workshop)
 	local jobs = workshop.jobs
+	
+	--imgui.BeginTooltip()
+	--imgui.Text("Real Building Id " .. tostring(workshop.id))
+	--imgui.EndTooltip()
 	
 	for _,v in ipairs(jobs) do
 		dump_job(v)
