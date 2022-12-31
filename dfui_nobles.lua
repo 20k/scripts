@@ -101,8 +101,9 @@ function add_or_transfer_fort_title_to(unit, assignment_id)
 	
 	newfig.entity_links:insert("#",{new=df.histfig_entity_link_positionst,entity_id=df.global.ui.group_id,
 				link_strength=100,assignment_id=assignment_id,start_year=df.global.cur_year})
-				
+
 	assignment.histfig=newfig.id
+	assignment.histfig2=newfig.id
 end
 
 function get_unit_title_assignment_ids(unit)
@@ -259,6 +260,26 @@ function can_appoint(position)
 	end
 
 	return #get_valid_units() >= position.requires_population
+end
+
+function push_new_assignment(position_id)
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	if entity == nil then
+		return nil
+	end
+
+	local next_assignment_id = entity.positions.next_assignment_id
+	
+	local next_assignment = df.entity_position_assignment:new()
+	
+	--next_assignment.id = 
+	
+	next_assignment.unk_1 = -1
+	next_assignment.unk_2 = -1
+	next_assignment.unk_3 = -1
+	next_assignment.unk_4 = -1
+	next_assignment.unk_6 = 0
 end
 
 function render_titles()
