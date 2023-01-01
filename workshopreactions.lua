@@ -118,6 +118,12 @@ function get_carpenter_workshop()
         make_carpentry("Construct wooden Table", df.job_type.ConstructTable),
         make_carpentry("Make wooden Minecart", df.job_type.MakeTool, "ITEM_TOOL_MINECART"),
         make_carpentry("Make wooden Wheelbarrow", df.job_type.MakeTool, "ITEM_TOOL_WHEELBARROW"),
+        make_carpentry("Make wooden Stepladder", df.job_type.MakeTool, "ITEM_TOOL_STEPLADDER"),
+        make_carpentry("Make wooden Bookcase", df.job_type.MakeTool, "ITEM_TOOL_BOOKCASE"),
+        make_carpentry("Make wooden Pedestal", df.job_type.MakeTool, "ITEM_TOOL_PEDESTAL"),
+        make_carpentry("Make wooden Altar", df.job_type.MakeTool, "ITEM_TOOL_ALTAR"),
+        make_carpentry("Make wooden Splint", df.job_type.ConstructSplint),
+        make_carpentry("Make wooden Crutch", df.job_type.ConstructCrutch),
     }
 end
 
