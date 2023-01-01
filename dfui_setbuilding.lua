@@ -2,6 +2,7 @@
 
 workshops = reqscript("workshopreactions")
 render = reqscript('dfui_render')
+utils = require("utils")
 
 imgui = dfhack.imgui
 
@@ -129,13 +130,11 @@ function render_setbuilding()
 	local is_workshop = df.building_workshopst:is_instance(building)
 	local is_furnace = df.building_furnacest:is_instance(building)
 	
-	if is_workshop or is_furnace then
-		local name = df.workshop_type.attrs[building.type].name
-		
-		imgui.Text(name)
-		
-		imgui.NewLine()
-	end
+	local name = utils.getBuildingName(building)
+
+	imgui.Text(name)
+	
+	imgui.NewLine()
 	
 	if state.screen == "Add new task" then
 		if is_workshop then
