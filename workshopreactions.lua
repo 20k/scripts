@@ -47,7 +47,8 @@ input_filter_defaults = {
     -- Leaves actually enabling artifacts to the discretion of the API user,
     -- which is the right thing because unlike the game UI these filters are
     -- used in a way that does not give the user a chance to choose manually.
-    flags2 = { allow_artifact = true },
+    --flags2 = { allow_artifact = true },
+    flags2 = {},
     flags3 = {},
     flags4 = 0,
     flags5 = 0,
@@ -427,6 +428,36 @@ function make_totem()
     return job
 end
 
+
+
+function make_strands()
+    local strand_jobs = {}
+
+    --RAW_ADAMANTINE
+    local rock_types = df.global.world.raws.inorganics
+
+    for rock_id = #rock_types-1, 0, -1 do
+        local mat_type = 0
+        local mat_index = rock_id
+
+        local name = rock_types[rock_id].material.state_adj.Solid
+
+        if #rock_types[rock_id].thread_metal.mat_index > 0 then
+            local job = {name="Extract metal " .. name .. " strands"}
+
+            local job_fields = {job_type=df.job_type.ExtractMetalStrands, mat_type=0, mat_index=rock_id}
+
+            job.job_fields = job_fields
+
+            add_custom_item_to_job(job, {item_type=df.item_type.BOULDER, mat_type=0, mat_index=rock_id, quantity=1, vector_id=df.job_item_vector_id.BOULDER})
+
+            strand_jobs[#strand_jobs+1] = job
+        end
+    end
+
+    return strand_jobs
+end
+
 function get_craftsdwarf_workshop()
     local rock_items = {"Crafts", "Mug", "short sword", "Nest Box", "Jug", "Pot", "Hive", "Scroll Rollers",
                         "Book Binding", "Bookcase", "Pedestal", "Altar", "Die", "Toy", "Figurine", "Amulet", "Scepter",
@@ -530,6 +561,12 @@ function get_craftsdwarf_workshop()
     tot.menu = "bone"
 
     result[#result+1] = tot
+
+    local strands = make_strands()
+
+    for _,v in ipairs(strands) do
+        result[#result+1] = v
+    end
 
     result.defaults = {}
 
