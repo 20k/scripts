@@ -73,28 +73,26 @@ function add_job(building, job)
 	building.jobs:insert('#', out_job)
 	
 	dfhack.job.linkIntoWorld(out_job)
-	
-	local existing_item = render.get_menu_item();
-	
-	existing_item.screen = "base"
-	
-	render.set_menu_item(existing_item)
+
+	return true
 end
 
 function display_jobs(building, jobs)
 	if jobs == nil then
-		return
+		return false
 	end
 
+	local any_added = false
+
 	for i,v in pairs(jobs) do
-		if imgui.Button(v.name .. "##" .. tostring(i)) then
-			add_job(building, v)
-			
-			goto done
+		if imgui.Button(v.name .. "##" .. tostring(i)) and not any_added then
+			if add_job(building, v) then
+				any_added = true
+			end
 		end
 	end
 	
-	::done::
+	return any_added
 end
 
 function jobs_by_menu(jobs)
@@ -217,7 +215,10 @@ function render_setbuilding()
 			end
 		end
 		
-		display_jobs(building, categorised[state.subscreen])
+		if display_jobs(building, categorised[state.subscreen]) then
+			next_state.screen = "base"
+			go_back = true
+		end
 		
 		if state.subscreen == "" and (imgui.Button("back##subback2") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse())) and not go_back then
 			next_state.screen = "base"
