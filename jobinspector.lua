@@ -45,7 +45,7 @@ end
 
 --job.job_items
 function dump_job_item(ji)
-	imgui.Text("Type: " .. df.item_type[ji.item_type] .. " (" .. tostring(ji.item_type) .. ")")
+	imgui.Text("item_type: " .. df.item_type[ji.item_type] .. " (" .. tostring(ji.item_type) .. ")")
 	imgui.Text("Subtype: " .. ji.item_subtype)
 	imgui.Text("Mat_type: " .. ji.mat_type)
 	imgui.Text("mat_index: " .. ji.mat_index)
