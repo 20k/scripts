@@ -11,7 +11,6 @@ function add_job(building, job)
 	--general_ref_building_holderst
 	
 	--then need a job_item, the flags for which are all set by the job up above
-
 	local ji_array = {}
 	
 	for k,v in ipairs(job.items) do
@@ -41,7 +40,21 @@ function add_job(building, job)
 	
 	--sets job_type
 	for k,v in pairs(job.job_fields) do
+		if k == "material_category" then 
+			goto skip
+		end
+	
 		out_job[k] = v
+		
+		::skip::
+	end
+	
+	--[[for k,v in pairs(job.job_fields.material_category) do
+		out_job.material_category[k] = v
+	end]]--
+	
+	if job.job_fields.material_category then
+		out_job.material_category[job.job_fields.material_category] = 1
 	end
 	
 	out_job.pos.x = building.centerx
