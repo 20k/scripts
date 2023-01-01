@@ -151,7 +151,38 @@ function get_masonry_workshop()
         make_masonry("Make rock Pedestal", df.job_type.MakeTool, "ITEM_TOOL_PEDESTAL"),
         make_masonry("Make rock Altar", df.job_type.MakeTool, "ITEM_TOOL_ALTAR"),
     }
+end
 
+function make_wood_item(job_item)
+    local default_item = {item_type=df.item_type.WOOD,vector_id=df.job_item_vector_id.WOOD}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_wood_job(unfinished_job)
+    local default_job = {material_category=df.job_material_category.wood}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_rock_item(job_item)
+    local default_item = {item_type=df.item_type.BOULDER,vector_id=df.job_item_vector_id.BOULDER, mat_type=0,mat_index=-1, flags2={non_economic=true},flags3={hard=true}}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_rock_job(unfinished_job)
+    local default_job = {mat_type=0, mat_index=-1}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
 end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
@@ -217,7 +248,6 @@ jobs_furnace={
     },
 }
 jobs_workshop={
-
     [df.workshop_type.Jewelers]={
         {
             name="cut gems",
@@ -469,8 +499,8 @@ end
 local function addSmeltJobs(ret,use_fuel)
     local ores=scanRawsOres()
     for idx,ore in pairs(ores) do
-        print("adding:",ore.material.state_name.Solid)
-        printall(ore)
+        --print("adding:",ore.material.state_name.Solid)
+        --printall(ore)
     local job={name="smelt "..ore.material.state_name.Solid,job_fields={job_type=df.job_type.SmeltOre,mat_type=df.builtin_mats.INORGANIC,mat_index=idx},items={
         {item_type=df.item_type.BOULDER,mat_type=df.builtin_mats.INORGANIC,mat_index=idx,vector_id=df.job_item_vector_id.BOULDER}}}
         if use_fuel then
