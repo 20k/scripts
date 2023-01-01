@@ -185,25 +185,18 @@ function render_setbuilding()
 	imgui.NewLine()
 	
 	local go_back = false
+
+	local jobs = nil
+
+	if is_workshop then
+		jobs = get_jobs(df.building_type.Workshop, building.type, -1, true)
+	end
 	
-	if state.screen == "Add new task" then
-		local jobs = nil
+	if is_furnace then
+		jobs = get_jobs(df.building_type.Furnace, building.type, -1, true)
+	end
 	
-		if is_workshop then
-			local type = df.building_type.Workshop
-			local subtype = building.type
-			
-			jobs = get_jobs(type, subtype, -1, true)
-		end
-		
-		if is_furnace then
-			local type = df.building_type.Furnace
-			local subtype = building.type
-			--what is melt_remainder?
-			
-			jobs = get_jobs(type, subtype, -1, true)
-		end
-		
+	if state.screen == "Add new task" and jobs ~= nil then
 		local categorised = jobs_by_menu(jobs)
 		
 		if state.subscreen == nil then
@@ -236,7 +229,7 @@ function render_setbuilding()
 		end
 	end
 	
-	if state.screen == "base" then
+	if state.screen == "base" and jobs ~= nil then
 		display_existing_jobs(building)
 		
 		imgui.NewLine()
