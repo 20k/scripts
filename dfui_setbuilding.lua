@@ -85,7 +85,7 @@ function display_jobs(building, jobs)
 	local any_added = false
 
 	for i,v in pairs(jobs) do
-		if imgui.Button(v.name .. "##" .. tostring(i)) and not any_added then
+		if imgui.Button(dfhack.df2utf(v.name) .. "##" .. tostring(i)) and not any_added then
 			if add_job(building, v) then
 				any_added = true
 			end
@@ -122,7 +122,7 @@ function get_job_name(j)
 	
 	return df.job_type.attrs[j.job_type].caption]]--
 	
-	return dfhack.job.getName(j)
+	return dfhack.df2utf(dfhack.job.getName(j))
 end
 
 function display_existing_jobs(building)
