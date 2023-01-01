@@ -45,7 +45,7 @@ end
 
 --job.job_items
 function dump_job_item(ji)
-	imgui.Text("Type: " .. df.item_type[ji.item_type])
+	imgui.Text("Type: " .. df.item_type[ji.item_type] .. " (" .. tostring(ji.item_type) .. ")")
 	imgui.Text("Subtype: " .. ji.item_subtype)
 	imgui.Text("Mat_type: " .. ji.mat_type)
 	imgui.Text("mat_index: " .. ji.mat_index)
@@ -90,14 +90,33 @@ function dump_job(j)
 		imgui.Text("Test " .. tostring(k) .. " " .. tostring(v))
 	end]]--
 	
+	if j.job_type == df.job_type.MakeTool then
+		local base_types = df.itemdef_toolst.get_vector()
+		
+		for _,v in pairs(base_types) do
+			if v.subtype == j.item_subtype then
+				imgui.Text("Match")
+				imgui.Text(v.name)
+				
+				--imgui.Text("Hfid " .. tostring(v.source_hfid))
+				--imgui.Text("efid " .. tostring(v.source_enid))
+				imgui.Text("id " .. tostring(v.id))
+			end
+		end
+	end
+	
 	imgui.Text(df.job_type.attrs[j.job_type].caption)
-
+	
 	--imgui.Text("Type: " .. tostring(j.job_type))
 	
 	--surgery only apparently
-	if j.job_subtype ~= -1 then
+	--if j.job_subtype ~= -1 then
 		imgui.Text("Subtype: " .. tostring(j.job_subtype))
-	end
+	--end
+	
+	--if j.item_subtype ~= -1 then
+		imgui.Text("ItemSubtype: " .. tostring(j.item_subtype))
+	--end
 	
 	--imgui.Text("Flags: " .. tostring(j.flags))
 	
@@ -109,8 +128,9 @@ function dump_job(j)
 	--imgui.Text("unk4: " .. tostring(j.unk4))
 	
 	--not set for eg beds, both -1
-	--imgui.Text("mat_type: " .. tostring(j.mat_type))
-	--imgui.Text("mat_index: " .. tostring(j.mat_index))
+	
+	imgui.Text("mat_type: " .. tostring(j.mat_type))
+	imgui.Text("mat_index: " .. tostring(j.mat_index))
 	
 	--always -1
 	--imgui.Text("unk5: " .. tostring(j.unk5))
@@ -118,7 +138,7 @@ function dump_job(j)
 	imgui.Text("Material Cat")
 	
 	dump_flags(j.material_category)
-	
+		
 	--imgui.Text("material cat: " .. tostring(j.material_category))
 	
 	--blank
