@@ -82,6 +82,10 @@ function add_job(building, job)
 end
 
 function display_jobs(building, jobs)
+	if jobs == nil then
+		return
+	end
+
 	for i,v in pairs(jobs) do
 		if imgui.Button(v.name .. "##" .. tostring(i)) then
 			add_job(building, v)
@@ -91,6 +95,26 @@ function display_jobs(building, jobs)
 	end
 	
 	::done::
+end
+
+function jobs_by_menu(jobs)
+	local result = {}
+	
+	for _,v in pairs(jobs) do
+		local key = ""
+	
+		if v.menu ~= nil then
+			key = v.menu
+		end
+		
+		if result[key] == nil then
+			result[key] = {}
+		end
+		
+		result[key][#result[key]+1] = v
+	end	
+	
+	return result
 end
 
 function get_job_name(j)	
@@ -139,13 +163,13 @@ function render_setbuilding()
 	imgui.NewLine()
 	
 	if state.screen == "Add new task" then
+		local jobs = nil
+	
 		if is_workshop then
 			local type = df.building_type.Workshop
 			local subtype = building.type
 			
-			local jobs = workshops.getJobs(type, subtype, -1, true)
-			
-			display_jobs(building, jobs)
+			jobs = workshops.getJobs(type, subtype, -1, true)
 		end
 		
 		if is_furnace then
@@ -153,10 +177,36 @@ function render_setbuilding()
 			local subtype = building.type
 			--what is melt_remainder?
 			
-			local jobs = workshops.getJobs(type, subtype, -1, true)
-			
-			display_jobs(building, jobs)
+			jobs = workshops.getJobs(type, subtype, -1, true)
 		end
+		
+		local categorised = jobs_by_menu(jobs)
+		
+		if state.subscreen == nil then
+			state.subscreen = ""
+		end
+		
+		if state.subscreen == "" then
+			for k,v in pairs(categorised) do
+				if k ~= "" and imgui.Button(k .. "##setbuilding_" .. building.id) then
+					state.subscreen = k
+					
+					render.set_menu_item(state)
+				end
+			end
+		else
+			if imgui.Button("Back##subback") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse()) then
+				state.subscreen = ""
+				
+				render.set_menu_item(state)
+			end
+		end
+		
+		display_jobs(building, categorised[state.subscreen])
+		
+		--[[if jobs ~= nil then
+			display_jobs(building, jobs)
+		end]]--
 	end
 	
 	if state.screen == "base" then
