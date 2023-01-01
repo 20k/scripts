@@ -155,6 +155,7 @@ function get_masonry_workshop()
     }
 end
 
+--todo: clean this up
 function make_wood_item(job_item)
     local default_item = {item_type=df.item_type.WOOD,vector_id=df.job_item_vector_id.WOOD}
 
@@ -393,7 +394,7 @@ function make_rock_sword()
     return job
 end
 
-function make_craftsdwarf_workshop()
+function get_craftsdwarf_workshop()
     local rock_items = {"Crafts", "Mug", "short sword", "Nest Box", "Jug", "Pot", "Hive", "Scroll Rollers",
                         "Book Binding", "Bookcase", "Pedestal", "Altar", "Die", "Toy", "Figurine", "Amulet", "Scepter",
                         "Crown", "Ring", "Earring", "Bracelet", "Large Gem"}
@@ -466,21 +467,24 @@ function make_craftsdwarf_workshop()
                 goto nil
             end
 
-            local job = {}
+            local job = {name="Make " .. name}
 
-            --result[#result+1] =
+            job.job_fields = make_job_type(class, {})
+            job.job_fields.job_type = info.t
+            job.job_fields.item_subtype_s = info.st
+
+            result[#result+1] = job
 
             ::nope::
         end
-
-
     end
 
     result[#result+1] = make_rock_sword()
 
-    --todo: engrave memorial slab, make totem, extract metal strams, make instrument piece and instrument
+    --todo: engrave memorial slab, make totem, extract metal strands, make instrument piece and instrument
     --make scroll, make quire, bind book
 
+    return result
 end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
@@ -587,6 +591,7 @@ jobs_workshop={
     },
     [df.workshop_type.Masons]=get_masonry_workshop(),
     [df.workshop_type.Carpenters] = get_carpenter_workshop(),
+    [df.workshop_type.Craftsdwarfs] = get_craftsdwarf_workshop(),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
         defaults={flags1={unrotten=true}},
