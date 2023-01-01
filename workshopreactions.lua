@@ -20,7 +20,7 @@ end]]--
 
 function get_subtype_of(id)
     --todo: Unconditionally check subtypes of everything
-    local types = {df.itemdef_toolst, df.itemdef_weaponst}
+    local types = {df.itemdef_toolst, df.itemdef_weaponst, df.itemdef_ammost}
 
     for _,l in ipairs(types) do
         local vec = l.get_vector()
@@ -463,7 +463,7 @@ function get_craftsdwarf_workshop()
 
     local labours = {Crafts={t=job_types.MakeCrafts},
                      Mug={t=job_types.MakeGoblet},
-                     --don't know how to make ammo
+                     bolts={t=job_types.MakeAmmo, st="ITEM_AMMO_BOLTS"},
                      --don't know how to decorate with
                      ["Nest Box"]={t=job_types.MakeTool, st="ITEM_TOOL_NEST_BOX"},
                      Jug={t=job_types.MakeTool, st="ITEM_TOOL_JUG"},
