@@ -583,6 +583,64 @@ function get_bowyers_workshop()
     return {bone_job, wood_job}
 end
 
+function attach_job_props(mod, name, job_type, extras)
+    mod.name = name
+    mod.menu = ""
+
+    if mod.items == nil then
+        mod.items = {}
+    end
+
+    if mod.job_fields == nil then
+        mod.job_fields = {}
+    end
+
+    if job_type == nil then
+        dfhack.println("Nil job type for job type ", name)
+    end
+
+    mod.job_fields.job_type = job_type
+
+    if extras == nil then
+        extras = {}
+    end
+
+    utils.assign(mod.job_fields, extras)
+end
+
+function get_farmers_workshop()
+    --local process_plants_job = {job_fields={job_type=df.job_type.ProcessPlants}}
+
+    local process_plants_job = {}
+    attach_job_props(process_plants_job, "Process Plants", df.job_type.ProcessPlants)
+    add_custom_item_to_job(process_plants_job, {item_type=df.item_type.PLANT, flags1={unrotten=true, processable=true}, vector_id=df.job_item_vector_id.PLANT})
+
+    local process_plants_vial_job = {}
+    attach_job_props(process_plants_vial_job, "Process Plants (Vial)", df.job_type.ProcessPlantsVial)
+    add_custom_item_to_job(process_plants_vial_job, {item_type=df.item_type.PLANT, flags1={unrotten=true, processable_to_vial=true}, vector_id=df.job_item_vector_id.PLANT})
+    add_custom_item_to_job(process_plants_vial_job, {item_type=df.item_type.FLASK, flags1={empty=true, glass=true}, vector_id=df.job_item_vector_id.FLASK})
+
+    local process_plants_barrel_job = {}
+    attach_job_props(process_plants_barrel_job, "Process Plants (Barrel)", df.job_type.ProcessPlantsBarrel)
+    add_custom_item_to_job(process_plants_barrel_job, {item_type=df.item_type.PLANT, flags1={unrotten=true, processable_to_barrel=true}, vector_id=df.job_item_vector_id.PLANT})
+    add_custom_item_to_job(process_plants_barrel_job, {item_type=df.item_type.BARREL, flags1={empty=true}, vector_id=df.job_item_vector_id.BARREL})
+
+    local make_cheese_job = {}
+    attach_job_props(make_cheese_job, "Make Cheese", df.job_type.MakeCheese)
+    add_custom_item_to_job(make_cheese_job, {flags1={unrotten=true, milk=true}, vector_id=df.job_item_vector_id.ANY_COOKABLE})
+
+    local milk_job = {}
+    attach_job_props(milk_job, "Milk Creature", df.job_type.MilkCreature)
+    local shear_job = {}
+    attach_job_props(shear_job, "Shear Creature", df.job_type.ShearCreature)
+
+    local spin_thread = {}
+    attach_job_props(spin_thread, "Spin Thread", df.job_type.SpinThread, {material_category={strand=true}})
+    add_custom_item_to_job(spin_thread, {flags1={unrotten=true}, vector_id=df.job_item_vector_id.ANY_REFUSE, flags2={body_part=true, hair_wool=true}})
+
+    return {process_plants_job, process_plants_vial_job, process_plants_barrel_job, make_cheese_job, milk_job, shear_job, spin_thread}
+end
+
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
 jobs_furnace={
     [df.furnace_type.Smelter]={
@@ -689,6 +747,7 @@ jobs_workshop={
     [df.workshop_type.Masons]=get_masonry_workshop(),
     [df.workshop_type.Carpenters] = get_carpenter_workshop(),
     [df.workshop_type.Craftsdwarfs] = get_craftsdwarf_workshop(),
+    [df.workshop_type.Farmers] = get_farmers_workshop(),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
         defaults={flags1={unrotten=true}},
@@ -943,6 +1002,13 @@ function getJobs(buildingId,workshopId,customId,adventure_check)
                     utils.assign(lclDefaults,c_jobs.defaults)
             end
             entry.items={}
+
+            if contents.items == nil then
+                for k,item in pairs(contents) do
+                    dfhack.println(k, item)
+                end
+            end
+
             for k,item in pairs(contents.items) do
                 entry.items[k]=utils.clone(lclDefaults,true)
                 utils.assign(entry.items[k],item)
