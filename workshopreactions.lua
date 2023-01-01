@@ -730,11 +730,11 @@ jobs_workshop={
             name="construct mechanisms",
             items={{item_type=df.item_type.BOULDER,item_subtype=-1,vector_id=df.job_item_vector_id.BOULDER, mat_type=0,mat_index=-1,quantity=1,
                 flags3={hard=true}}},
-            job_fields={job_type=df.job_type.ConstructMechanisms}
+            job_fields={job_type=df.job_type.ConstructMechanisms, mat_type=0, mat_index=-1}
         },
         {
             name="construct traction bench",
-            items={{item_type=df.item_type.TABLE},{item_type=df.item_type.MECHANISM},{item_type=df.item_type.CHAIN}},
+            items={{item_type=df.item_type.TABLE,vector_id=df.job_item_vector_id.TABLE},{item_type=df.item_type.TRAPPARTS,vector_id=df.job_item_vector_id.TRAPPARTS},{item_type=df.item_type.CHAIN,vector_id=df.job_item_vector_id.CHAIN}},
             job_fields={job_type=df.job_type.ConstructTractionBench}
         },
     },
