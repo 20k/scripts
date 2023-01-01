@@ -2,25 +2,11 @@
 
 local utils = require 'utils'
 
---[[function get_subtype_of(class, id)
-    local base_types = class.get_vector()
-
-    for _,v in pairs(base_types) do
-        if v.id == id then
-            return v.subtype
-        end
-    end
-
-    return nil
-end
-
-function get_tool_subtype_of(id)
-    return get_subtype_of(df.itemdef_toolst, id)
-end]]--
-
 function get_subtype_of(id)
     --todo: Unconditionally check subtypes of everything
-    local types = {df.itemdef_toolst, df.itemdef_weaponst, df.itemdef_ammost}
+    local types = {df.itemdef_ammost, df.itemdef_armorst, df.itemdef_floodst, df.itemdef_glovesst, df.itemdef_helmst,
+    df.itemdef_instrumentst, df.itemdef_pantsst, df.itemdef_shieldst, df.itemdef_shoesst, df.itemdef_siegeammost, df.itemdef_toolst,
+    df.itemdef_toyst, df.itemdef_trapcompst, df.itemdef_weaponst}
 
     for _,l in ipairs(types) do
         local vec = l.get_vector()
