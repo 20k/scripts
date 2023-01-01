@@ -8,8 +8,14 @@ function get_subtype_of(id)
     df.itemdef_instrumentst, df.itemdef_pantsst, df.itemdef_shieldst, df.itemdef_shoesst, df.itemdef_siegeammost, df.itemdef_toolst,
     df.itemdef_toyst, df.itemdef_trapcompst, df.itemdef_weaponst}
 
-    for _,l in ipairs(types) do
+    for _,l in pairs(types) do
         local vec = l.get_vector()
+
+        --[[if l == df.itemdef_weaponst then
+            for k,v in pairs(vec) do
+                dfhack.println(k, v.id)
+            end
+        end]]--
 
         for k,v in pairs(vec) do
             if v.id == id then
@@ -17,6 +23,8 @@ function get_subtype_of(id)
             end
         end
     end
+
+    dfhack.println("Error, no subtype")
 
     return nil
 end
@@ -414,8 +422,6 @@ function make_totem()
     return job
 end
 
-
-
 function make_strands()
     local strand_jobs = {}
 
@@ -531,7 +537,6 @@ function get_craftsdwarf_workshop()
 
             add_item_type_to_job(job, class)
 
-
             result[#result+1] = job
 
             ::nope::
@@ -560,6 +565,22 @@ function get_craftsdwarf_workshop()
     --make scroll, make quire, bind book
 
     return result
+end
+
+function get_bowyers_workshop()
+    local bone_job = {name="Make bone crossbow"}
+    local wood_job = {name="Make wood crossbow"}
+
+    bone_job.job_fields = make_bone_job({item_subtype_s="ITEM_WEAPON_CROSSBOW"})
+    wood_job.job_fields = make_wood_job({item_subtype_s="ITEM_WEAPON_CROSSBOW"})
+
+    bone_job.job_fields.job_type = df.job_type.MakeWeapon
+    wood_job.job_fields.job_type = df.job_type.MakeWeapon
+
+    add_item_type_to_job(bone_job, "bone")
+    add_item_type_to_job(wood_job, "wood")
+
+    return {bone_job, wood_job}
 end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
@@ -647,6 +668,7 @@ jobs_workshop={
             job_fields={job_type=df.job_type.EncrustWithGems}
         },
     },
+    [df.workshop_type.Bowyers] = get_bowyers_workshop(),
     [df.workshop_type.Fishery]={
         {
             name="prepare raw fish",
