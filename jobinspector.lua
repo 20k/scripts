@@ -75,7 +75,7 @@ function dump_job_item(ji)
 	
 	imgui.Text("mindim ".. tostring(ji.min_dimension))
 	
-	imgui.Text("has_tool_use ".. tostring(ji.min_dimension))
+	imgui.Text("has_tool_use ".. tostring(ji.has_tool_use))
 	
 	imgui.Text("unk_v43_1 ".. tostring(ji.unk_v43_1))
 	imgui.Text("unk_v43_2 ".. tostring(ji.unk_v43_2))
