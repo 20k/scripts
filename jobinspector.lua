@@ -223,17 +223,22 @@ function dump_job(j)
 		imgui.Text("#specific_refs: " .. tostring(#j.specific_refs))
 	end
 	
-	imgui.Text("#general_refs: " .. tostring(#j.general_refs))
-	
-	for k,v in pairs(j.general_refs) do
-		dump_general_ref(v)
+	if #j.general_refs > 1 then
+		imgui.Text("#general_refs: " .. tostring(#j.general_refs))
+		
+		for k,v in pairs(j.general_refs) do
+			dump_general_ref(v)
+		end
 	end
 	
 	imgui.Text("#job_items: " .. tostring(#j.job_items))
 	
 	for k,v in pairs(j.job_items) do
+		imgui.NewLine()
 		dump_job_item(v)
 	end
+	
+	imgui.NewLine()
 	
 	imgui.EndTooltip()
 end
