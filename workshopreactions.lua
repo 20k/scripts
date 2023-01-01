@@ -31,6 +31,8 @@ function get_subtype_of(id)
     return nil
 end
 
+job_types = df.job_type
+
 input_filter_defaults = {
     item_type = -1,
     item_subtype = -1,
@@ -265,7 +267,7 @@ function make_yarn_job(unfinished_job)
     return default_job
 end
 
-function make_ivorytooth_item(job_item)
+function make_tooth_item(job_item)
     local default_item = {item_type=-1, quantity=1, flags1={unrotten=true}, vector_id=df.job_item_vector_id.ANY_REFUSE, flags2={body_part=true, ivory_tooth=true}}
 
     utils.assign(default_item, job_item)
@@ -273,7 +275,7 @@ function make_ivorytooth_item(job_item)
     return default_item
 end
 
-function make_ivorytooth_job(unfinished_job)
+function make_tooth_job(unfinished_job)
     local default_job = {material_category={tooth=true}}
 
     utils.assign(default_job, unfinished_job)
@@ -327,6 +329,158 @@ function make_leather_job(unfinished_job)
     utils.assign(default_job, unfinished_job)
 
     return default_job
+end
+
+function make_item_type(name, base)
+    local m = {rock=make_rock_item(base),
+               bone=make_bone_item(base),
+               shell=make_shell_item(base),
+               cloth=make_cloth_item(base),
+               silk=make_silk_item(base),
+               yarn=make_yarn_item(base),
+               tooth=make_tooth_item(base),
+               horn=make_horn_item(base),
+               pearl=make_pearl_item(base),
+               leather=make_leather_item(base),
+             }
+
+    return m[name]
+end
+
+function make_job_type(name, base)
+    local m = {rock=make_rock_job(base),
+               bone=make_bone_job(base),
+               shell=make_shell_job(base),
+               cloth=make_cloth_job(base),
+               silk=make_silk_job(base),
+               yarn=make_yarn_job(base),
+               tooth=make_tooth_job(base),
+               horn=make_horn_job(base),
+               pearl=make_pearl_job(base),
+               leather=make_leather_job(base),
+             }
+
+    return m[name]
+end
+
+function add_item_type_to_job(job, name, extra)
+    if job.items == nil then
+        job.items = {}
+    end
+
+    job.items[#job.items+1] = make_item_type(name, extra)
+end
+
+function make_rock_sword()
+    --local item_1 = {item_type=df.item_type.BOULDER, flags1={sharpenable=true}, vector_id=df.job_item_vector_id.BOULDER, flags3={hard=true}, mat_type=0, mat_index=-1}
+    --why plant? Who knows! But its what the game does
+    --local item_2 = {item_type=df.item_type.WOOD, flags2={plant=true}}
+
+    --local job_fields = {job_type=job_types.MakeWeapon, mat_type=0, mat_index=-1, item_subtype_s="ITEM_WEAPON_SWORD_SHORT"}
+
+    --return {name="make rock short sword", items={item_1, item_2}, job_fields=job_fields}
+
+    local job = {name="make rock short sword"}
+
+    local rock_job = make_rock_job({item_subtype_s="ITEM_WEAPON_SWORD_SHORT"})
+
+    job.job_fields = rock_job
+    job.job_fields.job_type = df.job_type.MakeWeapon,
+
+    add_item_to_job(job, "rock", {flags1={sharpenable=true}, flags2={non_economic=false}})
+    add_item_to_job(job, "wood", {flags2={plant=true}})
+
+    return job
+end
+
+function make_craftsdwarf_workshop()
+    local rock_items = {"Crafts", "Mug", "short sword", "Nest Box", "Jug", "Pot", "Hive", "Scroll Rollers",
+                        "Book Binding", "Bookcase", "Pedestal", "Altar", "Die", "Toy", "Figurine", "Amulet", "Scepter",
+                        "Crown", "Ring", "Earring", "Bracelet", "Large Gem"}
+    local wood_items = {"Crafts", "Cup", "bolts", "Nest Box", "Jug", "Pot", "Hive", "Scroll Rolls", "Book Binding", "Die", "Amulet",
+                        "Bracelet", "Earring", "Crown", "Figurine", "Ring", "Large Gem", "Scepter"}
+
+    local bone_items = {"bolts", "Decorate With", "leggings", "greaves", "helm", "Amulet", "Bracelet", "Earring",
+                        "Crown", "Figurine", "Ring","Large Gem", "Scepter"}
+
+    local shell_items = {"Decorate With", "Crafts", "leggings", "gauntlet", "helm", "Amulet", "Bracelet",
+                         "Earring", "Crown", "Figurine", "Ring", "Large Gem"}
+
+    local cloth_items = {"Crafts", "Amulet", "Bracelet", "Earring"}
+
+    local silk_items = {"Crafts", "Amulet", "Bracelet", "Earring"}
+
+    local yarn_items = {"Crafts", "Amulet", "Braelet", "Earring"}
+
+    local tooth_items = {"Decorate With", "Crafts", "Amulet", "Bracelet", "Earring", "Crown", "Figurine", "Ring",
+                         "Large Gem", "Scepter"}
+
+    local horn_items = {"Decorate With", "Crafts", "Amulet", "Bracelet", "Earring", "Crown", "Figurine", "Ring", "Large Gem","Scepter"}
+
+    local pearl_items = {"Decorate With", "Crafts", "Amulet", "Bracelet", "Earring","Crown", "Figurine", "Ring", "Large Gem"}
+
+    local leather_items = {"Crafts", "Amulet", "Bracelet", "Earring"}
+
+    local wax_items = {"Crafts"}
+
+    local all_simple_typed = {rock=rock_items, wood=wood_items, bone=bone_items, shell=shell_items,
+                              cloth=cloth_items, silk=silk_items, yarn=yarn_items, tooth=tooth_items,
+                              horn=horn_items, pearl=pearl_items, leather=leather_items, wax=wax_items}
+
+    local labours = {Crafts={t=job_types.MakeCrafts},
+                     Mug={t=job_types.MakeGoblet},
+                     --don't know how to make ammo
+                     --don't know how to decorate with
+                     ["Nest Box"]={t=job_types.MakeTool, st="ITEM_TOOL_NEST_BOX"},
+                     Jug={t=job_types.MakeTool, st="ITEM_TOOL_JUG"},
+                     Pot={t=job_types.MakeTool, st="ITEM_TOOL_LARGE_POT"},
+                     Hive={t=job_types.MakeTool, st="ITEM_TOOL_HIVE"},
+                     ["Scroll Rollers"]={t=job_types.MakeTool, st="ITEM_TOOL_SCROLL_ROLLERS"},
+                     ["Book Binding"]={t=job_types.MakeTool, st="ITEM_TOOL_BOOK_BINDING"},
+                     ["Bookcase"]={t=job_types.MakeTool, st="ITEM_TOOL_BOOKCASE"},
+                     ["Pedestal"]={t=job_types.MakeTool, st="ITEM_TOOL_PEDESTAL"},
+                     ["Altar"]={t=job_types.MakeTool, st="ITEM_TOOL_ALTAR"},
+                     ["Die"]={t=job_types.MakeTool, st="ITEM_TOOL_DIE"},
+                     ["Toy"]={t=job_types.MakeToy},
+                     ["Figurine"]={t=job_types.MakeFigurine},
+                     ["Amulet"]={t=job_types.MakeAmulet},
+                     ["Scepter"]={t=job_types.MakeScepter},
+                     ["Crown"]={t=job_types.MakeCrown},
+                     ["Ring"]={t=job_types.MakeRing},
+                     ["Earring"]={t=job_types.MakeEarring},
+                     ["Bracelet"]={t=job_types.MakeBracelet},
+                     ["Large Gem"]={t=job_types.MakeLargeGem},
+                     }
+
+    local result = {}
+
+    for class,types in pairs(all_simple_typed) do
+        for name,list in pairs(types) do
+            if class == "wax" then
+                goto skip
+            end
+
+            local info = labours[name]
+
+            if info == nil then
+                goto nil
+            end
+
+            local job = {}
+
+            --result[#result+1] =
+
+            ::nope::
+        end
+
+
+    end
+
+    result[#result+1] = make_rock_sword()
+
+    --todo: engrave memorial slab, make totem, extract metal strams, make instrument piece and instrument
+    --make scroll, make quire, bind book
+
 end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
