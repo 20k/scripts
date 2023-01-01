@@ -54,8 +54,10 @@ function add_job(building, job)
 		out_job.material_category[k] = v
 	end]]--
 	
-	if job.job_fields.material_category then
-		out_job.material_category[job.job_fields.material_category] = 1
+	if job.job_fields.material_category ~= nil then
+		for k,v in pairs(job.job_fields.material_category) do
+			out_job.material_category[k] = v
+		end
 	end
 	
 	out_job.pos.x = building.centerx

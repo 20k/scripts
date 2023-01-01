@@ -488,6 +488,7 @@ function get_craftsdwarf_workshop()
             job.job_fields = make_job_type(class, {})
             job.job_fields.job_type = info.t
             job.job_fields.item_subtype_s = info.st
+            job.menu = class
 
             add_item_type_to_job(job, class)
 
@@ -856,6 +857,7 @@ function getJobs(buildingId,workshopId,customId,adventure_check)
     for jobId,contents in pairs(c_jobs) do
         if jobId~="defaults" then
             local entry={}
+            entry.menu=contents.menu
             entry.name=contents.name
             local lclDefaults=utils.clone(input_filter_defaults,true)
             if c_jobs.defaults ~=nil then
