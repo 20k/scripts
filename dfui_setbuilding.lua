@@ -66,7 +66,7 @@ function add_job(building, job)
 end
 
 function display_jobs(building, jobs)
-	for i,v in ipairs(jobs) do
+	for i,v in pairs(jobs) do
 		if imgui.Button(v.name .. "##" .. tostring(i)) then
 			add_job(building, v)
 			
@@ -78,11 +78,13 @@ function display_jobs(building, jobs)
 end
 
 function get_job_name(j)	
-	if #j.reaction_name > 0 then
+	--[[if #j.reaction_name > 0 then
 		return j.reaction_name
 	end
 	
-	return df.job_type.attrs[j.job_type].caption
+	return df.job_type.attrs[j.job_type].caption]]--
+	
+	return dfhack.job.getName(j)
 end
 
 function display_existing_jobs(building)
