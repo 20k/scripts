@@ -1,6 +1,6 @@
 --@ module = true
 
-workshops = require("dfhack.workshops")
+workshops = reqscript("workshop_reactions")
 render = reqscript('dfui_render')
 
 imgui = dfhack.imgui
