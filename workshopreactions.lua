@@ -67,6 +67,33 @@ function make_carpentry(name, type, subtype_s)
 	}
 end
 
+function make_masonry(name, type, subtype_s)
+    return {
+        name=name,
+        items={{}},
+        job_fields={job_type=type, mat_type=0, mat_index=-1, item_subtype_s=subtype_s}
+    }
+end
+
+fix_throne = false
+fix_casket = false
+
+function get_coffin_name()
+    if fix_casket then
+        return "Coffin"
+    end
+
+    return "Casket"
+end
+
+function get_throne_name()
+    if fix_throne then
+        return "Chair"
+    end
+
+    return "Throne"
+end
+
 function get_carpenter_workshop()
     return {
         defaults={item_type=df.item_type.WOOD,vector_id=df.job_item_vector_id.WOOD},
@@ -79,7 +106,7 @@ function get_carpenter_workshop()
         make_carpentry("Construct wooden Armor Stand", df.job_type.ConstructArmorStand),
         make_carpentry("Construct Bed", df.job_type.ConstructBed),
         make_carpentry("Construct wooden Chair", df.job_type.ConstructThrone),
-        make_carpentry("Construct wooden Casket", df.job_type.ConstructCoffin),
+        make_carpentry("Construct wooden " .. get_coffin_name(), df.job_type.ConstructCoffin),
         make_carpentry("Construct wooden Door", df.job_type.ConstructDoor),
         make_carpentry("Construct wooden Floodgate", df.job_type.ConstructFloodgate),
         make_carpentry("Construct wooden Hatch Cover", df.job_type.ConstructHatchCover),
@@ -92,6 +119,33 @@ function get_carpenter_workshop()
         make_carpentry("Make wooden Minecart", df.job_type.MakeTool, "ITEM_TOOL_MINECART"),
         make_carpentry("Make wooden Wheelbarrow", df.job_type.MakeTool, "ITEM_TOOL_WHEELBARROW"),
     }
+end
+
+function get_masonry_workshop()
+    return {
+        defaults={item_type=df.item_type.BOULDER,item_subtype=-1,vector_id=df.job_item_vector_id.BOULDER, mat_type=0,mat_index=-1, flags2={non_economic=true},flags3={hard=true}},
+
+        make_masonry("Construct rock Armor Stand", df.job_type.ConstructArmorStand),
+        make_masonry("Construct rock Blocks", df.job_type.ConstructBlocks),
+        make_masonry("Construct rock " .. get_throne_name(), df.job_type.ConstructThrone),
+        make_masonry("Construct rock Coffin", df.job_type.ConstructCoffin),
+        make_masonry("Construct rock Door", df.job_type.ConstructDoor),
+        make_masonry("Construct rock Floodgate", df.job_type.ConstructFloodgate),
+        make_masonry("Construct rock Hatch Cover", df.job_type.ConstructHatchCover),
+        make_masonry("Construct rock Grate", df.job_type.ConstructGrate),
+        make_masonry("Construct rock Cabinet", df.job_type.ConstructCabinet),
+        make_masonry("Construct rock Coffer", df.job_type.ConstructChest),
+        make_masonry("Construct rock Statue", df.job_type.ConstructStatue),
+        make_masonry("Construct rock Slab", df.job_type.ConstructSlab),
+        make_masonry("Construct rock Table", df.job_type.ConstructTable),
+        make_masonry("Construct rock Weapon Rack", df.job_type.ConstructWeaponRack),
+        make_masonry("Construct rock Quern", df.job_type.ConstructQuern),
+        make_masonry("Construct rock Millstone", df.job_type.ConstructMillstone),
+        make_masonry("Make rock Bookcase", df.job_type.MakeTool, "ITEM_TOOL_BOOKCASE"),
+        make_masonry("Make rock Pedestal", df.job_type.MakeTool, "ITEM_TOOL_PEDESTAL"),
+        make_masonry("Make rock Altar", df.job_type.MakeTool, "ITEM_TOOL_ALTAR"),
+    }
+
 end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
@@ -197,90 +251,7 @@ jobs_workshop={
             job_fields={job_type=df.job_type.CatchLiveFish}
         }, -- no items?
     },
-    [df.workshop_type.Masons]={
-        defaults={item_type=df.item_type.BOULDER,item_subtype=-1,vector_id=df.job_item_vector_id.BOULDER, mat_type=0,mat_index=-1,flags3={hard=true}},--flags2={non_economic=true},
-        {
-            name="construct armor stand",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructArmorStand}
-            },
-
-        {
-            name="construct blocks",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructBlocks}
-        },
-        {
-            name="construct throne",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructThrone}
-        },
-        {
-            name="construct coffin",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructCoffin}
-        },
-        {
-            name="construct door",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructDoor}
-        },
-        {
-            name="construct floodgate",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructFloodgate}
-        },
-        {
-            name="construct hatch cover",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructHatchCover}
-        },
-        {
-            name="construct grate",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructGrate}
-        },
-        {
-            name="construct cabinet",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructCabinet}
-        },
-        {
-            name="construct chest",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructChest}
-        },
-        {
-            name="construct statue",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructStatue}
-        },
-        {
-            name="construct slab",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructSlab}
-        },
-        {
-            name="construct table",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructTable}
-        },
-        {
-            name="construct weapon rack",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructWeaponRack}
-        },
-        {
-            name="construct quern",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructQuern}
-        },
-        {
-            name="construct millstone",
-            items={{}},
-            job_fields={job_type=df.job_type.ConstructMillstone}
-        },
-    },
+    [df.workshop_type.Masons]=get_masonry_workshop(),
     [df.workshop_type.Carpenters] = get_carpenter_workshop(),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
