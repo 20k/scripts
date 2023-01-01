@@ -69,7 +69,7 @@ function make_carpentry(name, type, subtype_s)
 	return {
 		name=name,
 		items={{}},
-		job_fields={job_type=type, material_category=df.job_material_category.wood, item_subtype_s=subtype_s}
+		job_fields={job_type=type, material_category={wood=true}, item_subtype_s=subtype_s}
 	}
 end
 
@@ -169,7 +169,7 @@ function make_wood_item(job_item)
 end
 
 function make_wood_job(unfinished_job)
-    local default_job = {material_category=df.job_material_category.wood}
+    local default_job = {material_category={wood=true}}
 
     utils.assign(default_job, unfinished_job)
 
@@ -362,7 +362,7 @@ function make_job_type(name, base)
         base = {}
     end
 
-    local m = {wood=make_wood_item(base),
+    local m = {wood=make_wood_job(base),
                rock=make_rock_job(base),
                bone=make_bone_job(base),
                shell=make_shell_job(base),
@@ -483,8 +483,6 @@ function get_craftsdwarf_workshop()
 
             local job = {name="Make " .. tostring(class) .. " " .. name}
 
-            --dfhack.println(class)
-
             job.job_fields = make_job_type(class, {})
             job.job_fields.job_type = info.t
             job.job_fields.item_subtype_s = info.st
@@ -497,6 +495,7 @@ function get_craftsdwarf_workshop()
 
             add_item_type_to_job(job, class)
 
+
             result[#result+1] = job
 
             ::nope::
@@ -507,6 +506,8 @@ function get_craftsdwarf_workshop()
     rs.menu = "rock"
 
     result[#result+1] = rs
+
+    result.defaults = {}
 
     --todo: engrave memorial slab, make totem, extract metal strands, make instrument piece and instrument
     --make scroll, make quire, bind book
@@ -672,22 +673,22 @@ jobs_workshop={
         {
             name="weave plant thread cloth",
             items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={plant=true}}},
-            job_fields={job_type=df.job_type.WeaveCloth, material_category=df.job_material_category.plant}
+            job_fields={job_type=df.job_type.WeaveCloth, material_category={plant=true}}
         },
         {
             name="weave silk thread cloth",
             items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={silk=true}}},
-            job_fields={job_type=df.job_type.WeaveCloth, material_category=df.job_material_category.silk}
+            job_fields={job_type=df.job_type.WeaveCloth, material_category={silk=true}}
         },
         {
             name="weave yarn cloth",
             items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={yarn=true}}},
-            job_fields={job_type=df.job_type.WeaveCloth, material_category=df.job_material_category.yarn}
+            job_fields={job_type=df.job_type.WeaveCloth, material_category={yarn=true}}
         },
         {
             name="weave inorganic cloth",
             items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},mat_type=0}},
-            job_fields={job_type=df.job_type.WeaveCloth, material_category=df.job_material_category.strand}
+            job_fields={job_type=df.job_type.WeaveCloth, material_category={strand=true}}
         },
         {
             name="collect webs",
@@ -806,7 +807,8 @@ local function addReactionJobs(ret,bid,wid,cid,adventure_check)
     local reactions=scanRawsReaction(bid,wid or -1,cid or -1,adventure_check)
     for idx,react in pairs(reactions) do
     local job={name=react.name,
-               items={},job_fields={job_type=df.job_type.CustomReaction,reaction_name=react.code}
+               items={},job_fields={job_type=df.job_type.CustomReaction,reaction_name=react.code},
+               menu="extra"
               }
         for reagentId,reagent in pairs(react.reagents) do
             table.insert(job.items,reagentToJobItem(reagent,idx,reagentId))
