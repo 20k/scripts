@@ -770,12 +770,12 @@ jobs_workshop={
     [df.workshop_type.Butchers]={
         {
             name="butcher an animal",
-            items={{flags1={butcherable=true,unrotten=true,nearby=true}}},
+            items={{vector_id=df.job_item_vector_id.ANY_BUTCHERABLE, flags1={butcherable=true,unrotten=true,nearby=true}}},
             job_fields={job_type=df.job_type.ButcherAnimal}
         },
         {
             name="extract from land animal",
-            items={{flags1={extract_bearing_vermin=true,unrotten=true}},{item_type=df.item_type.FLASK,flags1={empty=true,glass=true}}},
+            items={{vector_id=df.job_item_vector_id.ANY_GENERIC24, flags1={extract_bearing_vermin=true,unrotten=true}},{item_type=df.item_type.FLASK,flags1={empty=true,glass=true}}},
             job_fields={job_type=df.job_type.ExtractFromLandAnimal}
         },
         {
