@@ -166,7 +166,7 @@ function render_setbuilding()
 		selected_building = mouse_world_pos
 	end
 	
-	local next_state = state
+	local next_state = utils.clone(state, true)
 	
 	local building = dfhack.buildings.findAtTile(selected_building)
 	
