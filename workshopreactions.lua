@@ -464,7 +464,7 @@ function get_craftsdwarf_workshop()
                      ["Ring"]={t=job_types.MakeRing},
                      ["Earring"]={t=job_types.MakeEarring},
                      ["Bracelet"]={t=job_types.MakeBracelet},
-                     ["Large Gem"]={t=job_types.MakeLargeGem},
+                     ["Large Gem"]={t=job_types.MakeGem},
                      }
 
     local result = {}
@@ -489,6 +489,11 @@ function get_craftsdwarf_workshop()
             job.job_fields.job_type = info.t
             job.job_fields.item_subtype_s = info.st
             job.menu = class
+
+            if info.t == nil then
+                dfhack.println("Ruh roh ", class, name)
+                goto nope
+            end
 
             add_item_type_to_job(job, class)
 

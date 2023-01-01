@@ -105,7 +105,7 @@ function dump_job(j)
 		end
 	end
 	
-	imgui.Text(df.job_type.attrs[j.job_type].caption)
+	imgui.Text(tostring(df.job_type.attrs[j.job_type].caption))
 	
 	--imgui.Text("Type: " .. tostring(j.job_type))
 	
