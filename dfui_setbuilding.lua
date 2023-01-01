@@ -146,6 +146,8 @@ function render_setbuilding()
 		selected_building = state.pos
 	end
 	
+	local next_state = state
+	
 	local building = dfhack.buildings.findAtTile(selected_building)
 	
 	if building == nil then
@@ -161,6 +163,8 @@ function render_setbuilding()
 	imgui.Text(name)
 	
 	imgui.NewLine()
+	
+	local go_back = false
 	
 	if state.screen == "Add new task" then
 		local jobs = nil
@@ -183,30 +187,32 @@ function render_setbuilding()
 		local categorised = jobs_by_menu(jobs)
 		
 		if state.subscreen == nil then
-			state.subscreen = ""
+			next_state.subscreen = ""
 		end
 		
 		if state.subscreen == "" then
 			for k,v in pairs(categorised) do
 				if k ~= "" and imgui.Button(k .. "##setbuilding_" .. building.id) then
-					state.subscreen = k
-					
-					render.set_menu_item(state)
+					next_state.subscreen = k
 				end
 			end
 		else
-			if imgui.Button("Back##subback") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse()) then
-				state.subscreen = ""
-				
-				render.set_menu_item(state)
+			if imgui.Button("back##subback") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse()) then
+				next_state.subscreen = ""				
+				go_back = true
 			end
 		end
 		
 		display_jobs(building, categorised[state.subscreen])
 		
-		--[[if jobs ~= nil then
-			display_jobs(building, jobs)
-		end]]--
+		if state.subscreen == "" and (imgui.Button("back##subback2") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse())) and not go_back then
+			next_state.screen = "base"
+			next_state.subscreen = ""
+			
+			--render.set_menu_item(state)
+			
+			go_back = true
+		end
 	end
 	
 	if state.screen == "base" then
@@ -216,18 +222,20 @@ function render_setbuilding()
 		
 		local strings = {{key="a", text="Add new task"}}
 		
-		local next_state = render.render_table_impl(strings, "none")
+		local next = render.render_table_impl(strings, "none")
 		
-		if next_state == "Add new task" then
-			render.set_menu_item({screen=next_state, pos=selected_building})
+		if next == "Add new task" then
+			next_state = {screen=next, pos=selected_building}
 		end
 	end
+	
+	render.set_menu_item(next_state)
 	
 	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
 		render.set_menu_item({screen="base", pos=mouse_world_pos})
 	end
 	
-	if imgui.IsMouseClicked(1) and imgui.WantCaptureMouse() then
+	if imgui.IsMouseClicked(1) and imgui.WantCaptureMouse() and not go_back then
 		render.set_menu_item(nil)
 	end
 end
