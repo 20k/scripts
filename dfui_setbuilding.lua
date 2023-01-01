@@ -141,7 +141,7 @@ function render_setbuilding()
 			local type = df.building_type.Workshop
 			local subtype = building.type
 			
-			local jobs = workshops.getJobs(type, subtype, -1)
+			local jobs = workshops.getJobs(type, subtype, -1, true)
 			
 			display_jobs(building, jobs)
 		end
@@ -151,7 +151,7 @@ function render_setbuilding()
 			local subtype = building.type
 			--what is melt_remainder?
 			
-			local jobs = workshops.getJobs(type, subtype, -1)
+			local jobs = workshops.getJobs(type, subtype, -1, true)
 			
 			display_jobs(building, jobs)
 		end
