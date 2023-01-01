@@ -1,6 +1,6 @@
 --@ module = true
 
-workshops = reqscript("workshop_reactions")
+workshops = reqscript("workshopreactions")
 render = reqscript('dfui_render')
 
 imgui = dfhack.imgui
@@ -122,6 +122,7 @@ function render_setbuilding()
 	local building = dfhack.buildings.findAtTile(selected_building)
 	
 	if building == nil then
+		render.set_menu_item(nil)
 		return
 	end
 
