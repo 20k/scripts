@@ -22,7 +22,7 @@ function add_job(building, job)
 		ji.unk_v43_2 = -1
 		ji.unk_v43_3 = -1
 		ji.unk_v43_4 = 0
-		ji.has_tool_use = 0
+		ji.has_tool_use = -1
 		
 		for m,n in pairs(v) do
 			ji[m] = n
