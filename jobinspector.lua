@@ -12,6 +12,16 @@ function dump_flags(f)
 	end
 end
 
+function any_flags(f)
+	for k,v in pairs(f) do
+		if v and v ~= 0 then
+			return true
+		end
+	end
+	
+	return false
+end
+
 --so, the building_holder's general ref id *is* simply the buildings id, good good
 --think thats its only real propery, other than type, which is general_ref_building_holderst
 function dump_general_ref(gr)
@@ -43,44 +53,93 @@ function dump_general_ref(gr)
 	
 end
 
+function neq(a, b)
+	return tostring(a) ~= tostring(b)
+end
+
 --job.job_items
 function dump_job_item(ji)
 	imgui.Text("item_type: " .. df.item_type[ji.item_type] .. " (" .. tostring(ji.item_type) .. ")")
-	imgui.Text("Subtype: " .. ji.item_subtype)
-	imgui.Text("Mat_type: " .. ji.mat_type)
-	imgui.Text("mat_index: " .. ji.mat_index)
 	
-	imgui.Text("flags1")
+	if neq(ji.item_subtype, -1) then
+		imgui.Text("Subtype: " .. ji.item_subtype)
+	end
+	
+	if neq(ji.mat_type, -1) then
+		imgui.Text("Mat_type: " .. ji.mat_type)
+	end	
+	
+	if neq(ji.mat_index, -1) then
+		imgui.Text("mat_index: " .. ji.mat_index)
+	end
+	
+	if any_flags(ji.flags1) then
+		imgui.Text("flags1")
+	end
 	
 	dump_flags(ji.flags1)
 	
 	imgui.Text("Quantity: " .. ji.quantity)
-	imgui.Text("Vector_id: " .. df.job_item_vector_id[ji.vector_id])
 	
-	imgui.Text("flags2")
+	if neq(ji.vector_id, -1) then
+		imgui.Text("Vector_id: " .. df.job_item_vector_id[ji.vector_id])
+	end
+	
+	if any_flags(ji.flags2) then
+		imgui.Text("flags2")
+	end
 	
 	dump_flags(ji.flags2)
 	
-	imgui.Text("flags3")
+	if any_flags(ji.flags3) then
+		imgui.Text("flags3")
+	end
 	
 	dump_flags(ji.flags3)
 	
-	imgui.Text("flags4 ".. tostring(ji.flags4))
-	imgui.Text("flags5 ".. tostring(ji.flags5))
+	if neq(ji.flags4, 0) then
+		imgui.Text("flags4 ".. tostring(ji.flags4))
+	end
 	
-	imgui.Text("metal_ore ".. tostring(ji.metal_ore))
+	if neq(ji.flags5, 0) then
+		imgui.Text("flags5 ".. tostring(ji.flags5))
+	end
 	
-	imgui.Text("reaction_class ".. tostring(ji.reaction_class))
-	imgui.Text("has_product ".. tostring(ji.has_material_reaction_product))
+	if neq(ji.metal_ore, -1) then
+		imgui.Text("metal_ore ".. tostring(ji.metal_ore))
+	end
 	
-	imgui.Text("mindim ".. tostring(ji.min_dimension))
+	if #ji.reaction_class > 0 then
+		imgui.Text("reaction_class ".. tostring(ji.reaction_class))
+	end
 	
-	imgui.Text("has_tool_use ".. tostring(ji.has_tool_use))
+	if #tostring(ji.has_material_reaction_product) > 0 then
+		imgui.Text("has_product ".. tostring(ji.has_material_reaction_product))
+	end
 	
-	imgui.Text("unk_v43_1 ".. tostring(ji.unk_v43_1))
-	imgui.Text("unk_v43_2 ".. tostring(ji.unk_v43_2))
-	imgui.Text("unk_v43_3 ".. tostring(ji.unk_v43_3))
-	imgui.Text("unk_v43_4 ".. tostring(ji.unk_v43_4))
+	if neq(ji.min_dimension, -1) then
+		imgui.Text("mindim ".. tostring(ji.min_dimension))
+	end
+	
+	if neq(ji.has_tool_use, -1) then
+		imgui.Text("has_tool_use ".. tostring(ji.has_tool_use))
+	end
+	
+	if neq(ji.unk_v43_1, 0) then
+		imgui.Text("unk_v43_1 ".. tostring(ji.unk_v43_1))
+	end
+	
+	if neq(ji.unk_v43_2, -1) then
+		imgui.Text("unk_v43_2 ".. tostring(ji.unk_v43_2))
+	end
+	
+	if neq(ji.unk_v43_3, -1) then
+		imgui.Text("unk_v43_3 ".. tostring(ji.unk_v43_3))
+	end
+	
+	if neq(ji.unk_v43_4, 0) then
+		imgui.Text("unk_v43_4 ".. tostring(ji.unk_v43_4))
+	end
 end
 
 function dump_job(j)
@@ -110,17 +169,19 @@ function dump_job(j)
 	--imgui.Text("Type: " .. tostring(j.job_type))
 	
 	--surgery only apparently
-	--if j.job_subtype ~= -1 then
-		imgui.Text("Subtype: " .. tostring(j.job_subtype))
-	--end
+	if neq(j.job_subtype, -1) then
+		imgui.Text("job_subtype: " .. tostring(j.job_subtype))
+	end
 	
-	--if j.item_subtype ~= -1 then
-		imgui.Text("ItemSubtype: " .. tostring(j.item_subtype))
-	--end
+	if neq(j.item_subtype, -1) then
+		imgui.Text("item_subtype: " .. tostring(j.item_subtype))
+	end
 	
 	--imgui.Text("Flags: " .. tostring(j.flags))
 	
-	imgui.Text("Job flags")
+	if any_flags(j.flags) then
+		imgui.Text("Job flags")
+	end
 	
 	dump_flags(j.flags)
 	
@@ -129,13 +190,20 @@ function dump_job(j)
 	
 	--not set for eg beds, both -1
 	
-	imgui.Text("mat_type: " .. tostring(j.mat_type))
-	imgui.Text("mat_index: " .. tostring(j.mat_index))
+	if neq(j.mat_type, -1) then
+		imgui.Text("mat_type: " .. tostring(j.mat_type))
+	end
+	
+	if neq(j.mat_index, -1) then
+		imgui.Text("mat_index: " .. tostring(j.mat_index))
+	end
 	
 	--always -1
 	--imgui.Text("unk5: " .. tostring(j.unk5))
 	
-	imgui.Text("Material Cat")
+	if any_flags(j.material_category) then
+		imgui.Text("material_category")
+	end
 	
 	dump_flags(j.material_category)
 		
@@ -147,8 +215,14 @@ function dump_job(j)
 	-- -1
 	--imgui.Text("unk11: " .. tostring(j.unk11))
 	
-	imgui.Text("#items: " .. tostring(#j.items))
-	imgui.Text("#specific_refs: " .. tostring(#j.specific_refs))
+	if #j.items > 0 then
+		imgui.Text("#items: " .. tostring(#j.items))
+	end
+	
+	if #j.specific_refs > 0 then
+		imgui.Text("#specific_refs: " .. tostring(#j.specific_refs))
+	end
+	
 	imgui.Text("#general_refs: " .. tostring(#j.general_refs))
 	
 	for k,v in pairs(j.general_refs) do
