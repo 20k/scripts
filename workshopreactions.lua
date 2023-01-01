@@ -20,11 +20,15 @@ end]]--
 
 function get_subtype_of(id)
     --todo: Unconditionally check subtypes of everything
-    local base_types = df.itemdef_toolst.get_vector()
+    local types = {df.itemdef_toolst, df.itemdef_weaponst}
 
-    for _,v in pairs(base_types) do
-        if v.id == id then
-            return v.subtype
+    for _,l in ipairs(types) do
+        local vec = l.get_vector()
+
+        for k,v in pairs(vec) do
+            if v.id == id then
+                return v.subtype
+            end
         end
     end
 
@@ -333,7 +337,12 @@ function make_leather_job(unfinished_job)
 end
 
 function make_item_type(name, base)
-    local m = {rock=make_rock_item(base),
+    if base == nil then
+        base = {}
+    end
+
+    local m = {wood=make_wood_item(base),
+               rock=make_rock_item(base),
                bone=make_bone_item(base),
                shell=make_shell_item(base),
                cloth=make_cloth_item(base),
@@ -349,7 +358,12 @@ function make_item_type(name, base)
 end
 
 function make_job_type(name, base)
-    local m = {rock=make_rock_job(base),
+    if base == nil then
+        base = {}
+    end
+
+    local m = {wood=make_wood_item(base),
+               rock=make_rock_job(base),
                bone=make_bone_job(base),
                shell=make_shell_job(base),
                cloth=make_cloth_job(base),
@@ -388,8 +402,8 @@ function make_rock_sword()
     job.job_fields = rock_job
     job.job_fields.job_type = df.job_type.MakeWeapon,
 
-    add_item_to_job(job, "rock", {flags1={sharpenable=true}, flags2={non_economic=false}})
-    add_item_to_job(job, "wood", {flags2={plant=true}})
+    add_item_type_to_job(job, "rock", {flags1={sharpenable=true}, flags2={non_economic=false}})
+    add_item_type_to_job(job, "wood", {flags2={plant=true}})
 
     return job
 end
@@ -456,22 +470,26 @@ function get_craftsdwarf_workshop()
     local result = {}
 
     for class,types in pairs(all_simple_typed) do
-        for name,list in pairs(types) do
+        for _,name in ipairs(types) do
             if class == "wax" then
-                goto skip
+                goto nope
             end
 
             local info = labours[name]
 
             if info == nil then
-                goto nil
+                goto nope
             end
 
-            local job = {name="Make " .. name}
+            local job = {name="Make " .. tostring(class) .. " " .. name}
+
+            --dfhack.println(class)
 
             job.job_fields = make_job_type(class, {})
             job.job_fields.job_type = info.t
             job.job_fields.item_subtype_s = info.st
+
+            add_item_type_to_job(job, class)
 
             result[#result+1] = job
 

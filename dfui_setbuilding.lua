@@ -171,7 +171,7 @@ function render_setbuilding()
 		end
 	end
 	
-	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() then
+	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
 		render.set_menu_item({screen="base", pos=mouse_world_pos})
 	end
 	
