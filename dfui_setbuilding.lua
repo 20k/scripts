@@ -207,6 +207,7 @@ function render_setbuilding()
 		local categorised = jobs_by_menu(jobs)
 		
 		if state.subscreen == nil then
+			state.subscreen = ""
 			next_state.subscreen = ""
 		end
 		
