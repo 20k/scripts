@@ -135,6 +135,22 @@ function display_existing_jobs(building)
 	end
 end
 
+job_cache = {}
+
+function get_jobs(t, s, c, adv)
+	for _,v in ipairs(job_cache) do
+		if v.type == t and v.subtype == s then
+			return v.jobs
+		end
+	end
+	
+	jobs = workshops.getJobs(t, s, c, adv)
+	
+	job_cache[#job_cache + 1] = {type=t, subtype=s, jobs=jobs}
+	
+	return jobs
+end
+
 function render_setbuilding()
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 	
@@ -144,6 +160,10 @@ function render_setbuilding()
 	if render.get_menu_item() ~= nil then
 		state = render.get_menu_item()
 		selected_building = state.pos
+	end
+	
+	if selected_building == nil then
+		selected_building = mouse_world_pos
 	end
 	
 	local next_state = state
@@ -173,7 +193,7 @@ function render_setbuilding()
 			local type = df.building_type.Workshop
 			local subtype = building.type
 			
-			jobs = workshops.getJobs(type, subtype, -1, true)
+			jobs = get_jobs(type, subtype, -1, true)
 		end
 		
 		if is_furnace then
@@ -181,7 +201,7 @@ function render_setbuilding()
 			local subtype = building.type
 			--what is melt_remainder?
 			
-			jobs = workshops.getJobs(type, subtype, -1, true)
+			jobs = get_jobs(type, subtype, -1, true)
 		end
 		
 		local categorised = jobs_by_menu(jobs)
