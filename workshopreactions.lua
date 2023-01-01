@@ -386,6 +386,14 @@ function add_item_type_to_job(job, name, extra)
     job.items[#job.items+1] = make_item_type(name, extra)
 end
 
+function add_custom_item_to_job(job, extra)
+    if job.items == nil then
+        job.items = {}
+    end
+
+    job.items[#job.items+1] = extra
+end
+
 function make_rock_sword()
     --local item_1 = {item_type=df.item_type.BOULDER, flags1={sharpenable=true}, vector_id=df.job_item_vector_id.BOULDER, flags3={hard=true}, mat_type=0, mat_index=-1}
     --why plant? Who knows! But its what the game does
@@ -404,6 +412,17 @@ function make_rock_sword()
 
     add_item_type_to_job(job, "rock", {flags1={sharpenable=true}, flags2={non_economic=false}})
     add_item_type_to_job(job, "wood", {flags2={plant=true}})
+
+    return job
+end
+
+function make_totem()
+    local job = {name="make totem"}
+
+    job.job_fields = {}
+    job.job_fields.job_type = df.job_type.MakeTotem
+
+    add_custom_item_to_job(job, {item_type=-1, flags1={unrotten=true}, vector_id=df.job_item_vector_id.ANY_REFUSE, flags2={totemable=true, body_part=true}})
 
     return job
 end
@@ -506,6 +525,11 @@ function get_craftsdwarf_workshop()
     rs.menu = "rock"
 
     result[#result+1] = rs
+
+    local tot = make_totem()
+    tot.menu = "bone"
+
+    result[#result+1] = tot
 
     result.defaults = {}
 
