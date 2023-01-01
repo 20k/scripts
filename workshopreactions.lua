@@ -225,6 +225,109 @@ function make_cloth_item(job_item)
     return default_item
 end
 
+function make_cloth_job(unfinished_job)
+    local default_job = {material_category={cloth=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_silk_item(job_item)
+    local default_item = {item_type=df.item_type.CLOTH, quantity=10000, vector_id=df.job_item_vector_id.CLOTH, flags2={silk=true}, mindim=10000}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_silk_job(unfinished_job)
+    local default_job = {material_category={silk=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_yarn_item(job_item)
+    local default_item = {item_type=df.item_type.CLOTH, quantity=10000, vector_id=df.job_item_vector_id.CLOTH, flags2={yarn=true}, mindim=10000}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_yarn_job(unfinished_job)
+    local default_job = {material_category={yarn=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_ivorytooth_item(job_item)
+    local default_item = {item_type=-1, quantity=1, flags1={unrotten=true}, vector_id=df.job_item_vector_id.ANY_REFUSE, flags2={body_part=true, ivory_tooth=true}}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_ivorytooth_job(unfinished_job)
+    local default_job = {material_category={tooth=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_horn_item(job_item)
+    local default_item = {item_type=-1, quantity=1, flags1={unrotten=true}, vector_id=df.job_item_vector_id.ANY_REFUSE, flags2={body_part=true, horn=true}}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_horn_job(unfinished_job)
+    local default_job = {material_category={horn=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_pearl_item(job_item)
+    local default_item = {item_type=-1, quantity=1, flags1={unrotten=true}, vector_id=df.job_item_vector_id.ANY_REFUSE, flags2={body_part=true, pearl=true}}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_pearl_job(unfinished_job)
+    local default_job = {material_category={pearl=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_leather_item(job_item)
+    local default_item = {item_type=df.item_type.SKIN_TANNED, quantity=1, vector_id=df.job_item_vector_id.SKIN_TANNED}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_leather_job(unfinished_job)
+    local default_job = {material_category={leather=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
 jobs_furnace={
