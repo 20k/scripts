@@ -194,12 +194,37 @@ function make_bone_item(job_item)
 end
 
 function make_bone_job(unfinished_job)
-    local default_job = {material_category={bone=true}}}
+    local default_job = {material_category={bone=true}}
 
     utils.assign(default_job, unfinished_job)
 
     return default_job
 end
+
+function make_shell_item(job_item)
+    local default_item = {item_type=-1, flags1={unrotten=true}, vector_id=df.job_item_vector_id.ANY_REFUSE, flags2={shell=true, body_part=true}}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
+function make_shell_job(unfinished_job)
+    local default_job = {material_category={shell=true}}
+
+    utils.assign(default_job, unfinished_job)
+
+    return default_job
+end
+
+function make_cloth_item(job_item)
+    local default_item = {item_type=df.item_type.CLOTH, quantity=10000, vector_id=df.job_item_vector_id.CLOTH, flags2={plant=true}, mindim=10000}
+
+    utils.assign(default_item, job_item)
+
+    return default_item
+end
+
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
 jobs_furnace={
