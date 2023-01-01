@@ -503,7 +503,10 @@ function get_craftsdwarf_workshop()
         end
     end
 
-    result[#result+1] = make_rock_sword()
+    local rs = make_rock_sword()
+    rs.menu = "rock"
+
+    result[#result+1] = rs
 
     --todo: engrave memorial slab, make totem, extract metal strands, make instrument piece and instrument
     --make scroll, make quire, bind book
