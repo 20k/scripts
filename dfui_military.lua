@@ -82,11 +82,11 @@ function render_military()
 			local real_unit = nobles.histfig_to_unit(spos.occupant)
 			
 			if real_unit == nil then
-				lsquad[k] = -1
+				lsquad[k+1] = -1
 				goto notreal
 			end
 			
-			lsquad[k] = spos.occupant
+			lsquad[k+1] = spos.occupant
 			
 			::notreal::
 		end
@@ -102,64 +102,11 @@ function render_military()
 	local selected_squad = 2
 	
 	local max_len = 10
-	
-	local columns = {squad_ids, dwarf_histfigs_in_squads, all_elegible_dwarf_units}
-	
+		
 	if imgui.BeginTable("Tt1", 3, (1<<13)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
-		
-		--[[for i=1,max_len do
-			for c=1,3 do
-				if i > #columns[c] then
-					goto skip
-				end
-			
-				if c == 1 then
-					local squad_id = squad_ids[i]
-					
-					local squad = df.squad.find(squad_id)
-					
-					imgui.Text(get_squad_name(squad))
-				end
-				
-				if c == 2 then
-					local histfig = dwarf_histfigs_in_squads[selected_squad][i]
-				
-					if histfil ~= nil then
-						if histfig == -1 then
-							imgui.Text("Available")
-						else
-							local real_unit = nobles.histfig_to_unit(histfig)
-							
-							local unit_name = render.get_user_facing_name(real_unit)
-						
-							imgui.Text(unit_name)
-						end
-					end
-				end
-				
-				if c == 3 then
-					local unit = all_elegible_dwarf_units[i]
-					
-					if unit == nil then
-						goto skip
-					end
-					
-					local unit_name = render.get_user_facing_name(unit)
-			
-					imgui.Text(unit_name)
-				end
-				
-				::skip::
-			
-				imgui.TableNextColumn();
-			end
-			
-			imgui.TableNextRow();
-			imgui.TableNextColumn();
-		end]]--
-		
+
 		for _,i in ipairs(squad_ids) do
 			local squad_id = i
 			
@@ -170,7 +117,7 @@ function render_military()
 		
 		imgui.TableNextColumn()
 		
-		for _,histfig in pairs(dwarf_histfigs_in_squads[selected_squad]) do
+		for _,histfig in ipairs(dwarf_histfigs_in_squads[selected_squad]) do
 			if histfig == -1 then
 				imgui.Text("Available")
 			else
@@ -200,50 +147,4 @@ function render_military()
 		
 		imgui.EndTable()
 	end
-	
-	--[[if imgui.BeginTable("Tt1", 1, (1<<13)) then
-		imgui.TableNextRow();
-		imgui.TableNextColumn();
-	
-		for _,squad_id in ipairs(squad_ids) do
-			local squad = df.squad.find(squad_id)
-			
-			imgui.Text(get_squad_name(squad))
-			
-			imgui.TableNextRow();
-			imgui.TableNextColumn();
-		end
-	
-		imgui.EndTable()
-	end
-	
-	imgui.SameLine()
-	
-	local selected_squad = 1
-	
-	if imgui.BeginTable("Tt2", 1, (1<<13)) then
-		imgui.TableNextRow();
-		imgui.TableNextColumn();
-	
-		for _,histfig in pairs(dwarf_histfigs_in_squads[selected_squad]) do
-			--local squad = df.squad.find(squad_id)
-			
-			--imgui.Text(get_squad_name(squad))
-			
-			if histfig == -1 then
-				imgui.Text("Available")
-			else
-				local real_unit = nobles.histfig_to_unit(histfig)
-				
-				local unit_name = render.get_user_facing_name(real_unit)
-			
-				imgui.Text(unit_name)
-			end
-			
-			imgui.TableNextRow();
-			imgui.TableNextColumn();
-		end
-	
-		imgui.EndTable()
-	end]]--
 end
