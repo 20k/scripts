@@ -655,6 +655,23 @@ function get_still()
     return {extract_job}
 end
 
+function get_ashery()
+    local make_lye = {}
+    attach_job_props(make_lye, "Make Lye", df.job_type.MakeLye)
+    add_custom_item_to_job(make_lye, {item_type=df.item_type.BAR, mat_type=df.builtin_mats.ASH, vector_id=df.job_item_vector_id.BAR})
+    add_custom_item_to_job(make_lye, {item_type=df.item_type.BUCKET, flags1={empty=true}, vector_id=df.job_item_vector_id.BUCKET})
+
+    local make_potash_from_lye = {}
+    attach_job_props(make_potash_from_lye, "Make Potash From Lye", df.job_type.MakePotashFromLye)
+    add_custom_item_to_job(make_potash_from_lye, {flags1={lye_bearing=true}, vector_id=df.job_item_vector_id.BARREL})
+
+    local make_potash_from_ash = {}
+    attach_job_props(make_potash_from_ash, "Make Potash From Ash", df.job_type.MakePotashFromAsh)
+    add_custom_item_to_job(make_potash_from_ash, {item_type=df.item_type.BAR, mat_type=df.builtin_mats.ASH, vector_id=df.job_item_vector_id.BAR})
+
+    return {make_lye, make_potash_from_lye, make_potash_from_ash}
+end
+
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL,vector_id=df.job_item_vector_id.BAR}
 jobs_furnace={
     [df.furnace_type.Smelter]={
@@ -764,6 +781,7 @@ jobs_workshop={
     [df.workshop_type.Farmers] = get_farmers_workshop(),
     [df.workshop_type.Tanners] = get_tanners(),
     [df.workshop_type.Still] = get_still(),
+    [df.workshop_type.Ashery] = get_ashery(),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
         defaults={flags1={unrotten=true}},
