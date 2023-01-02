@@ -851,6 +851,9 @@ function get_forge(is_magma)
         if material.flags.ITEMS_SOFT then
             local metalclothing = (function(itemdef) return itemdef.props.flags.SOFT and itemdef.props.flags.METAL end)
             add_clothes_to(result, "Metal Clothing", material_info, any, is_magma)
+
+            add_mat_job(result, df.job_type.MakeBackpack, "Metal Clothing", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeQuiver, "Metal Clothing", material_info, is_magma)
         end
 
         ::notmetal::
