@@ -363,14 +363,44 @@ function get_plant_in_season(season, building)
 end
 
 function render_farm(building)
-	--get_biomeFlagMap()
+	local season_plants = {}
+	local max_rows = 0
+	
+	local counter = 1
 	
 	for season=1,4 do
 		local plants = get_plant_in_season(season,building)
 		
-		--[[for k,v in ipairs(plants) do
-			dfhack.println(v.name)
-		end]]--
+		season_plants[season] = plants
+		max_rows = math.max(max_rows, #plants)
+	end
+	
+	if imgui.BeginTable("Table", 4, (1 << 20)) then		
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+		
+		imgui.Text("Spring")
+		imgui.TableNextColumn();
+		imgui.Text("Summer")
+		imgui.TableNextColumn();
+		imgui.Text("Autumn")
+		imgui.TableNextColumn();
+		imgui.Text("Winter")
+		
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+		
+		for row=1,max_rows do	
+			for season=1,4 do			
+				if row <= #season_plants[season] then
+					imgui.Text(season_plants[season][row].name)
+				end
+							
+				imgui.TableNextColumn()
+			end
+		end
+			
+		imgui.EndTable()
 	end
 end
 
