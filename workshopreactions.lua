@@ -719,6 +719,11 @@ function get_forge(is_magma)
 
     for rock_id = 0, #rock_types - 1 do
         local material = rock_types[rock_id].material
+
+        if not material.flags.IS_METAL then
+            goto notmetal
+        end
+
         local material_name = material.state_adj.Solid
 
         local mat_type = 0
@@ -731,21 +736,33 @@ function get_forge(is_magma)
 
         function any(def) return true end
 
-        if material.flags.IS_METAL and material.flags.ITEMS_WEAPON then
+        function is_metal_clothing(def) return def.props.flags.METAL end
+
+        if material.flags.ITEMS_WEAPON then
             add_jobs_to(result, entity.resources.weapon_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, is_not_ranged_weapon, is_magma)
         end
 
-        if material.flags.IS_METAL and material.flags.ITEMS_WEAPON_RANGED then
+        if material.flags.ITEMS_WEAPON_RANGED then
             add_jobs_to(result, entity.resources.weapon_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, is_ranged_weapon, is_magma)
         end
 
-        if material.flags.IS_METAL and material.flags.ITEMS_DIGGER then
+        if material.flags.ITEMS_DIGGER then
             add_jobs_to(result, entity.resources.digger_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, any, is_magma)
         end
 
-        if material.flags.IS_METAL and material.flags.ITEMS_AMMO then
+        if material.flags.ITEMS_AMMO then
             add_jobs_to(result, entity.resources.ammo_type, itemdefs.ammo, df.job_type.MakeAmmo, "Weapons and Ammunition", material_info, any, is_magma)
         end
+
+        if material.flags.ITEMS_ARMOR then
+            add_jobs_to(result, entity.resources.armor_type, itemdefs.armor, df.job_type.MakeArmor, "Armor", material_info, is_metal_clothing, is_magma)
+            add_jobs_to(result, entity.resources.pants_type, itemdefs.pants, df.job_type.MakePants, "Armor", material_info, is_metal_clothing, is_magma)
+            add_jobs_to(result, entity.resources.gloves_type, itemdefs.gloves, df.job_type.MakeGloves, "Armor", material_info, is_metal_clothing, is_magma)
+            add_jobs_to(result, entity.resources.helm_type, itemdefs.helms, df.job_type.MakeHelm, "Armor", material_info, is_metal_clothing, is_magma)
+            add_jobs_to(result, entity.resources.shoes_type, itemdefs.shoes, df.job_type.MakeShoes, "Armor", material_info, is_metal_clothing, is_magma)
+        end
+
+        ::notmetal::
     end
 
     return result
