@@ -192,6 +192,14 @@ function get_job_name(j)
 	return dfhack.df2utf(dfhack.job.getName(j))
 end
 
+function select(c, a, b)
+	if c then
+		return a
+	end
+	
+	return b
+end
+
 function display_existing_jobs(building)
 	local jobs = building.jobs
 	
@@ -206,7 +214,7 @@ function display_existing_jobs(building)
 			col = COLOR_RED
 		end
 		
-		if imgui.ButtonColored({fg=col}, "[S]##job_"..tostring(j.id)) then
+		if imgui.ButtonColored({fg=col}, "[S]##job_"..tostring(idx)) then
 			toggle_suspend(j)
 		end
 		
@@ -220,26 +228,41 @@ function display_existing_jobs(building)
 		
 		imgui.SameLine()
 		
-		if imgui.ButtonColored({fg=COLOR_RED}, "[X]##cancel_"..tostring(j.id)) then
+		local repeat_col = select(j.flags["repeat"], COLOR_LIGHTBLUE, COLOR_DARKGREY)
+		
+		if imgui.ButtonColored({fg=repeat_col}, "[R]##repeat_"..tostring(idx)) then
+			j.flags["repeat"] = not j.flags["repeat"]
+		end
+		
+		if imgui.IsItemHovered() then
+			imgui.SetTooltip("repeat")
+		end
+		
+		imgui.SameLine()
+		
+		if imgui.ButtonColored({fg=COLOR_RED}, "[X]##cancel_"..tostring(idx)) then
 			should_kill[idx] = true
 		end
 		
 		if imgui.IsItemHovered() then
 			imgui.SetTooltip("cancel")
 		end
-		
+				
 		imgui.SameLine()
 		
 		imgui.Text(get_job_name(j))
+		
+		if j.flags.working then
+			imgui.SameLine()
+			
+			imgui.TextColored({fg=COLOR_LIGHTGREEN}, "A")
+		end
 	end
 	
 	for ix=#jobs-1,0,-1 do
 		if should_kill[ix] then
-			dfhack.println(ix)
 			local current = jobs[ix]
-			
-			dfhack.println("hi", current)
-			
+						
 			building.jobs:erase(ix)
 			
 			if not dfhack.job.removeJob(current) then
