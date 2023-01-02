@@ -142,8 +142,7 @@ function MyScreen:render()
 		self:dismiss()
 	end
 	
-	if state == "View Items In Buildings" then 
-		viewitems.handle_building_mouseover()
+	if state == "View Items In Buildings" then
 		viewitems.render_viewitems()
 	end
 	
@@ -169,7 +168,6 @@ function MyScreen:render()
 	
 	if state == "Zones" then
 		render_stock()
-		viewitems.handle_building_mouseover()
 		building.render_zones()
 	end
 	
@@ -181,11 +179,12 @@ function MyScreen:render()
 		setbuilding.render_setbuilding()
 	end
 	
-	if state == "main" then
-		viewitems.handle_building_mouseover()
-		viewitems.handle_unit_mouseover()
+	if state == "main" then	
 		render_menu()
 	end
+	
+	viewitems.handle_building_mouseover()
+	viewitems.handle_unit_mouseover()
 	
 	if not imgui.IsMouseDragging(2) or not has_last_camera then
 		last_camera = render.get_camera()
