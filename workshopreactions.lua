@@ -585,7 +585,7 @@ end
 
 function attach_job_props(mod, name, job_type, extras)
     mod.name = name
-    mod.menu = {""}
+    mod.menu = {}
 
     if mod.items == nil then
         mod.items = {}
@@ -699,6 +699,7 @@ function get_forge(is_magma)
             local types = entity.resources.weapon_type
             local local_itemdefs = itemdefs.weapons
             local job_type = df.job_type.MakeWeapon
+            local category = "Weapons and Ammunition"
 
             for _,itemid in ipairs(types) do
                 local item_subtype = itemid
@@ -720,7 +721,7 @@ function get_forge(is_magma)
                     add_custom_item_to_job(test_job, fuel)
                 end
 
-                test_job.menu = {material_name, def.name}
+                test_job.menu = {material_name, category}
 
                 result[#result+1] = test_job
 
