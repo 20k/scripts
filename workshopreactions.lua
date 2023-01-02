@@ -641,6 +641,11 @@ function get_farmers_workshop()
     return {process_plants_job, process_plants_vial_job, process_plants_barrel_job, make_cheese_job, milk_job, shear_job, spin_thread}
 end
 
+--df.workshop_type.Tanners
+function get_tanners()
+    return {}
+end
+
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
 jobs_furnace={
     [df.furnace_type.Smelter]={
@@ -748,6 +753,7 @@ jobs_workshop={
     [df.workshop_type.Carpenters] = get_carpenter_workshop(),
     [df.workshop_type.Craftsdwarfs] = get_craftsdwarf_workshop(),
     [df.workshop_type.Farmers] = get_farmers_workshop(),
+    [df.workshop_type.Tanners] = get_tanners(),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
         defaults={flags1={unrotten=true}},
