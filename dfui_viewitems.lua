@@ -196,7 +196,7 @@ function handle_building_mouseover()
 				goto skip
 			end
 			
-			if current_menu == "main" and imgui.IsMouseClicked(0) then
+			if (current_menu == "main" or current_menu == "Zones") and imgui.IsMouseClicked(0) then
 				selected_building_pos.x = lx
 				selected_building_pos.y = ly
 				selected_building_pos.z = top_left.z
