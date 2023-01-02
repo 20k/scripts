@@ -728,6 +728,17 @@ function add_mat_job(result, job_type, category, material_info, is_magma)
     result[#result+1] = test_job
 end
 
+function add_clothes_to(result, category, material_info, permiss, is_magma)
+    local entity = df.historical_entity.find(df.global.ui.civ_id)
+    local itemdefs = df.global.world.raws.itemdefs
+
+    add_jobs_to(result, entity.resources.armor_type, itemdefs.armor, df.job_type.MakeArmor, category, material_info, permiss, is_magma)
+    add_jobs_to(result, entity.resources.pants_type, itemdefs.pants, df.job_type.MakePants, category, material_info, permiss, is_magma)
+    add_jobs_to(result, entity.resources.gloves_type, itemdefs.gloves, df.job_type.MakeGloves, category, material_info, permiss, is_magma)
+    add_jobs_to(result, entity.resources.helm_type, itemdefs.helms, df.job_type.MakeHelm, category, material_info, permiss, is_magma)
+    add_jobs_to(result, entity.resources.shoes_type, itemdefs.shoes, df.job_type.MakeShoes, category, material_info, permiss, is_magma)
+end
+
 function get_forge(is_magma)
     local result = {}
 
@@ -777,11 +788,7 @@ function get_forge(is_magma)
         end
 
         if material.flags.ITEMS_ARMOR then
-            add_jobs_to(result, entity.resources.armor_type, itemdefs.armor, df.job_type.MakeArmor, "Armor", material_info, is_metal_clothing, is_magma)
-            add_jobs_to(result, entity.resources.pants_type, itemdefs.pants, df.job_type.MakePants, "Armor", material_info, is_metal_clothing, is_magma)
-            add_jobs_to(result, entity.resources.gloves_type, itemdefs.gloves, df.job_type.MakeGloves, "Armor", material_info, is_metal_clothing, is_magma)
-            add_jobs_to(result, entity.resources.helm_type, itemdefs.helms, df.job_type.MakeHelm, "Armor", material_info, is_metal_clothing, is_magma)
-            add_jobs_to(result, entity.resources.shoes_type, itemdefs.shoes, df.job_type.MakeShoes, "Armor", material_info, is_metal_clothing, is_magma)
+            add_clothes_to(result, "Armor", material_info, is_metal_clothing, is_magma)
 
             add_jobs_to(result, entity.resources.shield_type, itemdefs.shields, df.job_type.MakeShield, "Armor", material_info, any, is_magma)
         end
@@ -839,6 +846,13 @@ function get_forge(is_magma)
             add_mat_job(result, df.job_type.MakeRing, "Other Objects", material_info, is_magma)
             add_mat_job(result, df.job_type.MakeGem, "Other Objects", material_info, is_magma)
             add_mat_job(result, df.job_type.MakeScepter, "Other Objects", material_info, is_magma)
+        end
+
+        if material.flags.ITEMS_SOFT then
+            dfhack.println("hi ", material_name)
+
+            local metalclothing = (function(itemdef) return itemdef.props.flags.SOFT and itemdef.props.flags.METAL end)
+            add_clothes_to(result, "Metal Clothing", material_info, any, is_magma)
         end
 
         ::notmetal::
