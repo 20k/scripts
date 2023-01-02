@@ -77,6 +77,14 @@ function add_job(building, job)
 	return true
 end
 
+function toggle_suspend(job)
+	if job.flags.suspend then
+		job.flags.suspend = 0
+	else
+		job.flags.suspend = 1
+	end
+end
+
 function display_jobs(building, jobs)
 	if jobs == nil then
 		return false
@@ -188,6 +196,28 @@ function display_existing_jobs(building)
 	local jobs = building.jobs
 	
 	for _,j in ipairs(jobs) do
+		local is_suspended = j.flags.suspend
+		
+		local col = COLOR_GREEN
+		
+		if is_suspended then
+			col = COLOR_RED
+		end
+		
+		if imgui.ButtonColored({fg=col}, "[S]##job_"..tostring(j.id)) then
+			toggle_suspend(j)
+		end
+		
+		if imgui.IsItemHovered() then
+			if j.flags.suspend then
+				imgui.SetTooltip("unsuspend")
+			else
+				imgui.SetTooltip("suspend")
+			end
+		end
+		
+		imgui.SameLine()
+		
 		imgui.Text(get_job_name(j))
 	end
 end
