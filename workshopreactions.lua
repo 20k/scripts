@@ -869,15 +869,15 @@ jobs_workshop={
     [df.workshop_type.Siege]={
         {
             name="construct ballista parts",
-            items={{item_type=df.item_type.WOOD}},
+            items={{item_type=df.item_type.WOOD, vector_id=df.job_item_vector_id.WOOD}},
             job_fields={job_type=df.job_type.ConstructBallistaParts}
         },
         {
             name="construct catapult parts",
-            items={{item_type=df.item_type.WOOD}},
+            items={{item_type=df.item_type.WOOD, vector_id=df.job_item_vector_id.WOOD}},
             job_fields={job_type=df.job_type.ConstructCatapultParts}
         },
-        {
+        --[[{
             name="assemble ballista arrow",
             items={{item_type=df.item_type.WOOD}},
             job_fields={job_type=df.job_type.AssembleSiegeAmmo}
@@ -886,7 +886,7 @@ jobs_workshop={
             name="assemble tipped ballista arrow",
             items={{item_type=df.item_type.WOOD},{item_type=df.item_type.BALLISTAARROWHEAD}},
             job_fields={job_type=df.job_type.AssembleSiegeAmmo}
-        },
+        },]]--
     },
 }
 local function matchIds(bid1,wid1,cid1,bid2,wid2,cid2)
