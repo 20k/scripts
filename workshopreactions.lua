@@ -890,14 +890,14 @@ jobs_workshop={
         {
             name="dye thread",
             items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={dyeable=true}},
-                {flags1={unrotten=true},flags2={dye=true}}},
+                {flags1={unrotten=true},flags2={dye=true},vector_id=df.job_item_vector_id.ANY_COOKABLE}},
             job_fields={job_type=df.job_type.DyeThread}
         },
         {
             name="dye cloth",
             items={{item_type=df.item_type.CLOTH,quantity=10000,min_dimension=10000,flags2={dyeable=true}},
-                {flags1={unrotten=true},flags2={dye=true}}},
-            job_fields={job_type=df.job_type.DyeThread}
+                {flags1={unrotten=true},flags2={dye=true},vector_id=df.job_item_vector_id.ANY_COOKABLE}},
+            job_fields={job_type=df.job_type.DyeCloth}
         },
     },
     [df.workshop_type.Siege]={
