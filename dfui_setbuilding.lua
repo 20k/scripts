@@ -195,7 +195,9 @@ end
 function display_existing_jobs(building)
 	local jobs = building.jobs
 	
-	for _,j in ipairs(jobs) do
+	local should_kill = {}
+	
+	for idx,j in ipairs(jobs) do
 		local is_suspended = j.flags.suspend
 		
 		local col = COLOR_GREEN
@@ -218,7 +220,32 @@ function display_existing_jobs(building)
 		
 		imgui.SameLine()
 		
+		if imgui.ButtonColored({fg=COLOR_RED}, "[X]##cancel_"..tostring(j.id)) then
+			should_kill[idx] = true
+		end
+		
+		if imgui.IsItemHovered() then
+			imgui.SetTooltip("cancel")
+		end
+		
+		imgui.SameLine()
+		
 		imgui.Text(get_job_name(j))
+	end
+	
+	for ix=#jobs-1,0,-1 do
+		if should_kill[ix] then
+			dfhack.println(ix)
+			local current = jobs[ix]
+			
+			dfhack.println("hi", current)
+			
+			building.jobs:erase(ix)
+			
+			if not dfhack.job.removeJob(current) then
+				dfhack.println("Something bad happened killing the job :(")
+			end
+		end
 	end
 end
 
