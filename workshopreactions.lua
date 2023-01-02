@@ -730,12 +730,12 @@ jobs_workshop={
     [df.workshop_type.Fishery]={
         {
             name="prepare raw fish",
-            items={{item_type=df.item_type.FISH_RAW,flags1={unrotten=true}}},
+            items={{item_type=df.item_type.FISH_RAW,flags1={unrotten=true}, vector_id=df.job_item_vector_id.FISH_RAW}},
             job_fields={job_type=df.job_type.PrepareRawFish}
         },
         {
             name="extract from raw fish",
-            items={{flags1={unrotten=true,extract_bearing_fish=true}},{item_type=df.item_type.FLASK,flags1={empty=true,glass=true}}},
+            items={{flags1={unrotten=true,extract_bearing_fish=true}, vector_id=df.job_item_vector_id.FISH_RAW},{vector_id=df.job_item_vector_id.ANY_GENERIC24, item_type=df.item_type.FLASK,flags1={empty=true,glass=true}}},
             job_fields={job_type=df.job_type.ExtractFromRawFish}
         },
         {
