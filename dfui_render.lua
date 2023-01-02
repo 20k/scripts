@@ -93,6 +93,10 @@ function get_user_facing_name(unit)
 	
 	local tag = ""
 	
+	if dfhack.units.isKilled(unit) then
+		tag = tag.."[dead] "
+	end
+	
 	if dfhack.units.isUndead(unit) then
 		tag = tag.."[undead] "
 	end
@@ -164,23 +168,40 @@ end
 function TextColoredUnit(unit)
 	local is_hostile = check_hostile(unit)
 	local is_forts = dfhack.units.isFortControlled(unit)
+	local is_dead = dfhack.units.isKilled(unit)
 		
 	local col = COLOR_GREY
 	
 	if is_forts then
-		col = COLOR_WHITE
+		if is_dead then
+			col = COLOR_DARKGREY
+		else
+			col = COLOR_WHITE
+		end
 	end
 	
 	if dfhack.units.isAnimal(unit) then
-		col = COLOR_GREY
+		if is_dead then
+			col = COLOR_DARKGREY
+		else
+			col = COLOR_GREY
+		end
 	end
 	
 	if is_hostile then
-		col = COLOR_LIGHTRED
+		if is_dead then
+			col = COLOR_BROWN
+		else
+			col = COLOR_LIGHTRED
+		end
 	end
 	
 	if is_hostile and dfhack.units.isAnimal(unit) then
-		col = COLOR_RED
+		if is_dead then
+			col = COLOR_BROWN
+		else
+			col = COLOR_RED
+		end
 	end
 	
 	imgui.TextColored({fg=col}, get_user_facing_name(unit))
