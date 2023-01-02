@@ -758,6 +758,10 @@ function get_forge(is_magma)
 
         if material.flags.ITEMS_WEAPON then
             add_jobs_to(result, entity.resources.weapon_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, is_not_ranged_weapon, is_magma)
+
+            add_mat_job(result, df.job_type.MakeBallistaArrowHead, "Siege Equipment", material_info, is_magma)
+
+            add_jobs_to(result, entity.resources.trapcomp_type, itemdefs.trapcomps, df.job_type.MakeTrapComponent, "Trap Components", material_info, any, is_magma)
         end
 
         if material.flags.ITEMS_WEAPON_RANGED then
@@ -783,6 +787,8 @@ function get_forge(is_magma)
         end
 
         if material.flags.ITEMS_HARD then
+            add_mat_job(result, df.job_type.ConstructMechanisms, "Trap Components", material_info, is_magma)
+
             add_mat_job(result, df.job_type.MakeCage, "Furniture", material_info, is_magma)
             add_mat_job(result, df.job_type.MakeChain, "Furniture", material_info, is_magma)
             add_mat_job(result, df.job_type.MakeAnimalTrap, "Furniture", material_info, is_magma)
