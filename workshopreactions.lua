@@ -702,7 +702,7 @@ function add_jobs_to(result, types, itemdefs, job_type, category, material_info,
             add_custom_item_to_job(test_job, fuel)
         end
 
-        test_job.menu = {material_info.name, category}
+        test_job.menu = {category, material_info.name}
 
         result[#result+1] = test_job
 
@@ -723,7 +723,7 @@ function add_mat_job(result, job_type, category, material_info, is_magma)
         add_custom_item_to_job(test_job, fuel)
     end
 
-    test_job.menu = {material_info.name, category}
+    test_job.menu = {category, material_info.name}
 
     result[#result+1] = test_job
 end
@@ -849,8 +849,6 @@ function get_forge(is_magma)
         end
 
         if material.flags.ITEMS_SOFT then
-            dfhack.println("hi ", material_name)
-
             local metalclothing = (function(itemdef) return itemdef.props.flags.SOFT and itemdef.props.flags.METAL end)
             add_clothes_to(result, "Metal Clothing", material_info, any, is_magma)
         end
