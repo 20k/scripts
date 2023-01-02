@@ -687,7 +687,7 @@ function add_jobs_to(result, types, itemdefs, job_type, category, material_info,
 
         local def = itemdefs[itemid]
 
-        if not is_permitted(def) then
+        if is_permitted and not is_permitted(def) then
             goto nope
         end
 
@@ -702,7 +702,9 @@ function add_jobs_to(result, types, itemdefs, job_type, category, material_info,
             add_custom_item_to_job(test_job, fuel)
         end
 
-        test_job.menu = {category, material_info.name}
+        if category ~= nil then
+            test_job.menu = {category, material_info.name}
+        end
 
         result[#result+1] = test_job
 
@@ -858,6 +860,53 @@ function get_forge(is_magma)
 
         ::notmetal::
     end
+
+    return result
+end
+
+function get_siege()
+    local result = {{
+        name="construct ballista parts",
+        items={{item_type=df.item_type.WOOD, vector_id=df.job_item_vector_id.WOOD}},
+        job_fields={job_type=df.job_type.ConstructBallistaParts}
+    },
+    {
+        name="construct catapult parts",
+        items={{item_type=df.item_type.WOOD, vector_id=df.job_item_vector_id.WOOD}},
+        job_fields={job_type=df.job_type.ConstructCatapultParts}
+    }}
+
+    local entity = df.historical_entity.find(df.global.ui.civ_id)
+    local itemdefs = df.global.world.raws.itemdefs
+    local rock_types = df.global.world.raws.inorganics
+
+    for rock_id = 0, #rock_types - 1 do
+        local material = rock_types[rock_id].material
+
+        if not material.flags.IS_METAL then
+            goto notmetal
+        end
+
+        local material_name = material.state_adj.Solid
+
+        local mat_type = 0
+        local mat_index = rock_id
+
+        material_info = {mat_type=mat_type, mat_index=mat_index, name=material_name}
+
+        if material.flags.ITEMS_WEAPON then
+            add_jobs_to(result, entity.resources.siegeammo_type, itemdefs.siege_ammo, df.job_type.AssembleSiegeAmmo, nil, material_info, nil, false)
+        end
+
+        ::notmetal::
+    end
+
+    local wood_job = {name = "Make wooden ballista arrow"}
+    wood_job.job_fields = make_wood_job({item_subtype_s="ITEM_SIEGEAMMO_BALLISTA"})
+    wood_job.job_fields.job_type=df.job_type.AssembleSiegeAmmo
+    add_item_type_to_job(wood_job, "wood")
+
+    result[#result+1] = wood_job
 
     return result
 end
@@ -1074,17 +1123,8 @@ jobs_workshop={
             job_fields={job_type=df.job_type.DyeCloth}
         },
     },
-    [df.workshop_type.Siege]={
-        {
-            name="construct ballista parts",
-            items={{item_type=df.item_type.WOOD, vector_id=df.job_item_vector_id.WOOD}},
-            job_fields={job_type=df.job_type.ConstructBallistaParts}
-        },
-        {
-            name="construct catapult parts",
-            items={{item_type=df.item_type.WOOD, vector_id=df.job_item_vector_id.WOOD}},
-            job_fields={job_type=df.job_type.ConstructCatapultParts}
-        },
+    [df.workshop_type.Siege]=get_siege()
+
         --[[{
             name="assemble ballista arrow",
             items={{item_type=df.item_type.WOOD}},
@@ -1095,7 +1135,7 @@ jobs_workshop={
             items={{item_type=df.item_type.WOOD},{item_type=df.item_type.BALLISTAARROWHEAD}},
             job_fields={job_type=df.job_type.AssembleSiegeAmmo}
         },]]--
-    },
+    ,
 }
 local function matchIds(bid1,wid1,cid1,bid2,wid2,cid2)
     if bid1~=-1 and bid2~=-1 and bid1~=bid2 then
