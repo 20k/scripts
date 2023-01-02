@@ -682,13 +682,52 @@ end
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL,vector_id=df.job_item_vector_id.BAR}
 
 function get_forge(is_magma)
+    local result = {}
+
+    local entity = df.historical_entity.find(df.global.ui.civ_id)
     local itemdefs = df.global.world.raws.itemdefs
     local rock_types = df.global.world.raws.inorganics
 
     for rock_id = 0, #rock_types - 1 do
         local material = rock_types[rock_id].material
         local rock_name = material.state_adj.Solid
+
+        local mat_type = 0
+        local mat_index = rock_id
+
+        if material.flags.IS_METAL and material.flags.ITEMS_WEAPON then
+            local types = entity.resources.weapon_type
+            local local_itemdefs = itemdefs.weapons
+            local job_type = df.job_type.MakeWeapon
+
+            for _,itemid in ipairs(types) do
+                local item_subtype = itemid
+
+                local def = local_itemdefs[itemid]
+
+                if def.skill_ranged ~= -1 then
+                    goto nope
+                end
+
+                local name = "Make " .. def.name
+
+                local test_job = {}
+                attach_job_props(test_job, name, job_type, {mat_type=mat_type, mat_index=mat_index, item_subtype=item_subtype})
+                add_custom_item_to_job(test_job, {item_type=df.item_type.BAR, quantity=450, min_dimension=150,
+                                                  mat_type=0, mat_index=mat_index, vector_id=df.job_item_vector_id.BAR})
+
+                if not is_magma then
+                    add_custom_item_to_job(test_job, fuel)
+                end
+
+                result[#result+1] = test_job
+
+                ::nope::
+            end
+        end
     end
+
+    return result
 end
 
 jobs_furnace={
@@ -706,23 +745,6 @@ jobs_furnace={
             job_fields={job_type=df.job_type.MeltMetalObject}
         }
     },
-    --[[ [df.furnace_type.MetalsmithsForge]={
-        unpack(concat(furnaces,mechanism,anvil,crafts,coins,flask))
-
-    },
-    ]]
-    --MetalsmithsForge,
-    --MagmaForge
-    --[[
-        forges:
-            weapons and ammo-> from raws...
-            armor -> raws
-            furniture -> builtins?
-            siege eq-> builtin (only balista head)
-            trap eq -> from raws+ mechanisms
-            other object-> anvil, crafts, goblets,toys,instruments,nestbox... (raws?) flask, coins,stud with iron
-            metal clothing-> raws???
-    ]]
     [df.furnace_type.GlassFurnace]={
         {
             name="collect sand",
@@ -800,6 +822,8 @@ jobs_workshop={
     [df.workshop_type.Tanners] = get_tanners(),
     [df.workshop_type.Still] = get_still(),
     [df.workshop_type.Ashery] = get_ashery(),
+    [df.workshop_type.MetalsmithsForge]=get_forge(false),
+    [df.workshop_type.MagmaForge]=get_forge(true),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
         defaults={flags1={unrotten=true,cookable=true},vector_id=df.job_item_vector_id.ANY_COOKABLE},
