@@ -355,6 +355,7 @@ function render_commander_positions(override)
 	end
 end
 
+--other code does df.historical_figure.find(id), df.unit.find(result.unit_id)
 function histfig_to_unit(histfig_id)
 	if histfig_id < 0 or histfig_id == nil then
 		return nil
