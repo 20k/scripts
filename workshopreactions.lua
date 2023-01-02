@@ -690,7 +690,7 @@ function get_forge(is_magma)
 
     for rock_id = 0, #rock_types - 1 do
         local material = rock_types[rock_id].material
-        local rock_name = material.state_adj.Solid
+        local material_name = material.state_adj.Solid
 
         local mat_type = 0
         local mat_index = rock_id
@@ -709,7 +709,7 @@ function get_forge(is_magma)
                     goto nope
                 end
 
-                local name = "Make " .. def.name
+                local name = "Make " .. material_name ..  " " .. def.name
 
                 local test_job = {}
                 attach_job_props(test_job, name, job_type, {mat_type=mat_type, mat_index=mat_index, item_subtype=item_subtype})
