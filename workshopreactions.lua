@@ -720,6 +720,8 @@ function get_forge(is_magma)
                     add_custom_item_to_job(test_job, fuel)
                 end
 
+                test_job.menu = {material_name, def.name}
+
                 result[#result+1] = test_job
 
                 ::nope::
@@ -1012,7 +1014,7 @@ local function addReactionJobs(ret,bid,wid,cid,adventure_check)
     for idx,react in pairs(reactions) do
     local job={name=react.name,
                items={},job_fields={job_type=df.job_type.CustomReaction,reaction_name=react.code},
-               menu="extra"
+               menu={"extra"}
               }
         for reagentId,reagent in pairs(react.reagents) do
             table.insert(job.items,reagentToJobItem(reagent,idx,reagentId))
@@ -1071,7 +1073,7 @@ function getJobs(buildingId,workshopId,customId,adventure_check)
     for jobId,contents in pairs(c_jobs) do
         if jobId~="defaults" then
             local entry={}
-            entry.menu=contents.menu
+            entry.menu=utils.clone(contents.menu)
             entry.name=contents.name
             local lclDefaults=utils.clone(input_filter_defaults,true)
             if c_jobs.defaults ~=nil then
