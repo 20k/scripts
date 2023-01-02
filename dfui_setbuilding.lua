@@ -291,15 +291,9 @@ end
 function get_biomeFlagMap()
 	local type = df.biome_type
 	
-	local biomes = {}
-	
-	for i=type._first_item,type._last_item do
-		biomes[#biomes + 1] = i
-	end
-	
 	local map = {}
 	
-	for _,v in ipairs(biomes) do
+	for v=type._first_item,type._last_item do
 		map[df.plant_raw_flags["BIOME_" .. tostring(df.biome_type[v])]] = v
 	end
 	
@@ -377,6 +371,8 @@ function render_farm(building)
 		max_rows = math.max(max_rows, #plants)
 	end
 	
+	local bid = 0
+	
 	if imgui.BeginTable("Table", 4, (1 << 20)) then		
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
@@ -392,10 +388,31 @@ function render_farm(building)
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 		
-		for row=1,max_rows do	
-			for season=1,4 do			
+		for row=1,max_rows do
+			for season=1,4 do
+				bid = bid + 1
+				
 				if row <= #season_plants[season] then
-					imgui.Text(season_plants[season][row].name)
+					local current_id = building.plant_id[season - 1]
+					
+					local set = false
+					local off = false
+					
+					if current_id == season_plants[season][row].index then
+						off = imgui.ButtonColored({fg=COLOR_LIGHTGREEN}, season_plants[season][row].name .. "##plnt" .. bid)
+					else
+						set = imgui.Button(season_plants[season][row].name .. "##plnt" .. bid)
+					end
+					
+					local potential_index = season_plants[season][row].index
+					
+					if set then
+						building.plant_id[season - 1] = potential_index
+					end
+					
+					if off then
+						building.plant_id[season - 1] = -1
+					end
 				end
 							
 				imgui.TableNextColumn()
