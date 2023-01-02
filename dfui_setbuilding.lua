@@ -288,6 +288,92 @@ function get_jobs(t, s, c, adv)
 	return jobs
 end
 
+function get_biomeFlagMap()
+	local type = df.biome_type
+	
+	local biomes = {}
+	
+	for i=type._first_item,type._last_item do
+		biomes[#biomes + 1] = i
+	end
+	
+	local map = {}
+	
+	for _,v in ipairs(biomes) do
+		map[df.plant_raw_flags["BIOME_" .. tostring(df.biome_type[v])]] = v
+	end
+	
+	for k,v in pairs(map) do
+		if k == nil or v == nil then
+			dfhack.println(df.plant_raw_flags[k], df.biome_type[v])
+		end
+	end
+	
+	return map
+end
+
+local flag_map = get_biomeFlagMap()
+
+local seasons = {df.plant_raw_flags.SPRING, df.plant_raw_flags.SUMMER, 
+                 df.plant_raw_flags.AUTUMN, df.plant_raw_flags.WINTER}
+
+local function is_plantable(plant, season_index)
+	local has_seed = plant.flags.SEED
+	local is_tree = plant.flags.TREE
+				
+	return has_seed and not is_tree and plant.flags[seasons[season_index]]
+end
+
+function any_set(plant, biome)
+	for d,v in pairs(plant.flags) do
+		if v then
+			local converted = df.plant_raw_flags[d]
+		
+			if flag_map[converted] == biome then
+				return true
+			end
+		end
+	end
+	
+	return false
+end
+
+function get_plant_in_season(season, building)
+	local plant_raws = {}
+
+	for k,plant in ipairs(df.global.world.raws.plants.all) do
+		if is_plantable(plant, season) then
+			local rx, ry = dfhack.maps.getTileBiomeRgn(building.centerx, building.centery, building.z)
+			
+			local biome = dfhack.maps.GetBiomeType(rx, ry)
+			
+			local tile_flags = dfhack.maps.getTileFlags(building.centerx, building.centery, building.z)
+			
+			if tile_flags.subterranean then
+				biome = df.biome_type.SUBTERRANEAN_WATER
+			end
+
+			if any_set(plant, biome) then
+				plant_raws[#plant_raws+1] = plant
+			end
+		end
+	end
+	
+	return plant_raws
+end
+
+function render_farm(building)
+	--get_biomeFlagMap()
+	
+	for season=1,4 do
+		local plants = get_plant_in_season(season,building)
+		
+		--[[for k,v in ipairs(plants) do
+			dfhack.println(v.name)
+		end]]--
+	end
+end
+
 function render_setbuilding()
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 	
@@ -312,14 +398,19 @@ function render_setbuilding()
 		return
 	end
 
-	local is_workshop = df.building_workshopst:is_instance(building)
-	local is_furnace = df.building_furnacest:is_instance(building)
-	
 	local name = utils.getBuildingName(building)
 
 	imgui.Text(name)
 	
 	imgui.NewLine()
+	
+	if df.building_farmplotst:is_instance(building) then
+		render_farm(building)
+		return
+	end
+	
+	local is_workshop = df.building_workshopst:is_instance(building)
+	local is_furnace = df.building_furnacest:is_instance(building)
 	
 	local go_back = false
 
