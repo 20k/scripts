@@ -806,27 +806,27 @@ jobs_workshop={
     [df.workshop_type.Loom]={
         {
             name="weave plant thread cloth",
-            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={plant=true}}},
+            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={plant=true},vector_id=df.job_item_vector_id.THREAD}},
             job_fields={job_type=df.job_type.WeaveCloth, material_category={plant=true}}
         },
         {
             name="weave silk thread cloth",
-            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={silk=true}}},
+            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={silk=true},vector_id=df.job_item_vector_id.THREAD}},
             job_fields={job_type=df.job_type.WeaveCloth, material_category={silk=true}}
         },
         {
             name="weave yarn cloth",
-            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={yarn=true}}},
+            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},flags2={yarn=true},vector_id=df.job_item_vector_id.THREAD}},
             job_fields={job_type=df.job_type.WeaveCloth, material_category={yarn=true}}
         },
         {
             name="weave inorganic cloth",
-            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},mat_type=0}},
+            items={{item_type=df.item_type.THREAD,quantity=15000,min_dimension=15000,flags1={collected=true},mat_type=0,vector_id=df.job_item_vector_id.THREAD}},
             job_fields={job_type=df.job_type.WeaveCloth, material_category={strand=true}}
         },
         {
             name="collect webs",
-            items={{item_type=df.item_type.THREAD,quantity=10,min_dimension=10,flags1={undisturbed=true}}},
+            items={{item_type=df.item_type.THREAD,quantity=10,min_dimension=10,flags1={undisturbed=true}},vector_id=df.job_item_vector_id.ANY_WEBS},
             job_fields={job_type=df.job_type.CollectWebs}
         },
     },
