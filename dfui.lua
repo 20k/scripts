@@ -6,6 +6,7 @@ local viewitems = reqscript('dfui_viewitems')
 local render = reqscript('dfui_render')
 local nobles = reqscript('dfui_nobles')
 local setbuilding = reqscript('dfui_setbuilding')
+local military = reqscript('dfui_military')
 
 MyScreen = defclass(MyScreen, gui.Screen)
 
@@ -177,6 +178,10 @@ function MyScreen:render()
 	
 	if state == "Set Building Tasks/Prefs" then
 		setbuilding.render_setbuilding()
+	end
+	
+	if state == "Military" then
+		military.render_military()
 	end
 	
 	if state == "main" then	
