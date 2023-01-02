@@ -94,7 +94,7 @@ function render_stock()
 	for i=0,(#zones-1) do
 		local zone = zones[i]
 	
-		if not zone.room.extents then
+		if not zone.room.extents or zone.z ~= camera.z then
 			goto continue
 		end
 	
