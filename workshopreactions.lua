@@ -681,7 +681,7 @@ end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL,vector_id=df.job_item_vector_id.BAR}
 
-function add_jobs_to(result, types, itemdefs, job_type, category, material_info, is_permitted)
+function add_jobs_to(result, types, itemdefs, job_type, category, material_info, is_permitted, is_magma)
     for _,itemid in ipairs(types) do
         local item_subtype = itemid
 
@@ -727,9 +727,24 @@ function get_forge(is_magma)
         material_info = {mat_type=mat_type, mat_index=mat_index, name=material_name}
 
         function is_not_ranged_weapon(def) return def.skill_ranged == -1 end
+        function is_ranged_weapon(def) return not is_not_ranged_weapon(def) end
+
+        function any(def) return true end
 
         if material.flags.IS_METAL and material.flags.ITEMS_WEAPON then
-            add_jobs_to(result, entity.resources.weapon_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, is_not_ranged_weapon)
+            add_jobs_to(result, entity.resources.weapon_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, is_not_ranged_weapon, is_magma)
+        end
+
+        if material.flags.IS_METAL and material.flags.ITEMS_WEAPON_RANGED then
+            add_jobs_to(result, entity.resources.weapon_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, is_ranged_weapon, is_magma)
+        end
+
+        if material.flags.IS_METAL and material.flags.ITEMS_DIGGER then
+            add_jobs_to(result, entity.resources.digger_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, any, is_magma)
+        end
+
+        if material.flags.IS_METAL and material.flags.ITEMS_AMMO then
+            add_jobs_to(result, entity.resources.ammo_type, itemdefs.ammo, df.job_type.MakeAmmo, "Weapons and Ammunition", material_info, any, is_magma)
         end
     end
 
