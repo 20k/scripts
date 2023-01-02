@@ -826,7 +826,7 @@ jobs_workshop={
         },
         {
             name="collect webs",
-            items={{item_type=df.item_type.THREAD,quantity=10,min_dimension=10,flags1={undisturbed=true}},vector_id=df.job_item_vector_id.ANY_WEBS},
+            items={{item_type=df.item_type.THREAD,quantity=10,min_dimension=10,flags1={undisturbed=true},vector_id=df.job_item_vector_id.ANY_WEBS}},
             job_fields={job_type=df.job_type.CollectWebs}
         },
     },
