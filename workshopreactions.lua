@@ -696,7 +696,7 @@ function add_jobs_to(result, types, itemdefs, job_type, category, material_info,
         local test_job = {}
         attach_job_props(test_job, name, job_type, {mat_type=material_info.mat_type, mat_index=material_info.mat_index, item_subtype=item_subtype})
         add_custom_item_to_job(test_job, {item_type=df.item_type.BAR, quantity=450, min_dimension=150,
-                                            mat_type=material_info.mat_type, mat_index=material_info.mat_index, vector_id=df.job_item_vector_id.BAR})
+                                          mat_type=material_info.mat_type, mat_index=material_info.mat_index, vector_id=df.job_item_vector_id.BAR})
 
         if not is_magma then
             add_custom_item_to_job(test_job, fuel)
@@ -708,6 +708,24 @@ function add_jobs_to(result, types, itemdefs, job_type, category, material_info,
 
         ::nope::
     end
+end
+
+function add_mat_job(result, job_type, category, material_info, is_magma)
+    local name = df.job_type.attrs[job_type].caption .. " (" .. material_info.name .. ")"
+
+    local test_job = {}
+    attach_job_props(test_job, name, job_type, {mat_type=material_info.mat_type, mat_index=material_info.mat_index})
+
+    add_custom_item_to_job(test_job, {item_type=df.item_type.BAR, quantity=450, min_dimension=150,
+                                      mat_type=material_info.mat_type, mat_index=material_info.mat_index, vector_id=df.job_item_vector_id.BAR})
+
+    if not is_magma then
+        add_custom_item_to_job(test_job, fuel)
+    end
+
+    test_job.menu = {material_info.name, category}
+
+    result[#result+1] = test_job
 end
 
 function get_forge(is_magma)
@@ -762,6 +780,31 @@ function get_forge(is_magma)
             add_jobs_to(result, entity.resources.shoes_type, itemdefs.shoes, df.job_type.MakeShoes, "Armor", material_info, is_metal_clothing, is_magma)
 
             add_jobs_to(result, entity.resources.shield_type, itemdefs.shields, df.job_type.MakeShield, "Armor", material_info, any, is_magma)
+        end
+
+        if material.flags.ITEMS_HARD then
+            add_mat_job(result, df.job_type.MakeCage, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeChain, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeAnimalTrap, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeBucket, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeBarrel, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructArmorStand, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructBlocks, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructDoor, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructFloodgate, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructHatchCover, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructGrate, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructStatue, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructCabinet, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructChest, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructThrone, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructCoffin, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructTable, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructWeaponRack, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructBin, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakePipeSection, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructSplint, "Furniture", material_info, is_magma)
+            add_mat_job(result, df.job_type.ConstructCrutch, "Furniture", material_info, is_magma)
         end
 
         ::notmetal::
