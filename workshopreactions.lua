@@ -760,6 +760,8 @@ function get_forge(is_magma)
             add_jobs_to(result, entity.resources.gloves_type, itemdefs.gloves, df.job_type.MakeGloves, "Armor", material_info, is_metal_clothing, is_magma)
             add_jobs_to(result, entity.resources.helm_type, itemdefs.helms, df.job_type.MakeHelm, "Armor", material_info, is_metal_clothing, is_magma)
             add_jobs_to(result, entity.resources.shoes_type, itemdefs.shoes, df.job_type.MakeShoes, "Armor", material_info, is_metal_clothing, is_magma)
+
+            add_jobs_to(result, entity.resources.shield_type, itemdefs.shields, df.job_type.MakeShield, "Armor", material_info, any, is_magma)
         end
 
         ::notmetal::
