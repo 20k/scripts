@@ -655,19 +655,19 @@ function get_still()
     return {extract_job}
 end
 
-local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
+local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL,vector_id=df.job_item_vector_id.BAR}
 jobs_furnace={
     [df.furnace_type.Smelter]={
         {
             name="Melt metal object",
-            items={fuel,{flags2={allow_melt_dump=true}}},--also maybe melt_designated
+            items={fuel,{flags2={allow_melt_dump=true, melt_designated=true}, vector_id=df.job_item_vector_id.ANY_MELT_DESIGNATED}},
             job_fields={job_type=df.job_type.MeltMetalObject}
         }
     },
     [df.furnace_type.MagmaSmelter]={
         {
             name="Melt metal object",
-            items={{flags2={allow_melt_dump=true}}},--also maybe melt_designated
+            items={{flags2={allow_melt_dump=true, melt_designated=true}, vector_id=df.job_item_vector_id.ANY_MELT_DESIGNATED}},
             job_fields={job_type=df.job_type.MeltMetalObject}
         }
     },
