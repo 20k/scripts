@@ -363,6 +363,8 @@ function get_plant_in_season(season, building)
 end
 
 function render_farm(building)
+	local mouse_world_pos = render.get_mouse_world_coordinates()
+
 	local season_plants = {}
 	local max_rows = 0
 	
@@ -402,25 +404,37 @@ function render_farm(building)
 			
 		imgui.EndTable()
 	end
+	
+	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
+		render.set_menu_item({screen="base", pos=mouse_world_pos})
+	end
+	
+	if imgui.IsMouseClicked(1) and imgui.WantCaptureMouse() then
+		render.set_menu_item(nil)
+	end
 end
 
 function render_setbuilding()
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 	
 	local state = {screen="base"}
-	local selected_building = mouse_world_pos
+	local selected_building = nil
 	
 	if render.get_menu_item() ~= nil then
 		state = render.get_menu_item()
 		selected_building = state.pos
 	end
 	
-	if selected_building == nil then
+	if not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) then
 		selected_building = mouse_world_pos
 	end
 	
-	local next_state = utils.clone(state, true)
+	if selected_building == nil then
+		render.set_menu_item(nil)
+		return
+	end
 	
+	local next_state = utils.clone(state, true)	
 	local building = dfhack.buildings.findAtTile(selected_building)
 	
 	if building == nil then
