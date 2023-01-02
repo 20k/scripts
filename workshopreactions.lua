@@ -646,6 +646,15 @@ function get_tanners()
     return {}
 end
 
+function get_still()
+    local extract_job = {}
+    attach_job_props(extract_job, "Extract from Plants", df.job_type.ExtractFromPlants)
+    add_custom_item_to_job(extract_job, {item_type=df.item_type.PLANT, flags1={unrotten=true, extract_bearing_plant=true}, vector_id=df.job_item_vector_id.PLANT})
+    add_custom_item_to_job(extract_job, {item_type=df.item_type.FLASK, flags1={empty=true, glass=true}, vector_id=df.job_item_vector_id.FLASK})
+
+    return {extract_job}
+end
+
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL}
 jobs_furnace={
     [df.furnace_type.Smelter]={
@@ -754,6 +763,7 @@ jobs_workshop={
     [df.workshop_type.Craftsdwarfs] = get_craftsdwarf_workshop(),
     [df.workshop_type.Farmers] = get_farmers_workshop(),
     [df.workshop_type.Tanners] = get_tanners(),
+    [df.workshop_type.Still] = get_still(),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
         defaults={flags1={unrotten=true}},
