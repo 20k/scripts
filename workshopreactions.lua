@@ -681,6 +681,35 @@ end
 
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL,vector_id=df.job_item_vector_id.BAR}
 
+function add_jobs_to(result, types, itemdefs, job_type, category, material_info, is_permitted)
+    for _,itemid in ipairs(types) do
+        local item_subtype = itemid
+
+        local def = itemdefs[itemid]
+
+        if not is_permitted(def) then
+            goto nope
+        end
+
+        local name = "Make " .. material_info.name ..  " " .. def.name
+
+        local test_job = {}
+        attach_job_props(test_job, name, job_type, {mat_type=material_info.mat_type, mat_index=material_info.mat_index, item_subtype=item_subtype})
+        add_custom_item_to_job(test_job, {item_type=df.item_type.BAR, quantity=450, min_dimension=150,
+                                            mat_type=material_info.mat_type, mat_index=material_info.mat_index, vector_id=df.job_item_vector_id.BAR})
+
+        if not is_magma then
+            add_custom_item_to_job(test_job, fuel)
+        end
+
+        test_job.menu = {material_info.name, category}
+
+        result[#result+1] = test_job
+
+        ::nope::
+    end
+end
+
 function get_forge(is_magma)
     local result = {}
 
@@ -695,38 +724,12 @@ function get_forge(is_magma)
         local mat_type = 0
         local mat_index = rock_id
 
+        material_info = {mat_type=mat_type, mat_index=mat_index, name=material_name}
+
+        function is_not_ranged_weapon(def) return def.skill_ranged == -1 end
+
         if material.flags.IS_METAL and material.flags.ITEMS_WEAPON then
-            local types = entity.resources.weapon_type
-            local local_itemdefs = itemdefs.weapons
-            local job_type = df.job_type.MakeWeapon
-            local category = "Weapons and Ammunition"
-
-            for _,itemid in ipairs(types) do
-                local item_subtype = itemid
-
-                local def = local_itemdefs[itemid]
-
-                if def.skill_ranged ~= -1 then
-                    goto nope
-                end
-
-                local name = "Make " .. material_name ..  " " .. def.name
-
-                local test_job = {}
-                attach_job_props(test_job, name, job_type, {mat_type=mat_type, mat_index=mat_index, item_subtype=item_subtype})
-                add_custom_item_to_job(test_job, {item_type=df.item_type.BAR, quantity=450, min_dimension=150,
-                                                  mat_type=0, mat_index=mat_index, vector_id=df.job_item_vector_id.BAR})
-
-                if not is_magma then
-                    add_custom_item_to_job(test_job, fuel)
-                end
-
-                test_job.menu = {material_name, category}
-
-                result[#result+1] = test_job
-
-                ::nope::
-            end
+            add_jobs_to(result, entity.resources.weapon_type, itemdefs.weapons, df.job_type.MakeWeapon, "Weapons and Ammunition", material_info, is_not_ranged_weapon)
         end
     end
 
