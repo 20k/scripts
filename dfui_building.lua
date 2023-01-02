@@ -821,12 +821,12 @@ function handle_specific_zone_render(building)
 end
 
 function render_zones()
-	local to_render = {{key="z", text="Place Zone"}, {key="x", text="Remove Zones"}}
+	local to_render = {{key="s", text="Select Zone"}, {key="z", text="Place Zone"}, {key="x", text="Remove Zones"}}
 	
 	local current_state = render.get_menu_item()
 	
 	if current_state == nil then
-		current_state = {type='Place Zone', id=nil}
+		current_state = {type='Select Zone', id=nil}
 	end
 	
 	if current_state.type == "Selected" then
@@ -844,7 +844,7 @@ function render_zones()
 			handle_specific_zone_render(building)
 		else
 			--reset ui
-			current_state.type = 'Place Zone'
+			current_state.type = 'Select Zone'
 		end
 	end
 
