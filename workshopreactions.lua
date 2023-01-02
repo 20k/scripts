@@ -813,6 +813,34 @@ function get_forge(is_magma)
             add_mat_job(result, df.job_type.ConstructCrutch, "Furniture", material_info, is_magma)
         end
 
+        if material.flags.ITEMS_ANVIL then
+            add_mat_job(result, df.job_type.ForgeAnvil, "Other Objects", material_info, is_magma)
+        end
+
+        if material.flags.ITEMS_HARD then
+            add_mat_job(result, df.job_type.MakeCrafts, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeGoblet, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeToy, "Other Objects", material_info, is_magma)
+        end
+
+        function is_suitable_tool(itemdef) return ((material.flags.ITEMS_HARD and itemdef.flags.HARD_MAT) or (material.flags.ITEMS_METAL and itemdef.flags.METAL_MAT)) and not itemdef.flags.NO_DEFAULT_JOB end
+
+        add_jobs_to(result, entity.resources.tool_type, itemdefs.tools, df.job_type.MakeTool, "Other Objects", material_info, is_suitable_tool, is_magma)
+
+        if material.flags.ITEMS_HARD then
+            add_mat_job(result, df.job_type.MakeFlask, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MintCoins, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.StudWith, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeAmulet, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeBracelet, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeEarring, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeCrown, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeFigurine, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeRing, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeGem, "Other Objects", material_info, is_magma)
+            add_mat_job(result, df.job_type.MakeScepter, "Other Objects", material_info, is_magma)
+        end
+
         ::notmetal::
     end
 
