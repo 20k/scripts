@@ -784,20 +784,20 @@ jobs_workshop={
     [df.workshop_type.Ashery] = get_ashery(),
     [df.workshop_type.Kitchen]={
         --mat_type=2,3,4
-        defaults={flags1={unrotten=true}},
+        defaults={flags1={unrotten=true,cookable=true},vector_id=df.job_item_vector_id.ANY_COOKABLE},
         {
             name="prepare easy meal",
-            items={{flags1={solid=true,cookable=true}},{flags1={cookable=true}}},
+            items={{flags1={solid=true}},{flags1={}}},
             job_fields={job_type=df.job_type.PrepareMeal,mat_type=2}
         },
         {
             name="prepare fine meal",
-            items={{flags1={solid=true,cookable=true}},{flags1={cookable=true}},{flags1={cookable=true}}},
+            items={{flags1={solid=true}},{flags1={}},{flags1={}}},
             job_fields={job_type=df.job_type.PrepareMeal,mat_type=3}
         },
         {
             name="prepare lavish meal",
-            items={{flags1={solid=true,cookable=true}},{flags1={cookable=true}},{flags1={cookable=true}},{flags1={cookable=true}}},
+            items={{flags1={solid=true}},{flags1={}},{flags1={}},{flags1={}}},
             job_fields={job_type=df.job_type.PrepareMeal,mat_type=4}
         },
     },
