@@ -101,8 +101,8 @@ function jobs_by_menu(jobs)
 	for _,v in pairs(jobs) do
 		local key = ""
 	
-		if v.menu ~= nil then
-			key = v.menu
+		if v.menu ~= nil and v.menu[0] ~= nil then
+			key = v.menu[0]
 		end
 		
 		if result[key] == nil then

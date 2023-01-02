@@ -528,7 +528,7 @@ function get_craftsdwarf_workshop()
             job.job_fields = make_job_type(class, {})
             job.job_fields.job_type = info.t
             job.job_fields.item_subtype_s = info.st
-            job.menu = class
+            job.menu = {class}
 
             if info.t == nil then
                 dfhack.println("Ruh roh ", class, name)
@@ -544,12 +544,12 @@ function get_craftsdwarf_workshop()
     end
 
     local rs = make_rock_sword()
-    rs.menu = "rock"
+    rs.menu = {"rock"}
 
     result[#result+1] = rs
 
     local tot = make_totem()
-    tot.menu = "bone"
+    tot.menu = {"bone"}
 
     result[#result+1] = tot
 
@@ -585,7 +585,7 @@ end
 
 function attach_job_props(mod, name, job_type, extras)
     mod.name = name
-    mod.menu = ""
+    mod.menu = {""}
 
     if mod.items == nil then
         mod.items = {}
