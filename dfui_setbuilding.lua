@@ -95,24 +95,83 @@ function display_jobs(building, jobs)
 	return any_added
 end
 
-function jobs_by_menu(jobs)
+function mismatch_index(longer, shorter)
+	if longer == nil and shorter == nil then
+		return nil
+	end
+	
+	if #longer == 0 and shorter == nil then
+		return nil
+	end
+	
+	if #longer > 0 and shorter == nil then
+		return nil
+	end
+	
+	if #shorter > #longer then
+		return nil
+	end
+
+	for i=1,#shorter do
+		if shorter[i] ~= longer[i] then
+			return nil
+		end
+	end
+	
+	return #shorter + 1
+end
+
+function menu_eq(a, b)
+	if a == nil and b == nil then
+		return true
+	end
+	
+	if #a == 0 and b == nil then
+		return true
+	end
+	
+	if #a ~= #b then
+		return false
+	end
+	
+	for i=1,#a do
+		if a[i] ~= b[i] then
+			return false
+		end
+	end
+	
+	return true
+end
+
+function jobs_by_menu(jobs, menu_stack)
 	local result = {}
+	local additional = {}
 	
 	for _,v in pairs(jobs) do
-		local key = ""
-			
-		if v.menu ~= nil and v.menu[1] ~= nil then
-			key = v.menu[1]
+		if v.menu ~= nil then
+			if #v.menu > #menu_stack then
+				local pref = mismatch_index(v.menu, menu_stack)
+				
+				if pref == nil then
+					goto nope
+				end
+
+				additional[v.menu[pref]] = true
+				
+				goto nope
+			end
 		end
 		
-		if result[key] == nil then
-			result[key] = {}
+		--imgui.Text(tostring(key))
+		
+		if menu_eq(menu_stack, v.menu) then
+			result[#result+1] = v
 		end
 		
-		result[key][#result[key]+1] = v
+		::nope::
 	end	
 	
-	return result
+	return result, additional
 end
 
 function get_job_name(j)	
@@ -194,38 +253,37 @@ function render_setbuilding()
 		jobs = get_jobs(df.building_type.Furnace, building.type, -1, true)
 	end
 	
-	if state.screen == "Add new task" and jobs ~= nil then
-		local categorised = jobs_by_menu(jobs)
-		
+	if state.screen == "Add new task" and jobs ~= nil then		
 		if state.subscreen == nil then
-			state.subscreen = ""
-			next_state.subscreen = ""
+			state.subscreen = {}
+			next_state.subscreen = {}
 		end
 		
-		if state.subscreen == "" then
-			for k,v in pairs(categorised) do
-				if k ~= "" and imgui.Button(k .. "##setbuilding_" .. building.id) then
-					next_state.subscreen = k
-				end
+		local real_jobs, categories = jobs_by_menu(jobs, state.subscreen)
+	
+		for k,v in pairs(categories) do
+			if k ~= "" and imgui.Button(k .. "##setbuilding_" .. building.id) then
+				table.insert(next_state.subscreen, k)
 			end
-		else
+		end
+
+		if #state.subscreen > 0 then
 			if imgui.Button("back##subback") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse()) then
-				next_state.subscreen = ""				
+				table.remove(next_state.subscreen, #next_state.subscreen)
 				go_back = true
 			end
 		end
 		
-		if display_jobs(building, categorised[state.subscreen]) then
+		if display_jobs(building, real_jobs) then
 			next_state.screen = "base"
+			next_state.subscreen = {}
 			go_back = true
 		end
 		
-		if state.subscreen == "" and (imgui.Button("back##subback2") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse())) and not go_back then
+		if #state.subscreen == 0 and (imgui.Button("back##subback2") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse())) and not go_back then
 			next_state.screen = "base"
-			next_state.subscreen = ""
-			
-			--render.set_menu_item(state)
-			
+			next_state.subscreen = {}
+						
 			go_back = true
 		end
 	end
