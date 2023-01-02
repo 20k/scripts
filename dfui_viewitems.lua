@@ -190,7 +190,7 @@ function handle_building_mouseover()
 	
 	local civzones = dfhack.buildings.findCivzonesAt(xyz2pos(lx, ly, top_left.z))
 
-	if civzones ~= nil then
+	if civzones ~= nil and not imgui.WantCaptureMouse() then
 		for _,civzone in ipairs(civzones) do
 			if civzone.type ~= df.civzone_type.ActivityZone then
 				goto skip
