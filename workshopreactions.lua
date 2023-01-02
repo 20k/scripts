@@ -859,31 +859,31 @@ jobs_workshop={
         },
     },
     [df.workshop_type.Leatherworks]={
-        defaults={item_type=SKIN_TANNED},
+        defaults={item_type=df.item_type.SKIN_TANNED,vector_id=df.job_item_vector_id.SKIN_TANNED},
         {
             name="construct leather bag",
             items={{}},
-            job_fields={job_type=df.job_type.ConstructChest}
+            job_fields={job_type=df.job_type.ConstructChest, material_category={leather=true}}
         },
         {
             name="construct waterskin",
             items={{}},
-            job_fields={job_type=df.job_type.MakeFlask}
+            job_fields={job_type=df.job_type.MakeFlask, material_category={leather=true}}
         },
         {
             name="construct backpack",
             items={{}},
-            job_fields={job_type=df.job_type.MakeBackpack}
+            job_fields={job_type=df.job_type.MakeBackpack, material_category={leather=true}}
         },
         {
             name="construct quiver",
             items={{}},
-            job_fields={job_type=df.job_type.MakeQuiver}
+            job_fields={job_type=df.job_type.MakeQuiver, material_category={leather=true}}
         },
         {
             name="sew leather image",
-            items={{item_type=-1,flags1={empty=true},flags2={sewn_imageless=true}},{}},
-            job_fields={job_type=df.job_type.SewImage}
+            items={{item_type=-1,flags1={empty=true},flags2={sewn_imageless=true},vector_id=df.job_item_vector_id.IN_PLAY},{}},
+            job_fields={job_type=df.job_type.SewImage, material_category={leather=true}}
         },
     },
     [df.workshop_type.Dyers]={
