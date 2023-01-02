@@ -672,7 +672,25 @@ function get_ashery()
     return {make_lye, make_potash_from_lye, make_potash_from_ash}
 end
 
+--[[wS={label='Soap Maker\'s Workshop',
+        type=df.building_type.Workshop, subtype=df.workshop_type.Custom,
+        custom=0},
+    wp={label='Screw Press',
+        type=df.building_type.Workshop, subtype=df.workshop_type.Custom,
+        custom=1, min_width=1, max_width=1, min_height=1, max_height=1},]]
+
 local fuel={item_type=df.item_type.BAR,mat_type=df.builtin_mats.COAL,vector_id=df.job_item_vector_id.BAR}
+
+function get_forge(is_magma)
+    local itemdefs = df.global.world.raws.itemdefs
+    local rock_types = df.global.world.raws.inorganics
+
+    for rock_id = 0, #rock_types - 1 do
+        local material = rock_types[rock_id].material
+        local rock_name = material.state_adj.Solid
+    end
+end
+
 jobs_furnace={
     [df.furnace_type.Smelter]={
         {
