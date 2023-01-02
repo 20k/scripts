@@ -926,7 +926,7 @@ local function scanRawsReaction(buildingId,workshopId,customId,adventure_check)
 end
 local function reagentToJobItem(reagent,react_id,reagentId)
     local ret_item
-    ret_item=utils.clone_with_default(reagent, input_filter_defaults)
+    ret_item=utils.clone_with_default(reagent, input_filter_defaults, true)
     ret_item.reaction_id=react_id
     ret_item.reagent_index=reagentId
     return ret_item
