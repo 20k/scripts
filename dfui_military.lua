@@ -62,12 +62,18 @@ function get_squad_name(squad)
 	return name
 end
 
-function render_military()
+last_dwarf_list = nil
+
+function render_military(just_changed)
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
 	local squad_ids = {}
 	local dwarf_histfigs_in_squads = {}
-	local all_elegible_dwarf_units = get_valid_units()
+	local all_elegible_dwarf_units = last_dwarf_list
+	
+	if just_changed or all_elegible_dwarf_units == nil then
+		all_elegible_dwarf_units = get_valid_units()
+	end
 	
 	for _,squad_id in ipairs(entity.squads) do	
 		local squad = df.squad.find(squad_id)

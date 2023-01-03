@@ -137,7 +137,7 @@ function MyScreen:render()
 	--I really need to sort out the constants
 	imgui.Begin("Main")
 	
-	local state = render.get_menu()
+	local state, just_changed = render.get_menu()
 
 	if state == nil then
 		self:dismiss()
@@ -181,7 +181,7 @@ function MyScreen:render()
 	end
 	
 	if state == "Military" then
-		military.render_military()
+		military.render_military(just_changed)
 	end
 	
 	if state == "main" then	
