@@ -77,6 +77,12 @@ function render_military()
 		render.menu_change_clear()
 	end
 	
+	local dwarf_count = 20
+	local start_dwarf = 1
+	
+	start_dwarf = math.min(start_dwarf, (#all_elegible_dwarf_units-dwarf_count) + 1)
+	start_dwarf = math.max(start_dwarf, 0)
+	
 	for _,squad_id in ipairs(entity.squads) do	
 		local squad = df.squad.find(squad_id)
 		
@@ -107,10 +113,14 @@ function render_military()
 		::badsquad::
 	end
 	
-	local selected_squad = 2
+	local dwarf_slice = {}
 	
-	local max_len = 10
-		
+	for i=start_dwarf,(start_dwarf+dwarf_count-1) do
+		dwarf_slice[#dwarf_slice + 1] = all_elegible_dwarf_units[i]
+	end
+	
+	local selected_squad = 2
+			
 	if imgui.BeginTable("Tt1", 3, (1<<13)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
@@ -139,7 +149,7 @@ function render_military()
 		
 		imgui.TableNextColumn()
 		
-		for _,unit in ipairs(all_elegible_dwarf_units) do				
+		for _,unit in ipairs(dwarf_slice) do				
 			if unit == nil then
 				goto skip
 			end
