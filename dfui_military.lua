@@ -102,6 +102,8 @@ function appoint_to(squad_id, slot, pending_unit)
 	end
 end
 
+--don't think either of the manip functions are correct, dwarves have a squad_id and a squad_position
+--When adding a dwarf, the game appears to fix them up, but not when removing
 function remove_from(squad_id, slot)
 	local squad = df.squad.find(squad_id)
 	
@@ -112,6 +114,7 @@ function remove_from(squad_id, slot)
 	
 	local existing_position = squad.positions[slot - 1]
 	local existing_histfig_id = existing_position.occupant
+	local unit = nobles.histfig_to_unit(existing_histfig_id)
 	
 	local leader_assignment_id = squad.leader_assignment
 	
@@ -121,6 +124,10 @@ function remove_from(squad_id, slot)
 		dfhack.println("No leader assignment in remove")
 		return
 	end
+
+	unit.military.squad_id = -1
+	unit.military.squad_position = -1
+	unit.military.cur_uniform = 0
 	
 	if existing_histfig_id ~= -1 and leader_assignment.histfig == existing_histfig_id then
 		nobles.remove_fort_title(leader_assignment_id)
@@ -294,6 +301,12 @@ function render_military()
 						
 						local unit_name = render.get_user_facing_name(real_unit)
 						
+						--unit_name = unit_name .. " " .. tostring(real_unit.military.squad_id) .. " " .. tostring(real_unit.military.squad_position) .. " " .. tostring(real_unit.military.cur_uniform)
+						
+						--[[for g,m in ipairs(real_unit.military.uniforms[0]) do
+							unit_name = unit_name .. " " .. tostring(m)
+						end]]--
+						
 						if imgui.ButtonColored({fg=COLOR_RED}, "[X]##rem"..tostring(histfig)) then
 							remove_from(squad_ids[selected_squad], o)
 						end
@@ -349,6 +362,8 @@ function render_military()
 					end
 					
 					local unit_name = render.get_user_facing_name(unit)
+
+					--unit_name = unit_name .. " " .. tostring(unit.military.squad_id) .. " " .. tostring(unit.military.squad_position) .. " " .. tostring(unit.military.cur_uniform)
 
 					rendered_count = rendered_count+1
 
