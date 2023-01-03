@@ -129,6 +129,10 @@ function remove_from(squad_id, slot)
 	squad.positions[slot - 1].occupant = -1
 end
 
+--navigate_right = -1
+keyboard_layout = imgui.Ref(true)
+dwarf_page = 0
+
 function render_military()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -186,8 +190,12 @@ function render_military()
 	
 	--dfhack.println(render.get_user_facing_name(all_elegible_dwarf_units[#all_elegible_dwarf_units]))
 	
-	if selected_squad == -1 and #squad_ids > 0 then
+	if (selected_squad == -1 or selected_squad == nil) and #squad_ids > 0 then
 		selected_squad = 1
+	end
+	
+	if (selected_dwarf == -1 or selected_dwarf == nil) then
+		selected_dwarf = 1
 	end
 
 	local table_height = math.max(10, #entity.squads)
@@ -212,7 +220,7 @@ function render_military()
 	end
 	
 	imgui.SameLine()
-	
+		
 	if imgui.BeginTable("Tt2", 1, (1<<13) | (1<<16)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
@@ -245,43 +253,116 @@ function render_military()
 					if imgui.Selectable(unit_name .. "##dorfsel_" .. tostring(histfig), selected_dwarf == o) then
 						selected_dwarf = o
 					end
+					
+					--[[if imgui.IsItemHovered() and imgui.IsNavVisible() and imgui.Shortcut(df.interface_key.CURSOR_RIGHT) then
+						navigate_right = o
+					end]]--
 				end
 			end
 		end
 		
 		imgui.EndTable()
 	end
-	
+
+	local keyboard_friendly_nav = imgui.IsNavVisible()
+
 	if selected_squad ~= -1 and selected_dwarf ~= -1 then
 		imgui.SameLine()
 		
-		if imgui.BeginTable("Tt3", 1, (1<<13) | (1<<25)) then
-			imgui.TableNextRow();
-			imgui.TableNextColumn();
-			
-			imgui.Text("Click to appoint")
-						
-			if selected_squad ~= -1 then
+		if not imgui.Get(keyboard_layout) then
+			if imgui.BeginTable("Tt3", 1, (1<<13) | (1<<25)) then
+				imgui.TableNextRow();
+				imgui.TableNextColumn();
+				
+				imgui.Text("Click to appoint")
+							
+				if selected_squad ~= -1 then
+					if imgui.Button("Leave Vacant") then
+						remove_from(squad_ids[selected_squad], selected_dwarf)
+					end
+				end
+											
+				for o,unit in ipairs(dwarf_slice) do				
+					if unit == nil then
+						goto skip
+					end
+					
+					local unit_name = render.get_user_facing_name(unit)
+
+					if imgui.Button(unit_name .. "##namesel_" .. tostring(unit.id)) then
+						appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
+					end
+					
+					::skip::
+				end
+
+				imgui.EndTable()
+			end
+		else
+			if imgui.BeginTable("Tt3", 1, (1<<13)) then
+				imgui.TableNextRow();
+				imgui.TableNextColumn();
+				
+				local num_per_page = 17
+				
+				local start_idx = dwarf_page * num_per_page + 1
+				
 				if imgui.Button("Leave Vacant") then
 					remove_from(squad_ids[selected_squad], selected_dwarf)
 				end
-			end
-			
-			for _,unit in ipairs(dwarf_slice) do				
-				if unit == nil then
-					goto skip
-				end
 				
-				local unit_name = render.get_user_facing_name(unit)
-		
-				if imgui.Button(unit_name .. "##namesel_" .. tostring(unit.id)) then
-					appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
-				end
+				--start_idx = math.min(start_idx, (#dwarf_slice-num_per_page) + 1)
+				start_idx = math.max(start_idx, 1)
 				
-				::skip::
-			end
+				local end_idx = start_idx + num_per_page - 1
+				
+				local rendered_count = 0
+				
+				for i=start_idx,end_idx do
+					local unit = dwarf_slice[i]
+					
+					if unit == nil then
+						goto skip
+					end
+					
+					local unit_name = render.get_user_facing_name(unit)
 
-			imgui.EndTable()
+					rendered_count = rendered_count+1
+
+					if imgui.Button(unit_name .. "##namesel_" .. tostring(unit.id)) then
+						appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
+					end
+
+					::skip::
+				end
+				
+				for i=rendered_count,num_per_page-1 do
+					imgui.Text(" ")
+				end
+				
+				imgui.NewLine()
+				
+				if imgui.Button("Prev") then
+					dwarf_page = dwarf_page - 1
+					
+					dwarf_page = math.max(dwarf_page, 0)
+				end
+				
+				imgui.SameLine()
+				
+				if imgui.Button("Next") then
+					dwarf_page = dwarf_page + 1
+					
+					local max_page = math.floor(#dwarf_slice / num_per_page)
+					
+					dwarf_page = math.max(dwarf_page, 0)
+					dwarf_page = math.min(dwarf_page, max_page)
+				end
+				
+				imgui.EndTable()
+			end
 		end
 	end
+	
+	imgui.Checkbox("use keyboard layout", keyboard_layout)
 end
