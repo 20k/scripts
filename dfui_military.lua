@@ -311,7 +311,6 @@ function render_military()
 					remove_from(squad_ids[selected_squad], selected_dwarf)
 				end
 				
-				--start_idx = math.min(start_idx, (#dwarf_slice-num_per_page) + 1)
 				start_idx = math.max(start_idx, 1)
 				
 				local end_idx = start_idx + num_per_page - 1
@@ -343,9 +342,7 @@ function render_military()
 				end
 				
 				imgui.NewLine()
-				
-				--local mini_table = {{key="q", text="Prev"}, {key="e", text="Next"}}
-				
+
 				if render.render_hotkey_text({key="q", text="Prev"}) then
 					dwarf_page = dwarf_page - 1
 					
@@ -362,24 +359,7 @@ function render_military()
 					dwarf_page = math.max(dwarf_page, 0)
 					dwarf_page = math.min(dwarf_page, max_page)
 				end
-				
-				--[[local state = render.render_table_impl(mini_table, "main")
-				
-				if state == "Prev" then
-					dwarf_page = dwarf_page - 1
-					
-					dwarf_page = math.max(dwarf_page, 0)
-				end
-				
-				if state == "Next" then
-					dwarf_page = dwarf_page + 1
-					
-					local max_page = math.floor(#dwarf_slice / num_per_page)
-					
-					dwarf_page = math.max(dwarf_page, 0)
-					dwarf_page = math.min(dwarf_page, max_page)
-				end]]--
-				
+
 				imgui.EndTable()
 			end
 		end
