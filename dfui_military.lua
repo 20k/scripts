@@ -64,6 +64,7 @@ end
 
 last_dwarf_list = nil
 selected_squad = -1
+selected_dwarf = -1
 
 function render_military()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
@@ -123,17 +124,17 @@ function render_military()
 	if selected_squad == -1 and #squad_ids > 0 then
 		selected_squad = 1
 	end
-				
+
 	if imgui.BeginTable("Tt1", 3, (1<<13)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 
 		for o,i in ipairs(squad_ids) do
 			local squad_id = i
-			
+
 			local squad = df.squad.find(squad_id)
-						
-			if imgui.Button(get_squad_name(squad).."##squadname_" .. tostring(squad_id)) then
+
+			if imgui.Selectable(get_squad_name(squad).."##squadname_" .. tostring(squad_id), selected_squad == o) then
 				selected_squad = o
 			end
 		end
@@ -141,15 +142,19 @@ function render_military()
 		imgui.TableNextColumn()
 		
 		if selected_squad ~= -1 then
-			for _,histfig in ipairs(dwarf_histfigs_in_squads[selected_squad]) do
+			for o,histfig in ipairs(dwarf_histfigs_in_squads[selected_squad]) do
 				if histfig == -1 then
-					imgui.Text("Available")
+					if imgui.Selectable("Available##dorfsel2_" .. tostring(o), selected_dwarf == o) then
+						selected_dwarf = o
+					end
 				else
 					local real_unit = nobles.histfig_to_unit(histfig)
 					
 					local unit_name = render.get_user_facing_name(real_unit)
-				
-					imgui.Text(unit_name)
+									
+					if imgui.Selectable(unit_name .. "##dorfsel_" .. tostring(histfig), selected_dwarf == o) then
+						selected_dwarf = o
+					end
 				end
 			end
 		end
