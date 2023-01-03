@@ -218,6 +218,31 @@ function TextColoredUnit(unit)
 	imgui.TextColored({fg=col}, get_user_facing_name(unit))
 end
 
+function render_hotkey_text(v)
+	local keyboard_key = 0;
+			
+	if #v.key > 1 then
+		keyboard_key = "STRING_A" .. v.key
+	else
+		local byt = tostring(string.byte(v.key))
+		
+		if #byt < 3 then
+			byt = "0"..byt
+		end
+			
+		keyboard_key = "STRING_A"..byt
+	end
+
+	local shortcut_name = imgui.GetKeyDisplay(keyboard_key)
+	
+	imgui.TextColored(COLOR_LIGHTGREEN, shortcut_name)
+	imgui.SameLine(0,0)
+	imgui.Text(": ")
+	imgui.SameLine(0,0)
+	
+	return imgui.Button(v.text) or imgui.Shortcut(keyboard_key)
+end
+
 function render_table_impl(menus, old_state)
 	local state = old_state
 		

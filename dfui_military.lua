@@ -329,7 +329,9 @@ function render_military()
 
 					rendered_count = rendered_count+1
 
-					if imgui.Button(unit_name .. "##namesel_" .. tostring(unit.id)) then
+					--the reason for the ### indexing here is so that the keyboard nav
+					--active highlight target remains the same across different pages
+					if imgui.Button(unit_name .. "###namesel_" .. tostring(i-start_idx)) then
 						appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
 					end
 
@@ -342,7 +344,9 @@ function render_military()
 				
 				imgui.NewLine()
 				
-				if imgui.Button("Prev") then
+				--local mini_table = {{key="q", text="Prev"}, {key="e", text="Next"}}
+				
+				if render.render_hotkey_text({key="q", text="Prev"}) then
 					dwarf_page = dwarf_page - 1
 					
 					dwarf_page = math.max(dwarf_page, 0)
@@ -350,7 +354,7 @@ function render_military()
 				
 				imgui.SameLine()
 				
-				if imgui.Button("Next") then
+				if render.render_hotkey_text({key="e", text="Next"}) then
 					dwarf_page = dwarf_page + 1
 					
 					local max_page = math.floor(#dwarf_slice / num_per_page)
@@ -358,6 +362,23 @@ function render_military()
 					dwarf_page = math.max(dwarf_page, 0)
 					dwarf_page = math.min(dwarf_page, max_page)
 				end
+				
+				--[[local state = render.render_table_impl(mini_table, "main")
+				
+				if state == "Prev" then
+					dwarf_page = dwarf_page - 1
+					
+					dwarf_page = math.max(dwarf_page, 0)
+				end
+				
+				if state == "Next" then
+					dwarf_page = dwarf_page + 1
+					
+					local max_page = math.floor(#dwarf_slice / num_per_page)
+					
+					dwarf_page = math.max(dwarf_page, 0)
+					dwarf_page = math.min(dwarf_page, max_page)
+				end]]--
 				
 				imgui.EndTable()
 			end
