@@ -327,6 +327,38 @@ function collect_commander_position_ids()
 	return result
 end
 
+function collect_assignment_objects_with_possible_squads()
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	local result = {}
+	
+	for i=0,#entity.positions.assignments-1 do
+		local assignment = entity.positions.assignments[i]
+		local position = position_id_to_position(assignment_to_position(assignment.id))
+
+		if position.squad_size > 0 then
+			result[#result+1] = assignment
+		end
+	end
+	
+	return result
+end
+
+function get_sorted_assignment_objects_by_precedence(assignment_ids)
+	local sorted_assignments = shallow_copy_to_array(assignment_ids)
+	
+	function comp(a, b)
+		local p1 = position_id_to_position(assignment_to_position(a.id))
+		local p2 = position_id_to_position(assignment_to_position(b.id))
+
+		return p1.precedence < p2.precedence
+	end
+	
+	table.sort(sorted_assignments, comp)
+	
+	return sorted_assignments
+end
+
 function render_commander_positions(override)
 	local position_ids = collect_commander_position_ids()
 				
@@ -400,7 +432,7 @@ function histfig_to_unit(histfig_id)
 	end
 	
 	return df.unit.find(histfig_actual.unit_id)
-end	
+end
 
 function shallow_copy_to_array(t)
 	local result = {}
@@ -423,16 +455,7 @@ function render_titles()
 	
 	local override = imgui.Get(override_noble_assignments)
 
-	local sorted_assignments = shallow_copy_to_array(entity.positions.assignments)
-	
-	function comp(a, b)
-		local p1 = position_id_to_position(assignment_to_position(a.id))
-		local p2 = position_id_to_position(assignment_to_position(b.id))
-
-		return p1.precedence < p2.precedence
-	end
-	
-	table.sort(sorted_assignments, comp)
+	local sorted_assignments = get_sorted_assignment_objects_by_precedence(entity.positions.assignments)
 
 	if menu_item == nil then 	
 		if imgui.BeginTable("NobleTable", 3, (1<<13)) then

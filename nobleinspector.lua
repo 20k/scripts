@@ -343,6 +343,8 @@ function dump_titles(eid)
 			imgui.Text("Commanderid " .. tostring(k))
 		end
 		
+		imgui.Text("Squad Size " .. tostring(position.squad_size))
+		
 		--imgui.Text("Number: " .. tostring(position.number))
 		
 		--imgui.Text("Sid " .. tostring(v.squad_id))
