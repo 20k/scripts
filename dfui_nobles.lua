@@ -361,7 +361,7 @@ function histfig_to_unit(histfig_id)
 		return nil
 	end
 
-	local units = df.global.world.units.active
+	--[[local units = df.global.world.units.active
 	
 	for i=0,#units-1 do
 		local unit = units[i]
@@ -385,7 +385,15 @@ function histfig_to_unit(histfig_id)
 		::continue::
 	end
 	
-	return nil
+	return nil]]--
+	
+	local histfig_actual = df.historical_figure.find(histfig_id)
+	
+	if histfig_actual == nil then
+		return nil
+	end
+	
+	return df.unit.find(histfig_actual.unit_id)
 end	
 
 function shallow_copy_to_array(t)
