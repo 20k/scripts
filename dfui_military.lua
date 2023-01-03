@@ -131,6 +131,29 @@ end
 
 dwarf_page = 0
 
+function get_sorted_squads_by_precedence(entity_squads)
+	local vals = {}
+	
+	for _,v in ipairs(entity_squads) do
+		vals[#vals + 1] = v
+	end
+	
+	function comp(a,b)
+		--yeesh
+		local s1 = df.squad.find(a)
+		local s2 = df.squad.find(b)
+	
+		local p1 = nobles.position_id_to_position(s1.leader_position)
+		local p2 = nobles.position_id_to_position(s2.leader_position)
+
+		return p1.precedence < p2.precedence
+	end
+	
+	table.sort(vals, comp)
+	
+	return vals
+end
+
 function render_military()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -150,7 +173,9 @@ function render_military()
 	start_dwarf = math.min(start_dwarf, (#all_elegible_dwarf_units-dwarf_count) + 1)
 	start_dwarf = math.max(start_dwarf, 0)
 	
-	for _,squad_id in ipairs(entity.squads) do	
+	local sorted_squads = get_sorted_squads_by_precedence(entity.squads)
+	
+	for _,squad_id in ipairs(sorted_squads) do	
 		local squad = df.squad.find(squad_id)
 		
 		if squad == nil then
