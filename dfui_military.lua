@@ -275,6 +275,10 @@ function render_military()
 			
 			local start_idx = dwarf_page * num_per_page + 1
 			
+			local max_page = math.floor(#dwarf_slice / num_per_page)
+			
+			imgui.Text("Page: " .. tostring(dwarf_page + 1) .. "/" .. tostring(max_page+1))
+			
 			if imgui.Button("Leave Vacant") then
 				remove_from(squad_ids[selected_squad], selected_dwarf)
 			end
@@ -321,8 +325,6 @@ function render_military()
 			
 			if render.render_hotkey_text({key="e", text="Next"}) then
 				dwarf_page = dwarf_page + 1
-				
-				local max_page = math.floor(#dwarf_slice / num_per_page)
 				
 				dwarf_page = math.max(dwarf_page, 0)
 				dwarf_page = math.min(dwarf_page, max_page)
