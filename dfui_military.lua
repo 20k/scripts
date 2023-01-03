@@ -184,11 +184,17 @@ function render_military()
 		dwarf_slice[#dwarf_slice + 1] = all_elegible_dwarf_units[i]
 	end
 	
+	--dfhack.println(render.get_user_facing_name(all_elegible_dwarf_units[#all_elegible_dwarf_units]))
+	
 	if selected_squad == -1 and #squad_ids > 0 then
 		selected_squad = 1
 	end
 
-	if imgui.BeginTable("Tt1", 3, (1<<13)) then
+	local table_height = math.max(10, #entity.squads)
+
+	--(1<<13) | (1<<25)
+
+	if imgui.BeginTable("Tt1", 1, (1<<13) | (1<<16)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 
@@ -202,7 +208,14 @@ function render_military()
 			end
 		end
 		
-		imgui.TableNextColumn()
+		imgui.EndTable()
+	end
+	
+	imgui.SameLine()
+	
+	if imgui.BeginTable("Tt2", 1, (1<<13) | (1<<16)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
 		
 		if selected_squad ~= -1 then
 			for o,histfig in ipairs(dwarf_histfigs_in_squads[selected_squad]) do
@@ -236,7 +249,14 @@ function render_military()
 			end
 		end
 		
-		imgui.TableNextColumn()
+		imgui.EndTable()
+	end
+	
+	imgui.SameLine()
+	
+	if imgui.BeginTable("Tt3", 1, (1<<13) | (1<<25)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
 		
 		if selected_squad ~= -1 then
 			if imgui.Button("Leave Vacant") then
@@ -263,9 +283,7 @@ function render_military()
 			
 			::skip::
 		end
-		
-		imgui.TableNextColumn();
-		
+
 		imgui.EndTable()
 	end
 end
