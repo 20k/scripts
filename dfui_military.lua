@@ -131,10 +131,10 @@ end
 
 dwarf_page = 0
 
-function get_sorted_squads_by_precedence(entity_squads)
+function get_sorted_squad_ids_by_precedence(squads)
 	local vals = {}
 	
-	for _,v in ipairs(entity_squads) do
+	for _,v in ipairs(squads) do
 		vals[#vals + 1] = v
 	end
 	
@@ -154,12 +154,36 @@ function get_sorted_squads_by_precedence(entity_squads)
 	return vals
 end
 
+function get_all_uncreated_squad_assignments(squads)
+	local assignments = nobles.collect_assignment_objects_with_possible_squads()
+	
+	local real_squads = get_sorted_squad_ids_by_precedence(squads)
+	
+	for _,k in ipairs(real_squads) do
+		local squad = df.squad.find(k)
+	
+		for i,v in ipairs(assignments) do
+			if squad.leader_assignment == v.id then
+				table.remove(assignments, i)
+				goto done
+			end
+		end
+		
+		::done::
+	end
+	
+	local sorted = nobles.get_sorted_assignment_objects_by_precedence(assignments)
+	
+	return sorted
+end
+
 function render_military()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
 	local squad_ids = {}
 	local dwarf_histfigs_in_squads = {}
 	local all_elegible_dwarf_units = last_dwarf_list
+	local commandable_assignments_without_squads = get_all_uncreated_squad_assignments(entity.squads)
 	
 	if render.menu_was_changed() or all_elegible_dwarf_units == nil then
 		all_elegible_dwarf_units = get_valid_units()
@@ -173,7 +197,7 @@ function render_military()
 	start_dwarf = math.min(start_dwarf, (#all_elegible_dwarf_units-dwarf_count) + 1)
 	start_dwarf = math.max(start_dwarf, 0)
 	
-	local sorted_squads = get_sorted_squads_by_precedence(entity.squads)
+	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
 	
 	for _,squad_id in ipairs(sorted_squads) do	
 		local squad = df.squad.find(squad_id)
@@ -237,6 +261,12 @@ function render_military()
 			if imgui.Selectable(get_squad_name(squad).."##squadname_" .. tostring(squad_id), selected_squad == o) then
 				selected_squad = o
 			end
+		end
+		
+		for o,i in ipairs(commandable_assignments_without_squads) do
+			local position = nobles.position_id_to_position(nobles.assignment_to_position(i.id))
+		
+			imgui.Text(position.name[0])
 		end
 		
 		imgui.EndTable()
