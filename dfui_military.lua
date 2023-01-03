@@ -247,15 +247,11 @@ function render_military()
 
 	local table_height = math.max(10, #entity.squads)
 
-	--(1<<13) | (1<<25)
-
 	if imgui.BeginTable("Tt1", 1, (1<<13) | (1<<16)) then
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 
-		for o,i in ipairs(squad_ids) do
-			local squad_id = i
-
+		for o,squad_id in ipairs(squad_ids) do
 			local squad = df.squad.find(squad_id)
 
 			if imgui.Selectable(get_squad_name(squad).."##squadname_" .. tostring(squad_id), selected_squad == o) then
@@ -263,129 +259,131 @@ function render_military()
 			end
 		end
 		
-		for o,i in ipairs(commandable_assignments_without_squads) do
-			local position = nobles.position_id_to_position(nobles.assignment_to_position(i.id))
-		
-			imgui.Text(position.name[0])
+		for o,a in ipairs(commandable_assignments_without_squads) do
+			local position = nobles.position_id_to_position(nobles.assignment_to_position(a.id))
+
+			local offset_index = o + #squad_ids
+			
+			if imgui.Selectable(position.name[0].."##unclaimed_"..tostring(a.id), selected_squad==offset_index) then
+				selected_squad = offset_index
+			end
 		end
 		
 		imgui.EndTable()
 	end
 	
-	imgui.SameLine()
-		
-	if imgui.BeginTable("Tt2", 1, (1<<13) | (1<<16)) then
-		imgui.TableNextRow();
-		imgui.TableNextColumn();
-		
-		if selected_squad ~= -1 then
-			for o,histfig in ipairs(dwarf_histfigs_in_squads[selected_squad]) do
-				if histfig == -1 then
-					imgui.Text("   ")
-					
-					imgui.SameLine()
-				
-					if imgui.Selectable("Available##dorfsel2_" .. tostring(o), selected_dwarf == o) then
-						selected_dwarf = o
-					end
-				else
-					local real_unit = nobles.histfig_to_unit(histfig)
-					
-					local unit_name = render.get_user_facing_name(real_unit)
-					
-					if imgui.ButtonColored({fg=COLOR_RED}, "[X]##rem"..tostring(histfig)) then
-						remove_from(squad_ids[selected_squad], o)
-					end
-					
-					if imgui.IsItemHovered() then
-						imgui.SetTooltip("Remove From Squad")
-					end
-					
-					imgui.SameLine()
-									
-					if imgui.Selectable(unit_name .. "##dorfsel_" .. tostring(histfig), selected_dwarf == o) then
-						selected_dwarf = o
-					end
-					
-					--[[if imgui.IsItemHovered() and imgui.IsNavVisible() and imgui.Shortcut(df.interface_key.CURSOR_RIGHT) then
-						navigate_right = o
-					end]]--
-				end
-			end
-		end
-		
-		imgui.EndTable()
-	end
-
-	local keyboard_friendly_nav = imgui.IsNavVisible()
-
-	if selected_squad ~= -1 and selected_dwarf ~= -1 then
+	if selected_squad ~= -1 and selected_squad <= #squad_ids then 
 		imgui.SameLine()
-
-		if imgui.BeginTable("Tt3", 1, (1<<13)) then
+			
+		if imgui.BeginTable("Tt2##t"..tostring(selected_squad), 1, (1<<13) | (1<<16)) then
 			imgui.TableNextRow();
 			imgui.TableNextColumn();
 			
-			local num_per_page = 17
-			
-			local start_idx = dwarf_page * num_per_page + 1
-			
-			local max_page = math.floor(#dwarf_slice / num_per_page)
-			
-			imgui.Text("Page: " .. tostring(dwarf_page + 1) .. "/" .. tostring(max_page+1))
-			
-			if imgui.Button("Leave Vacant") then
-				remove_from(squad_ids[selected_squad], selected_dwarf)
-			end
-			
-			start_idx = math.max(start_idx, 1)
-			
-			local end_idx = start_idx + num_per_page - 1
-			
-			local rendered_count = 0
-			
-			for i=start_idx,end_idx do
-				local unit = dwarf_slice[i]
-				
-				if unit == nil then
-					goto skip
+			if selected_squad ~= -1 then
+				for o,histfig in ipairs(dwarf_histfigs_in_squads[selected_squad]) do
+					if histfig == -1 then
+						imgui.Text("   ")
+						
+						imgui.SameLine()
+					
+						if imgui.Selectable("Available##dorfsel2_" .. tostring(o), selected_dwarf == o) then
+							selected_dwarf = o
+						end
+					else
+						local real_unit = nobles.histfig_to_unit(histfig)
+						
+						local unit_name = render.get_user_facing_name(real_unit)
+						
+						if imgui.ButtonColored({fg=COLOR_RED}, "[X]##rem"..tostring(histfig)) then
+							remove_from(squad_ids[selected_squad], o)
+						end
+						
+						if imgui.IsItemHovered() then
+							imgui.SetTooltip("Remove From Squad")
+						end
+						
+						imgui.SameLine()
+										
+						if imgui.Selectable(unit_name .. "##dorfsel_" .. tostring(histfig), selected_dwarf == o) then
+							selected_dwarf = o
+						end
+					end
 				end
-				
-				local unit_name = render.get_user_facing_name(unit)
-
-				rendered_count = rendered_count+1
-
-				--the reason for the ### indexing here is so that the keyboard nav
-				--active highlight target remains the same across different pages
-				if imgui.Button(unit_name .. "###namesel_" .. tostring(i-start_idx)) then
-					appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
-				end
-
-				::skip::
 			end
 			
-			for i=rendered_count,num_per_page-1 do
-				imgui.Text(" ")
-			end
-			
-			imgui.NewLine()
-
-			if render.render_hotkey_text({key="q", text="Prev"}) then
-				dwarf_page = dwarf_page - 1
-				
-				dwarf_page = math.max(dwarf_page, 0)
-			end
-			
-			imgui.SameLine()
-			
-			if render.render_hotkey_text({key="e", text="Next"}) then
-				dwarf_page = dwarf_page + 1
-				
-				dwarf_page = math.max(dwarf_page, 0)
-				dwarf_page = math.min(dwarf_page, max_page)
-			end
-
 			imgui.EndTable()
+		end
+
+		local keyboard_friendly_nav = imgui.IsNavVisible()
+
+		if selected_squad ~= -1 and selected_dwarf ~= -1 then
+			imgui.SameLine()
+
+			if imgui.BeginTable("Tt3##b"..tostring(selected_squad), 1, (1<<13)) then
+				imgui.TableNextRow();
+				imgui.TableNextColumn();
+				
+				local num_per_page = 17
+				
+				local start_idx = dwarf_page * num_per_page + 1
+				
+				local max_page = math.floor(#dwarf_slice / num_per_page)
+				
+				imgui.Text("Page: " .. tostring(dwarf_page + 1) .. "/" .. tostring(max_page+1))
+				
+				if imgui.Button("Leave Vacant") then
+					remove_from(squad_ids[selected_squad], selected_dwarf)
+				end
+				
+				start_idx = math.max(start_idx, 1)
+				
+				local end_idx = start_idx + num_per_page - 1
+				
+				local rendered_count = 0
+				
+				for i=start_idx,end_idx do
+					local unit = dwarf_slice[i]
+					
+					if unit == nil then
+						goto skip
+					end
+					
+					local unit_name = render.get_user_facing_name(unit)
+
+					rendered_count = rendered_count+1
+
+					--the reason for the ### indexing here is so that the keyboard nav
+					--active highlight target remains the same across different pages
+					if imgui.Button(unit_name .. "###namesel_" .. tostring(i-start_idx)) then
+						appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
+					end
+
+					::skip::
+				end
+				
+				for i=rendered_count,num_per_page-1 do
+					imgui.Text(" ")
+				end
+				
+				imgui.NewLine()
+
+				if render.render_hotkey_text({key="q", text="Prev"}) then
+					dwarf_page = dwarf_page - 1
+					
+					dwarf_page = math.max(dwarf_page, 0)
+				end
+				
+				imgui.SameLine()
+				
+				if render.render_hotkey_text({key="e", text="Next"}) then
+					dwarf_page = dwarf_page + 1
+					
+					dwarf_page = math.max(dwarf_page, 0)
+					dwarf_page = math.min(dwarf_page, max_page)
+				end
+
+				imgui.EndTable()
+			end
 		end
 	end
 end
