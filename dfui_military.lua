@@ -62,16 +62,6 @@ function get_squad_name(squad)
 	return name
 end
 
-function histfig_to_unit(histfig_id)	
-	local histfig_actual = df.historical_figure.find(histfig_id)
-	
-	if histfig_actual == nil then
-		return nil
-	end
-	
-	return df.unit.find(histfig_actual.unit_id)
-end
-
 last_dwarf_list = nil
 
 function render_military()
@@ -103,7 +93,7 @@ function render_military()
 		local lsquad = {}
 		
 		for k,spos in ipairs(squad.positions) do
-			local real_unit = histfig_to_unit(spos.occupant)
+			local real_unit = nobles.histfig_to_unit(spos.occupant)
 			
 			if real_unit == nil then
 				lsquad[k+1] = -1
