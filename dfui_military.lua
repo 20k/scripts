@@ -252,38 +252,36 @@ function render_military()
 		imgui.EndTable()
 	end
 	
-	imgui.SameLine()
-	
-	if imgui.BeginTable("Tt3", 1, (1<<13) | (1<<25)) then
-		imgui.TableNextRow();
-		imgui.TableNextColumn();
+	if selected_squad ~= -1 and selected_dwarf ~= -1 then
+		imgui.SameLine()
 		
-		if selected_squad ~= -1 then
-			if imgui.Button("Leave Vacant") then
-				remove_from(squad_ids[selected_squad], selected_dwarf)
-			end
-		end
-		
-		for _,unit in ipairs(dwarf_slice) do				
-			if unit == nil then
-				goto skip
+		if imgui.BeginTable("Tt3", 1, (1<<13) | (1<<25)) then
+			imgui.TableNextRow();
+			imgui.TableNextColumn();
+			
+			imgui.Text("Click to appoint")
+						
+			if selected_squad ~= -1 then
+				if imgui.Button("Leave Vacant") then
+					remove_from(squad_ids[selected_squad], selected_dwarf)
+				end
 			end
 			
-			local unit_name = render.get_user_facing_name(unit)
-	
-			if selected_squad ~= -1 and selected_dwarf ~= -1 then
-				if imgui.ButtonColored({fg=COLOR_GREEN}, "[A]##"..tostring(unit.id)) then
+			for _,unit in ipairs(dwarf_slice) do				
+				if unit == nil then
+					goto skip
+				end
+				
+				local unit_name = render.get_user_facing_name(unit)
+		
+				if imgui.Button(unit_name .. "##namesel_" .. tostring(unit.id)) then
 					appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
 				end
 				
-				imgui.SameLine()
+				::skip::
 			end
-	
-			imgui.Text(unit_name)
-			
-			::skip::
-		end
 
-		imgui.EndTable()
+			imgui.EndTable()
+		end
 	end
 end
