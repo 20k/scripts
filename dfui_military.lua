@@ -91,6 +91,7 @@ function appoint_to(squad_id, slot, pending_unit)
 	--if the current leader is the person I'm replacing, or we're slotting into an empty slot 1 and there is no leader
 	--note that this is a very cautious check because I'm not sure if slot 1 is guaranteed to be the leader
 	--testing has shown that this is probably unnecessary
+	--because noble positions appear to be *derived* from squad positions, rather than vice versa
 	--that said it does show that I probably *do* need to modify squads when assigning nobles
 	if (leader_assignment.histfig == existing_histfig_id) or (leader_assignment.histfig == -1 and existing_histfig_id == -1 and slot == 1) then
 		if nobles.add_or_transfer_fort_title_to(pending_unit, leader_assignment_id) then
