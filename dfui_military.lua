@@ -142,7 +142,7 @@ function render_military()
 		render.menu_change_clear()
 	end
 	
-	local dwarf_count = 20
+	local dwarf_count = 300
 	local start_dwarf = 1
 	
 	start_dwarf = math.min(start_dwarf, (#all_elegible_dwarf_units-dwarf_count) + 1)
@@ -207,6 +207,10 @@ function render_military()
 		if selected_squad ~= -1 then
 			for o,histfig in ipairs(dwarf_histfigs_in_squads[selected_squad]) do
 				if histfig == -1 then
+					imgui.Text("   ")
+					
+					imgui.SameLine()
+				
 					if imgui.Selectable("Available##dorfsel2_" .. tostring(o), selected_dwarf == o) then
 						selected_dwarf = o
 					end
@@ -214,6 +218,16 @@ function render_military()
 					local real_unit = nobles.histfig_to_unit(histfig)
 					
 					local unit_name = render.get_user_facing_name(real_unit)
+					
+					if imgui.ButtonColored({fg=COLOR_RED}, "[X]") then
+						remove_from(squad_ids[selected_squad], o)
+					end
+					
+					if imgui.IsItemHovered() then
+						imgui.SetTooltip("Remove From Squad")
+					end
+					
+					imgui.SameLine()
 									
 					if imgui.Selectable(unit_name .. "##dorfsel_" .. tostring(histfig), selected_dwarf == o) then
 						selected_dwarf = o
