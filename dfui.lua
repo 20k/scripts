@@ -137,10 +137,14 @@ function MyScreen:render()
 	--I really need to sort out the constants
 	imgui.Begin("Main")
 	
-	local state, just_changed = render.get_menu()
+	local state = render.get_menu()
 
 	if state == nil then
 		self:dismiss()
+	end
+		
+	if state == "main" then	
+		render_menu()
 	end
 	
 	if state == "View Items In Buildings" then
@@ -179,13 +183,9 @@ function MyScreen:render()
 	if state == "Set Building Tasks/Prefs" then
 		setbuilding.render_setbuilding()
 	end
-	
+		
 	if state == "Military" then
-		military.render_military(just_changed)
-	end
-	
-	if state == "main" then	
-		render_menu()
+		military.render_military()
 	end
 	
 	viewitems.handle_building_mouseover()

@@ -3,6 +3,7 @@
 imgui = dfhack.imgui
 menu_state = {"main"}
 menu_item = nil
+menu_changed = true
 
 mouse_click_start = {x=-1, y=-1, z=-1}
 mouse_click_end = {x=-1, y=-1, z=-1}
@@ -31,21 +32,31 @@ function centre_camera(x, y, z)
 	df.global.window_z = z
 end
 
+function menu_was_changed()
+	return menu_changed
+end
+
+function menu_change_clear()
+	menu_changed = false
+end
 
 function reset_menu_to(st)
 	menu_state = {st}
+	menu_changed = true
 end
 
 function push_menu(st)
 	mouse_has_drag = false
 	menu_state[#menu_state+1] = st
 	menu_item = nil
+	menu_changed = true
 end
 
 function pop_menu(st)
 	mouse_has_drag = false
 	table.remove(menu_state, #menu_state)
 	menu_item = nil
+	menu_changed = true
 end
 
 function get_menu(which)

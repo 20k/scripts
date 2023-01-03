@@ -64,15 +64,17 @@ end
 
 last_dwarf_list = nil
 
-function render_military(just_changed)
+function render_military()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
 	local squad_ids = {}
 	local dwarf_histfigs_in_squads = {}
 	local all_elegible_dwarf_units = last_dwarf_list
 	
-	if just_changed or all_elegible_dwarf_units == nil then
+	if render.menu_was_changed() or all_elegible_dwarf_units == nil then
 		all_elegible_dwarf_units = get_valid_units()
+		last_dwarf_list = all_elegible_dwarf_units
+		render.menu_change_clear()
 	end
 	
 	for _,squad_id in ipairs(entity.squads) do	
