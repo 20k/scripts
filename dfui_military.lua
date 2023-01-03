@@ -219,7 +219,7 @@ function render_military()
 					
 					local unit_name = render.get_user_facing_name(real_unit)
 					
-					if imgui.ButtonColored({fg=COLOR_RED}, "[X]") then
+					if imgui.ButtonColored({fg=COLOR_RED}, "[X]##rem"..tostring(histfig)) then
 						remove_from(squad_ids[selected_squad], o)
 					end
 					
