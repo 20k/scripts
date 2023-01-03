@@ -102,6 +102,33 @@ function appoint_to(squad_id, slot, pending_unit)
 	end
 end
 
+function remove_from(squad_id, slot)
+	local squad = df.squad.find(squad_id)
+	
+	if squad == nil then
+		dfhack.println("Bad squad id in remove")
+		return
+	end
+	
+	local existing_position = squad.positions[slot - 1]
+	local existing_histfig_id = existing_position.occupant
+	
+	local leader_assignment_id = squad.leader_assignment
+	
+	local leader_assignment = nobles.assignment_id_to_assignment(leader_assignment_id)
+	
+	if leader_assignment == nil then
+		dfhack.println("No leader assignment in remove")
+		return
+	end
+	
+	if existing_histfig_id ~= -1 and leader_assignment.histfig == existing_histfig_id then
+		nobles.remove_fort_title(leader_assignment_id)
+	end
+	
+	squad.positions[slot - 1].occupant = -1
+end
+
 function render_military()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -196,6 +223,12 @@ function render_military()
 		end
 		
 		imgui.TableNextColumn()
+		
+		if selected_squad ~= -1 then
+			if imgui.Button("Leave Vacant") then
+				remove_from(squad_ids[selected_squad], selected_dwarf)
+			end
+		end
 		
 		for _,unit in ipairs(dwarf_slice) do				
 			if unit == nil then
