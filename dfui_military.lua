@@ -66,6 +66,41 @@ last_dwarf_list = nil
 selected_squad = -1
 selected_dwarf = -1
 
+function appoint_to(squad_id, slot, pending_unit)
+	local squad = df.squad.find(squad_id)
+	
+	if squad == nil then
+		dfhack.println("Bad squad id in appoint")
+		return
+	end
+
+	--squad.positions is 0 index based
+	local existing_position = squad.positions[slot - 1]
+	local existing_histfig_id = existing_position.occupant
+	local pending_unit_histfig = nobles.unit_to_histfig(pending_unit)
+	
+	local leader_assignment_id = squad.leader_assignment
+	
+	local leader_assignment = nobles.assignment_id_to_assignment(leader_assignment_id)
+	
+	if leader_assignment == nil then
+		dfhack.println("No leader assignment")
+		return
+	end
+	
+	--if the current leader is the person I'm replacing, or we're slotting into an empty slot 1 and there is no leader
+	--note that this is a very cautious check because I'm not sure if slot 1 is guaranteed to be the leader
+	--testing has shown that this is probably unnecessary
+	--that said it does show that I probably *do* need to modify squads when assigning nobles
+	if (leader_assignment.histfig == existing_histfig_id) or (leader_assignment.histfig == -1 and existing_histfig_id == -1 and slot == 1) then
+		if nobles.add_or_transfer_fort_title_to(pending_unit, leader_assignment_id) then
+			squad.positions[slot - 1].occupant = pending_unit_histfig.id
+		end
+	else
+		squad.positions[slot - 1].occupant = pending_unit_histfig.id
+	end
+end
+
 function render_military()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -167,6 +202,14 @@ function render_military()
 			end
 			
 			local unit_name = render.get_user_facing_name(unit)
+	
+			if selected_squad ~= -1 and selected_dwarf ~= -1 then
+				if imgui.ButtonColored({fg=COLOR_GREEN}, "[A]##"..tostring(unit.id)) then
+					appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
+				end
+				
+				imgui.SameLine()
+			end
 	
 			imgui.Text(unit_name)
 			

@@ -83,18 +83,22 @@ function remove_fort_title(assignment_id)
 	return nil
 end
 
+function unit_to_histfig(unit)
+	return dfhack.units.getNemesis(unit).figure
+end
+
 --doesn't work for eg monarch
 function add_or_transfer_fort_title_to(unit, assignment_id)	
 	local assignment = assignment_id_to_assignment(assignment_id)
 	
 	if assignment == nil then
-		return
+		return false
 	end
 	
 	local newfig=dfhack.units.getNemesis(unit).figure
 	
 	if newfig == nil then
-		return
+		return false
 	end
 	
 	remove_fort_title(assignment_id)
@@ -107,6 +111,8 @@ function add_or_transfer_fort_title_to(unit, assignment_id)
 	--the game also doesn't set histfig or histfgi2 any differently to how I'm doing it in that case either
 	assignment.histfig=newfig.id
 	assignment.histfig2=newfig.id
+	
+	return true
 end
 
 function get_unit_title_assignment_ids(unit)
