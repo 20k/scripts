@@ -156,6 +156,10 @@ function render_viewitems()
 end
 
 function handle_building_mouseover()
+	if imgui.WantCaptureMouse() then
+		return
+	end
+
 	local top_left = render.get_camera()
 
 	local mouse_pos = imgui.GetMousePos()
@@ -168,7 +172,7 @@ function handle_building_mouseover()
 	local current_menu = render.get_menu()
 	local target_menu = "View Items In Buildings"
 	
-	if building ~= nil and not imgui.WantCaptureMouse() then	
+	if building ~= nil then	
 		if (current_menu == "main" or current_menu == target_menu) and imgui.IsMouseClicked(0) then
 			selected_building_pos.x = lx
 			selected_building_pos.y = ly
@@ -190,7 +194,7 @@ function handle_building_mouseover()
 	
 	local civzones = dfhack.buildings.findCivzonesAt(xyz2pos(lx, ly, top_left.z))
 
-	if civzones ~= nil and not imgui.WantCaptureMouse() and current_menu == "Zones" then
+	if civzones ~= nil and current_menu == "Zones" then
 		for _,civzone in ipairs(civzones) do
 			if civzone.type ~= df.civzone_type.ActivityZone then
 				goto skip
@@ -222,6 +226,10 @@ function handle_building_mouseover()
 end
 
 function handle_unit_mouseover()
+	if imgui.WantCaptureMouse() then
+		return
+	end
+
 	local mouse_pos = render.get_mouse_world_coordinates()
 	
 	local units = df.global.world.units.active
