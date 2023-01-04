@@ -126,7 +126,7 @@ function MyScreen:render()
 		--self:dismiss()
 	end]]--
 	
-	if imgui.IsKeyPressed(6) then
+	if imgui.IsKeyPressed(6) and imgui.IsWantCaptureInput() then
 		render.pop_menu()
 	end
 	
