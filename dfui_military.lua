@@ -184,6 +184,10 @@ function get_all_uncreated_squad_assignments(squads)
 	return sorted
 end
 
+function create_squad_from_noble(assignment)
+
+end
+
 function render_squad_unit_selection()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
@@ -401,7 +405,11 @@ function render_squad_unit_selection()
 		imgui.NewLine()
 		
 		if render.render_hotkey_text({key="c", text="Create Squad"}) then
-		
+			local real_offset = selected_squad - #squad_ids
+			
+			local assignment = commandable_assignments_without_squads[real_offset]
+			
+			create_squad_from_noble(assignment)
 		end
 	end
 end
