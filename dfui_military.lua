@@ -184,7 +184,7 @@ function get_all_uncreated_squad_assignments(squads)
 	return sorted
 end
 
-function render_military()
+function render_squad_unit_selection()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 	
 	local squad_ids = {}
@@ -261,7 +261,11 @@ function render_military()
 		for o,squad_id in ipairs(squad_ids) do
 			local squad = df.squad.find(squad_id)
 
-			if imgui.Selectable(get_squad_name(squad).."##squadname_" .. tostring(squad_id), selected_squad == o) then
+			local name = get_squad_name(squad)
+
+			--name = name .. " " .. tostring(df.global.ui.alerts.list[squad.cur_alert_idx].name)
+
+			if imgui.Selectable(name.."##squadname_" .. tostring(squad_id), selected_squad == o) then
 				selected_squad = o
 			end
 		end
@@ -279,6 +283,7 @@ function render_military()
 		imgui.EndTable()
 	end
 	
+	--need to use squad ids instead of selected squad for multiplayer if squads dynamically change
 	if selected_squad ~= -1 and selected_squad <= #squad_ids then 
 		imgui.SameLine()
 			
@@ -300,7 +305,7 @@ function render_military()
 						local real_unit = nobles.histfig_to_unit(histfig)
 						
 						local unit_name = render.get_user_facing_name(real_unit)
-						
+												
 						--unit_name = unit_name .. " " .. tostring(real_unit.military.squad_id) .. " " .. tostring(real_unit.military.squad_position) .. " " .. tostring(real_unit.military.cur_uniform)
 						
 						--[[for g,m in ipairs(real_unit.military.uniforms[0]) do
@@ -400,5 +405,118 @@ function render_military()
 				imgui.EndTable()
 			end
 		end
+	end
+end
+
+selected_alert = 1
+selected_squad_alert = 1
+
+function render_alerts()
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
+
+	local alerts = {}
+	
+	for _,v in ipairs(df.global.ui.alerts.list) do
+		alerts[#alerts + 1] = v
+	end
+	
+	local civ_alert_idx = df.global.ui.alerts.civ_alert_idx + 1
+	
+	if imgui.BeginTable("Alerts", 1, (1<<13) | (1<<16)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+
+		imgui.NewLine()
+		imgui.Text("ALERTS")
+		imgui.NewLine()
+	
+		for o,alert in ipairs(alerts) do
+			local name = alert.name
+			
+			if civ_alert_idx == o then
+				imgui.TextColored({fg=COLOR_LIGHTGREEN}, "[CIV]")
+			else
+				imgui.Text("     ")
+			end
+			
+			imgui.SameLine()
+			
+			if imgui.Selectable(name.."##"..tostring(selected_alert), selected_alert==o) then
+				selected_alert = o
+			end
+		end
+	
+		imgui.EndTable()
+	end
+	
+	imgui.SameLine()
+	
+	if imgui.BeginTable("Alerts2", 1, (1<<13) | (1<<16)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+		
+		imgui.NewLine()
+		imgui.Text("SQUADS")
+		imgui.NewLine()
+		
+		for o,squad_id in ipairs(sorted_squads) do
+			local squad = df.squad.find(squad_id)
+
+			local name = get_squad_name(squad)
+
+			local squad_alert = squad.cur_alert_idx + 1
+			
+			if squad_alert == selected_alert then
+				imgui.TextColored({fg=COLOR_LIGHTGREEN}, "A")
+			else
+				imgui.Text(" ")
+			end
+			
+			imgui.SameLine()
+
+			if imgui.Selectable(name.."##sq"..tostring(squad_id), selected_squad_alert==o) then
+				selected_squad_alert = o
+			end
+		end
+		
+		imgui.EndTable()
+	end
+	
+	imgui.NewLine()
+	
+	if render.render_hotkey_text({key="c", text="Set civilian alert"}) then 
+		df.global.ui.alerts.civ_alert_idx = math.min(math.max(0, selected_alert - 1), #alerts - 1)
+	end
+	
+	imgui.SameLine()
+	
+	if render.render_hotkey_text({key="v", text="Set squad to alert, retaining orders"}) then
+		local squad_id = sorted_squads[selected_squad_alert]
+		
+		local squad = df.squad.find(squad_id)
+		
+		if squad ~= nil then
+			squad.cur_alert_idx = math.min(math.max(0, selected_alert - 1), #alerts - 1)
+		end
+	end
+	
+end
+
+function render_military()
+	if imgui.BeginTabBar("Tabs", 0) then
+		if imgui.BeginTabItem("Squads") then
+			render_squad_unit_selection()
+		
+			imgui.EndTabItem()
+		end
+		
+		if imgui.BeginTabItem("Alerts") then
+			render_alerts()
+			
+			imgui.EndTabItem()
+		end
+		
+		imgui.EndTabBar()
 	end
 end
