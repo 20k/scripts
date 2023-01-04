@@ -263,8 +263,6 @@ function render_squad_unit_selection()
 
 			local name = get_squad_name(squad)
 
-			--name = name .. " " .. tostring(df.global.ui.alerts.list[squad.cur_alert_idx].name)
-
 			if imgui.Selectable(name.."##squadname_" .. tostring(squad_id), selected_squad == o) then
 				selected_squad = o
 			end
@@ -305,13 +303,7 @@ function render_squad_unit_selection()
 						local real_unit = nobles.histfig_to_unit(histfig)
 						
 						local unit_name = render.get_user_facing_name(real_unit)
-												
-						--unit_name = unit_name .. " " .. tostring(real_unit.military.squad_id) .. " " .. tostring(real_unit.military.squad_position) .. " " .. tostring(real_unit.military.cur_uniform)
-						
-						--[[for g,m in ipairs(real_unit.military.uniforms[0]) do
-							unit_name = unit_name .. " " .. tostring(m)
-						end]]--
-						
+
 						if imgui.ButtonColored({fg=COLOR_RED}, "[X]##rem"..tostring(histfig)) then
 							remove_from(squad_ids[selected_squad], o)
 						end
@@ -368,8 +360,6 @@ function render_squad_unit_selection()
 					
 					local unit_name = render.get_user_facing_name(unit)
 
-					--unit_name = unit_name .. " " .. tostring(unit.military.squad_id) .. " " .. tostring(unit.military.squad_position) .. " " .. tostring(unit.military.cur_uniform)
-
 					rendered_count = rendered_count+1
 
 					--the reason for the ### indexing here is so that the keyboard nav
@@ -404,6 +394,14 @@ function render_squad_unit_selection()
 
 				imgui.EndTable()
 			end
+		end
+	end
+	
+	if selected_squad > #squad_ids then
+		imgui.NewLine()
+		
+		if render.render_hotkey_text({key="c", text="Create Squad"}) then
+		
 		end
 	end
 end
