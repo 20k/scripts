@@ -276,6 +276,8 @@ function render_squad_unit_selection()
 		local lsquad = {}
 		
 		for k,spos in ipairs(squad.positions) do
+			--imgui.Text(tostring(spos.uniform[0][0].color))
+
 			local real_unit = nobles.histfig_to_unit(spos.occupant)
 			
 			if real_unit == nil then
@@ -287,7 +289,7 @@ function render_squad_unit_selection()
 			
 			::notreal::
 		end
-		
+				
 		local next_id = #squad_ids + 1
 		
 		squad_ids[next_id] = squad_id
@@ -579,6 +581,35 @@ function invert(v)
 	return 0
 end
 
+--return spec, flags
+function entity_uniform_to_uniform_spec(uniform_spec, part, which)
+	local item_type_vector_in = uniform_spec.uniform_item_types[part]
+	local item_subtype_vector_in = uniform_spec.uniform_item_subtypes[part]
+	local item_uniform_in = uniform_spec.uniform_item_info[part]
+	local flags = uniform_spec.flags
+	
+	local item_type = item_type_vector_in[which]
+	local item_subtype = item_subtype_vector_in[which]
+	local item_uniform = item_uniform_in[which]
+	
+	local squad_uniform = df.squad_uniform_spec:new()
+	squad_uniform.item = -1
+	squad_uniform.color = -1
+	
+	--TEST UNIFORM ITEM.ITEM_COLOR
+	--think it mathes to squad_uniform.color
+	
+	squad_uniform.item_filter.item_type = item_type
+	squad_uniform.item_filter.item_subtype = item_subtype
+	squad_uniform.item_filter.material_class = item_uniform.image_material_class
+	squad_uniform.item_filter.mattype = item_uniform.mattype
+	squad_uniform.item_filter.matindex = item_uniform.matindex
+	
+	squad_uniform.indiv_choice = item_uniform.indiv_choice
+	
+	return squad_uniform, flags
+end
+
 selected_squad_uniform = 1
 
 function render_assign_uniforms()
@@ -669,7 +700,7 @@ function render_assign_uniforms()
 		end
 	end
 	
-	imgui.SameLine()
+	--imgui.SameLine()
 	
 	if render.render_hotkey_text({key="t", text=current_exact_text}) then
 		for _,p in ipairs(csquad.positions) do
