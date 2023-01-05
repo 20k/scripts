@@ -563,6 +563,125 @@ function render_alerts()
 	
 end
 
+function b2n(b)
+	if b then
+		return 1
+	end
+	
+	return 0
+end
+
+function invert(v)
+	if v == 0 then
+		return 1
+	end
+	
+	return 0
+end
+
+selected_squad_uniform = 1
+
+function render_assign_uniforms()
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+	
+	local uniforms = entity.uniforms
+	
+	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
+	
+	if imgui.BeginTable("SquadUniformss", 1, (1<<13) | (1<<16)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+	
+		for o,squad_id in ipairs(sorted_squads) do
+			local squad = df.squad.find(squad_id)
+			
+			local name = get_squad_name(squad)
+
+			if imgui.Selectable(name.."##usq"..tostring(squad_id), selected_squad_uniform==o) then
+				selected_squad_uniform = o
+			end
+		end
+		
+		imgui.EndTable()
+	end
+	
+	imgui.SameLine()
+	
+	if imgui.BeginTable("UniformTemplates", 1, (1<<13) | (1<<16)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+	
+		for i,v in ipairs(uniforms) do
+			imgui.Text(v.name)
+		end
+		
+		imgui.EndTable()
+	end
+	
+	imgui.NewLine()
+	
+	local csquad_id = sorted_squads[selected_squad_uniform]
+	
+	if csquad_id == nil then
+		goto nope
+	end
+	
+	local csquad = df.squad.find(csquad_id)
+	
+	if csquad == nil then
+		goto nope
+	end
+	
+	local num_non_replace = 0
+	local num_replace = 0
+	
+	local num_non_exact = 0
+	local num_exact = 0
+	
+	for _,p in ipairs(csquad.positions) do
+		num_non_replace = num_non_replace + b2n(p.flags.replace_clothing == false)
+		num_replace = num_replace + b2n(p.flags.replace_clothing == true)
+		
+		num_non_exact = num_non_exact + b2n(p.flags.exact_matches == false)
+		num_exact = num_exact + b2n(p.flags.exact_matches == true)
+	end
+	
+	local replace_text = {"Over clothing", "Replacing clothing"}
+	local exact_text = {"Non exact matches", "Exact matches"}
+	
+	local is_replace = 0
+	local is_exact = 0
+	
+	if num_replace >= num_non_replace then
+		is_replace = 1
+	end
+	
+	if num_exact >= num_non_exact then
+		is_exact = 1
+	end
+	
+	local current_replace_text = replace_text[is_replace + 1]
+	local current_exact_text = exact_text[is_exact + 1]
+	
+	if render.render_hotkey_text({key="r", text=current_replace_text}) then
+		for _,p in ipairs(csquad.positions) do
+			p.flags.replace_clothing = invert(is_replace)
+		end
+	end
+	
+	imgui.SameLine()
+	
+	if render.render_hotkey_text({key="t", text=current_exact_text}) then
+		for _,p in ipairs(csquad.positions) do
+			p.flags.exact_matches = invert(is_exact)
+		end
+	end
+	
+	::nope::
+	
+	--if render.render_hotkey_text({key="r", text="Set squad to alert, retaining orders"}) then
+end
+
 function render_military()
 	if imgui.BeginTabBar("Tabs", 0) then
 		if imgui.BeginTabItem("Squads") then
@@ -573,6 +692,12 @@ function render_military()
 		
 		if imgui.BeginTabItem("Alerts") then
 			render_alerts()
+			
+			imgui.EndTabItem()
+		end
+		
+		if imgui.BeginTabItem("Uniforms") then
+			render_assign_uniforms()
 			
 			imgui.EndTabItem()
 		end
