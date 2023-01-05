@@ -240,7 +240,21 @@ function render_hotkey_text(v)
 	imgui.Text(": ")
 	imgui.SameLine(0,0)
 	
-	return imgui.Button(v.text) or imgui.Shortcut(keyboard_key)
+	local pushed = false
+	
+	if v.highlight then
+		pushed = true
+		local col = v.highlight_col or COLOR_WHITE
+		imgui.PushStyleColor(imgui.StyleIndex("Text"), {fg=col})
+	end
+	
+	local result = imgui.Button(v.text) or imgui.Shortcut(keyboard_key)
+	
+	if pushed then
+		imgui.PopStyleColor(1)
+	end
+	
+	return result
 end
 
 function render_table_impl(menus, old_state)
