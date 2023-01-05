@@ -922,6 +922,14 @@ function render_squads()
 		goto novalidselected
 	end
 	
+	function cancel_orders(squad)
+		for i,j in ipairs(squad.orders) do
+			j:delete()
+		end
+		
+		squad.orders:resize(0)
+	end
+	
 	if render.get_menu_item() == "Move" and imgui.IsMouseClicked(0) then
 		local mouse_pos = render.get_mouse_world_coordinates()
 	
@@ -937,11 +945,7 @@ function render_squads()
 		move_order.pos.y = mouse_pos.y
 		move_order.pos.z = mouse_pos.z
 		
-		for i,j in ipairs(csquad.orders) do
-			j:delete()
-		end
-		
-		csquad.orders:resize(0)
+		cancel_orders(csquad)
 		
 		csquad.orders:insert('#', move_order)
 		
@@ -956,6 +960,10 @@ function render_squads()
 	
 	if state == "Move" then
 		render.set_menu_item(state)
+	end
+	
+	if state == "Cancel orders" then
+		cancel_orders(csquad)
 	end
 	
 	::novalidselected::
