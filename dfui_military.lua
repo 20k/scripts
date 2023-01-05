@@ -853,6 +853,15 @@ end
 
 selected_squad_order = -1
 
+function fill_order_default(order)
+	order.unk_v40_1 = -1
+	order.unk_v40_2 = -1
+	order.year = df.global.cur_year
+	order.year_tick = df.global.cur_year_tick
+	order.unk_v40_3 = -1
+	order.unk_1 = 0
+end
+
 function render_squads()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 		
@@ -864,6 +873,19 @@ function render_squads()
 	
 	for o,squad_id in ipairs(sorted_squads) do
 		local squad = df.squad.find(squad_id)
+		
+		
+		--if o == 1 then
+			--local position = squad.positions[2]
+			
+			imgui.Text("Orders " .. tostring(#squad.orders))
+			
+			for i,v in ipairs(squad.orders) do
+				if df.squad_order_movest:is_instance(v) then
+					imgui.Text("Move order to .. " .. tostring(v.pos.x) .. " " .. tostring(v.pos.y) .. " " .. tostring(v.pos.z) .. " id " .. tostring(v.point_id))
+				end
+			end
+		--end
 		
 		if squad == nil then
 			goto badsquad
@@ -888,5 +910,53 @@ function render_squads()
 	
 	local state = render.render_table_impl(to_render, "main")
 	
+	local csquad_id = sorted_squads[selected_squad_order]
 	
+	if csquad_id == nil then
+		goto novalidselected
+	end
+	
+	local csquad = df.squad.find(csquad_id)
+	
+	if csquad == nil then
+		goto novalidselected
+	end
+	
+	if render.get_menu_item() == "Move" and imgui.IsMouseClicked(0) then
+		local mouse_pos = render.get_mouse_world_coordinates()
+	
+		local move_order = df.squad_order_movest:new()
+		fill_order_default(move_order)
+		
+		--there are a lot of things that are low on the priority list
+		--right at the bottom are things that I didn't know existed until I 
+		--dug through the source code
+		move_order.point_id = -1 
+		
+		move_order.pos.x = mouse_pos.x
+		move_order.pos.y = mouse_pos.y
+		move_order.pos.z = mouse_pos.z
+		
+		for i,j in ipairs(csquad.orders) do
+			j:delete()
+		end
+		
+		csquad.orders:resize(0)
+		
+		csquad.orders:insert('#', move_order)
+		
+		render.set_menu_item(nil)
+	end
+	
+	if render.get_menu_item() == "Move" then
+		imgui.BeginTooltip()
+		imgui.Text("Click to move here")
+		imgui.EndTooltip()
+	end
+	
+	if state == "Move" then
+		render.set_menu_item(state)
+	end
+	
+	::novalidselected::
 end
