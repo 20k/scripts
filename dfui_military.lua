@@ -850,3 +850,43 @@ function render_military()
 		imgui.EndTabBar()
 	end
 end
+
+selected_squad_order = -1
+
+function render_squads()
+	local entity = df.historical_entity.find(df.global.ui.group_id)
+		
+	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
+	
+	--I actually have no idea how df handles this by default, but it must stop before p
+	--considering numbering them 1-9
+	local keys = {"a","b","c","d","e","f","g","h","i","j"}
+	
+	for o,squad_id in ipairs(sorted_squads) do
+		local squad = df.squad.find(squad_id)
+		
+		if squad == nil then
+			goto badsquad
+		end
+	
+		local should_highlight = selected_squad_order==o
+	
+		if render.render_hotkey_text({key=keys[o], text=get_squad_name(squad), highlight=should_highlight, highlight_col=COLOR_LIGHTCYAN}) then
+			if selected_squad == o then
+				selected_squad = -1
+			else
+				selected_squad_order = o
+			end
+		end
+				
+		::badsquad::
+	end
+	
+	imgui.NewLine()
+
+	local to_render = {{key="k", text="Attack"}, {key="m", text="Move"}, {key="o", text="Cancel orders"}}
+	
+	local state = render.render_table_impl(to_render, "main")
+	
+	
+end
