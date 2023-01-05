@@ -149,7 +149,13 @@ function get_sorted_squad_ids_by_precedence(squads)
 		--yeesh
 		local s1 = df.squad.find(a)
 		local s2 = df.squad.find(b)
-	
+		
+		--[[local s3 = df.global.world.squads.bad.find(a)
+		
+		if s3 ~= nil then
+			dfhack.println("hi")
+		end]]--
+		
 		local p1 = nobles.position_id_to_position(s1.leader_position)
 		local p2 = nobles.position_id_to_position(s2.leader_position)
 
@@ -184,8 +190,67 @@ function get_all_uncreated_squad_assignments(squads)
 	return sorted
 end
 
-function create_squad_from_noble(assignment)
+--intentionally using a fixed seed
+rng = dfhack.random.new(1234)
 
+
+--words: -1, -1, 1731, -1, -1, 1182, -1. Seems to be common
+--parts of speech: noun, noun, adjective, noun, noun, nounplural, noun
+function generate_language_name_object()
+	local result = {}
+
+	--result.language = math.floor(rng:drandom() * #df.world.raws.language.translations)
+	result.type = df.language_name_type.Squad
+	result.nickname = ""
+	result.first_name = ""
+	result.has_name = 1
+	result.language = 0
+	result.words = {-1, -1, -1, -1, -1, -1, -1}
+	result.parts_of_speech = {df.part_of_speech.Noun, df.part_of_speech.Noun, df.part_of_speech.Adjective, df.part_of_speech.Noun, df.part_of_speech.Noun, df.part_of_speech.NounPlural, df.part_of_speech.Noun}
+	
+	local lwords = df.global.world.raws.language.word_table[0][35].words[0]
+	
+	result.words[3] = lwords[math.floor(rng:drandom() * (#lwords - 1))]
+	result.words[6] = lwords[math.floor(rng:drandom() * (#lwords - 1))]
+
+	return result
+end
+
+function fnd(id, parent)
+	for _,v in ipairs(parent) do
+		if v == id then
+			return true
+		end
+	end
+	
+	return false
+end
+
+function squad_in_entity(squad_id, entity_id)
+	local entity = df.historical_entity.find(entity_id)
+	
+	return fnd(squad_id, entity.squads)
+	--return entity.squads.find(squad_id)
+end
+
+function create_squad_from_noble(assignment)
+	local squad = dfhack.units.makeSquad(assignment.id)
+	
+	local name = generate_language_name_object()
+
+	squad.name.type = name.type
+	squad.name.nickname = name.nickname
+	squad.name.first_name = name.first_name
+	squad.name.has_name = 1
+	squad.name.language = 0
+	
+	for i,j in ipairs(name.words) do
+		squad.name.words[i - 1] = j
+	end
+	
+	for i,j in ipairs(name.parts_of_speech) do
+		squad.name.parts_of_speech[i - 1] = j
+	end
 end
 
 function render_squad_unit_selection()
@@ -266,6 +331,130 @@ function render_squad_unit_selection()
 			local squad = df.squad.find(squad_id)
 
 			local name = get_squad_name(squad)
+			
+			--for k,p in ipairs(squad.positions) do
+				--imgui.Text("Position")
+								
+				--[[imgui.Text(tostring(#p.orders))
+				
+				imgui.Text(tostring(#p.preferences[0]))
+				imgui.Text(tostring(#p.preferences[1]))
+				imgui.Text(tostring(#p.preferences[2]))
+				imgui.Text(tostring(#p.preferences[3]))]]--
+				
+				--imgui.Text(p.unk_c4)
+				--[[imgui.Text(tostring(p.quiver))
+				imgui.Text(tostring(p.backpack))
+				imgui.Text(tostring(p.flask))
+				imgui.Text(tostring(p.unk_1))
+				imgui.Text(tostring(p.activities[0]))
+				imgui.Text(tostring(p.activities[1]))
+				imgui.Text(tostring(p.activities[2]))				
+				imgui.Text(tostring(p.events[0]))
+				imgui.Text(tostring(p.events[1]))
+				imgui.Text(tostring(p.events[2]))
+				imgui.Text(tostring(p.unk_2))]]--
+				
+				--imgui.Text(tostring(#p.uniform[0]))
+				
+				--imgui.Text
+			--end
+			
+			
+			--imgui.Text(tostring(squad.schedule[0][1].name))
+			
+
+			--imgui.Text(tostring(squad.id))
+			--imgui.Text(tostring(squad.uniform_priority))
+
+			--[[imgui.Text(tostring(#squad.ammo_items))
+			imgui.Text(tostring(#squad.ammo_units))
+			imgui.Text(tostring(squad.carry_food))
+			imgui.Text(tostring(squad.carry_water))
+			imgui.Text(tostring(squad.entity_id))
+			imgui.Text(tostring(squad.unk_1))
+			imgui.Text(tostring(squad.activity))]]--
+
+			--words: -1, -1, 1731, -1, -1, 1182, -1. Seems to be common
+			--parts of speech: noun, noun, adjective, noun, noun, nounplural, noun
+
+			--
+
+			--[[for t,v in ipairs(squad.name.words) do
+				imgui.Text(v)
+			end]]--
+			
+			--[[for t,v in ipairs(squad.name.parts_of_speech) do
+				imgui.Text(df.part_of_speech[v])
+			end]]--
+			
+			--imgui.Text(dfhack.TranslateName(generate_language_name_object()))
+			--imgui.Text(dfhack.TranslateName(generate_language_name_object()))
+			--imgui.Text(dfhack.TranslateName(generate_language_name_object()))
+
+			--[[imgui.Text(tostring(squad.id))
+				
+			for k,p in ipairs(df.global.world.squads.bad) do
+				if p.id == squad.id then
+					imgui.Text("In bad")
+				end
+			end]]--	
+			
+			--imgui.Text(tostring(squad_in_entity(squad_id, df.global.ui.civ_id)))
+			--imgui.Text(tostring(squad_in_entity(squad_id, df.global.ui.site_id)))
+			--imgui.Text(tostring(squad_in_entity(squad_id, df.global.ui.group_id)))
+			--imgui.Text(tostring(squad_in_entity(squad_id, df.global.ui.race_id)))
+			
+			--imgui.Text(tostring(df.global.ui.group_id))
+			--imgui.Text(tostring(squad.entity_id))
+			
+			--imgui.Text(#df.global.ui.squads.list)
+			
+			--imgui.Text(#squad.schedule[0][0].orders)
+			
+			--[[imgui.Text(tostring(squad.positions[0].events[0]))
+			imgui.Text(tostring(squad.positions[0].events[1]))
+			imgui.Text(tostring(squad.positions[0].events[2]))]]--
+			
+			--imgui.Text(squad.name.language)
+			
+			for i1,k in ipairs(squad.schedule) do
+				--for m=0,11 do
+				for m,sched in ipairs(k) do
+					--local sched = k[m]
+					
+					--imgui.Text("Test " .. tostring(sched))
+					--imgui.Text("orders " .. tostring(#sched.orders))
+
+					for oa,v in ipairs(sched.orders) do
+						--imgui.Text("alert: " .. tostring(i1) .. " " .. " month " .. tostring(m) .. " position " .. tostring(oa) .. " " .. tostring(v.min_count))
+						
+						--imgui.Text("A: " .. tostring(#sched.orders))
+						
+						--imgui.Text(tostring(#v.positions))
+						
+						--imgui.Text(tostring(#v.positions))
+						
+						--[[for d,n in ipairs(v.positions) do
+							imgui.Text(tostring(n))
+						end]]--
+						
+						--[[imgui.Text("Unky " .. tostring(v.order.unk_v40_1))
+						imgui.Text(tostring(v.order.unk_v40_2))
+						imgui.Text(tostring(v.order.unk_v40_2))
+						imgui.Text(tostring(v.order.year))
+						imgui.Text(tostring(v.order.year_tick))
+						imgui.Text(tostring(v.order.unk_v40_3))
+						imgui.Text("end " .. tostring(v.order.unk_1))]]--
+						
+						--[[for d,n in ipairs(v.positions) do
+							if n == true then
+							imgui.Text(tostring(n))
+							end
+						end]]--
+					end
+				end
+			end
 
 			if imgui.Selectable(name.."##squadname_" .. tostring(squad_id), selected_squad == o) then
 				selected_squad = o
