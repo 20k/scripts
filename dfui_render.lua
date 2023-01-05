@@ -94,6 +94,15 @@ function get_mouse_world_coordinates()
 	return {x=lx, y=ly, z=top_left.z}
 end
 
+function check_hostile(unit)
+	return dfhack.units.isCrazed(unit) or 
+		   dfhack.units.isInvader(unit) or 
+		   dfhack.units.isUndead(unit, false) or 
+		   dfhack.units.isSemiMegabeast(unit) or
+		   dfhack.units.isNightCreature(unit) or
+		   dfhack.units.isGreatDanger(unit)
+end
+
 function get_user_facing_name(unit)
 	local name_type = dfhack.units.getVisibleName(unit)
 	
@@ -146,6 +155,8 @@ function get_user_facing_name(unit)
 	
 	if dfhack.units.isInvader(unit) then
 		tag = tag.."[invader] "
+	elseif check_hostile(unit) then
+		tag = tag.."[hostile] "
 	end
 	
 	if dfhack.units.isVisitor(unit) and not dfhack.units.isInvader(unit) then
@@ -167,16 +178,7 @@ function get_user_facing_name(unit)
 	end
 end
 
-function check_hostile(unit)
-	return dfhack.units.isCrazed(unit) or 
-		   dfhack.units.isInvader(unit) or 
-		   dfhack.units.isUndead(unit, false) or 
-		   dfhack.units.isSemiMegabeast(unit) or
-		   dfhack.units.isNightCreature(unit) or
-		   dfhack.units.isGreatDanger(unit)
-end
-
-function TextColoredUnit(unit)
+function get_unit_colour(unit)
 	local is_hostile = check_hostile(unit)
 	local is_forts = dfhack.units.isFortControlled(unit)
 	local is_dead = dfhack.units.isKilled(unit)
@@ -214,6 +216,12 @@ function TextColoredUnit(unit)
 			col = COLOR_RED
 		end
 	end
+	
+	return col
+end
+
+function TextColoredUnit(unit)
+	local col = get_unit_colour(unit)
 	
 	imgui.TextColored({fg=col}, get_user_facing_name(unit))
 end

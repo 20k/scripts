@@ -84,7 +84,17 @@ function remove_fort_title(assignment_id)
 end
 
 function unit_to_histfig(unit)
-	return dfhack.units.getNemesis(unit).figure
+	local nem = dfhack.units.getNemesis(unit)
+	
+	if nem == nil then
+		return -1
+	end
+	
+	if nem.figure == nil then
+		return -1
+	end
+
+	return nem.figure
 end
 
 --doesn't work for eg monarch

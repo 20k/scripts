@@ -188,6 +188,10 @@ function MyScreen:render()
 		military.render_military()
 	end
 	
+	if state == "Squads" then
+		military.render_squads()
+	end
+	
 	viewitems.handle_building_mouseover()
 	viewitems.handle_unit_mouseover()
 	
