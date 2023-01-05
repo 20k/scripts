@@ -591,6 +591,75 @@ function copy_flags(target, source)
 	end
 end
 
+--does this have a f1 == f2?
+function same_flags(f1, f2)
+	for k,v in pairs(f1) do
+		if f2[k] ~= v then
+			return false
+		end
+	end
+	
+	for k,v in pairs(f2) do
+		if f1[k] ~= v then
+			return false
+		end
+	end
+	
+	return true
+end
+
+function position_uniform_matches_entity_uniform(position, entity_uniform)
+	if not same_flags(position.flags, entity_uniform.flags) then
+		return false
+	end
+	
+	for i=0,6 do
+		local uniform_length = #entity_uniform.uniform_item_types[i]
+		
+		local position_uniform_length = #position.uniform[i]
+		
+		if uniform_length ~= position_uniform_length then
+			return false
+		end
+		
+		for k=0,(uniform_length-1) do
+			local item_type = entity_uniform.uniform_item_types[i][k]
+			local item_subtype = entity_uniform.uniform_item_subtypes[i][k]
+			local item_eui = entity_uniform.uniform_item_info[i][k]
+			
+			local p_spec = position.uniform[i][k]
+			
+			if item_type ~= p_spec.item_filter.item_type then
+				return false
+			end
+			
+			if item_subtype ~= p_spec.item_filter.item_subtype then
+				return false
+			end
+			
+			--if item_eui.item_color ~= p_spec.color
+			
+			if item_eui.material_class ~= p_spec.item_filter.material_class then
+				return false
+			end
+			
+			if not same_flags(item_eui.indiv_choice, p_spec.indiv_choice) then
+				return false
+			end
+			
+			if item_eui.mattype ~= p_spec.item_filter.mattype then
+				return false
+			end
+			
+			if item_eui.matindex ~= p_spec.item_filter.matindex then
+				return false
+			end
+		end
+	end
+	
+	return true
+end 
+
 --return spec
 function entity_uniform_to_uniform_spec(uniform_spec, part, which)
 	local item_type_vector_in = uniform_spec.uniform_item_types[part]
@@ -663,7 +732,26 @@ function render_assign_uniforms()
 		imgui.TableNextRow();
 		imgui.TableNextColumn();
 	
-		for i,v in ipairs(uniforms) do		
+		for i,v in ipairs(uniforms) do
+			local num_matching = 0
+			
+			for _,position in ipairs(csquad.positions) do
+				if position_uniform_matches_entity_uniform(position, v) then
+					num_matching = num_matching + 1
+				end
+			end
+		
+			local pad = ""
+			
+			---todo: this is probably better solved with tables
+			if num_matching < 10 then
+				pad = " "
+			end
+		
+			imgui.Text("("..tostring(num_matching)..")" .. pad)
+			
+			imgui.SameLine()
+		
 			if imgui.Button(v.name .. "##" .. tostring(i)) then
 				for i=0,6 do
 					local flags = v.flags
