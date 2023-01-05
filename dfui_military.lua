@@ -581,12 +581,21 @@ function invert(v)
 	return 0
 end
 
---return spec, flags
+function copy_flags(target, source)
+	for k,v in pairs(target) do
+		target[k] = false
+	end
+
+	for k,v in pairs(source) do
+		target[k] = v
+	end
+end
+
+--return spec
 function entity_uniform_to_uniform_spec(uniform_spec, part, which)
 	local item_type_vector_in = uniform_spec.uniform_item_types[part]
 	local item_subtype_vector_in = uniform_spec.uniform_item_subtypes[part]
 	local item_uniform_in = uniform_spec.uniform_item_info[part]
-	local flags = uniform_spec.flags
 	
 	local item_type = item_type_vector_in[which]
 	local item_subtype = item_subtype_vector_in[which]
@@ -601,13 +610,13 @@ function entity_uniform_to_uniform_spec(uniform_spec, part, which)
 	
 	squad_uniform.item_filter.item_type = item_type
 	squad_uniform.item_filter.item_subtype = item_subtype
-	squad_uniform.item_filter.material_class = item_uniform.image_material_class
+	squad_uniform.item_filter.material_class = item_uniform.material_class
 	squad_uniform.item_filter.mattype = item_uniform.mattype
 	squad_uniform.item_filter.matindex = item_uniform.matindex
 	
-	squad_uniform.indiv_choice = item_uniform.indiv_choice
+	copy_flags(squad_uniform.indiv_choice, item_uniform.indiv_choice)
 	
-	return squad_uniform, flags
+	return squad_uniform
 end
 
 selected_squad_uniform = 1
@@ -636,21 +645,6 @@ function render_assign_uniforms()
 		imgui.EndTable()
 	end
 	
-	imgui.SameLine()
-	
-	if imgui.BeginTable("UniformTemplates", 1, (1<<13) | (1<<16)) then
-		imgui.TableNextRow();
-		imgui.TableNextColumn();
-	
-		for i,v in ipairs(uniforms) do
-			imgui.Text(v.name)
-		end
-		
-		imgui.EndTable()
-	end
-	
-	imgui.NewLine()
-	
 	local csquad_id = sorted_squads[selected_squad_uniform]
 	
 	if csquad_id == nil then
@@ -662,6 +656,38 @@ function render_assign_uniforms()
 	if csquad == nil then
 		goto nope
 	end
+	
+	imgui.SameLine()
+	
+	if imgui.BeginTable("UniformTemplates", 1, (1<<13) | (1<<16)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+	
+		for i,v in ipairs(uniforms) do		
+			if imgui.Button(v.name .. "##" .. tostring(i)) then
+				for i=0,6 do
+					local flags = v.flags
+
+					for pi,pp in ipairs(csquad.positions) do
+						--leak memory
+						pp.uniform[i]:resize(0)
+						
+						for o,_ in ipairs(v.uniform_item_types[i]) do
+							local spec = entity_uniform_to_uniform_spec(v, i, o)
+					
+							pp.uniform[i]:insert('#', spec)
+						end
+						
+						copy_flags(pp.flags, flags)
+					end
+				end
+			end
+		end
+		
+		imgui.EndTable()
+	end
+	
+	imgui.NewLine()
 	
 	local num_non_replace = 0
 	local num_replace = 0
