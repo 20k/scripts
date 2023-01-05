@@ -3,6 +3,7 @@
 imgui = dfhack.imgui
 nobles = reqscript('dfui_nobles')
 render = reqscript('dfui_render')
+utils = require('utils')
 
 function valid_unit(unit)
 	if not dfhack.units.isOwnGroup(unit) then
@@ -862,6 +863,27 @@ function fill_order_default(order)
 	order.unk_1 = 0
 end
 
+function get_hostile_units()
+	local result = {}
+	
+	local units = df.global.world.units.active
+	
+	for _,unit in ipairs(units) do
+		--and not dfhack.units.isFortControlled(unit)?
+		
+		local generic_wild = not dfhack.units.isOwnCiv(unit) and not dfhack.units.isOwnGroup(unit) and not dfhack.units.isFortControlled(unit) and not dfhack.units.isKilled(unit)
+		
+		local angry = render.check_hostile(unit)
+		
+		if (generic_wild or angry) and dfhack.units.isVisible(unit) and not dfhack.units.isGhost(unit) and not dfhack.units.isKilled(unit) then
+			result[#result+1] = unit
+		end
+	end
+	
+	return result
+end
+
+
 function render_squads()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
 		
@@ -871,37 +893,59 @@ function render_squads()
 	--considering numbering them 1-9
 	local keys = {"a","b","c","d","e","f","g","h","i","j"}
 	
-	for o,squad_id in ipairs(sorted_squads) do
-		local squad = df.squad.find(squad_id)
-		
-		
-		--if o == 1 then
-			--local position = squad.positions[2]
+
+	if imgui.BeginTable("SquadTable", 3, (1<<13) | (1<<16)) then
+		imgui.TableNextRow();
+		imgui.TableNextColumn();
+
+		for o,squad_id in ipairs(sorted_squads) do
+			local squad = df.squad.find(squad_id)
 			
-			imgui.Text("Orders " .. tostring(#squad.orders))
-			
-			for i,v in ipairs(squad.orders) do
-				if df.squad_order_movest:is_instance(v) then
-					imgui.Text("Move order to .. " .. tostring(v.pos.x) .. " " .. tostring(v.pos.y) .. " " .. tostring(v.pos.z) .. " id " .. tostring(v.point_id))
+			if squad == nil then
+				goto badsquad
+			end
+	
+			local should_highlight = selected_squad_order==o
+		
+			if render.render_hotkey_text({key=keys[o], text=get_squad_name(squad), highlight=should_highlight, highlight_col=COLOR_LIGHTCYAN}) then
+				if selected_squad == o then
+					selected_squad = -1
+				else
+					selected_squad_order = o
 				end
 			end
-		--end
 		
-		if squad == nil then
-			goto badsquad
-		end
-	
-		local should_highlight = selected_squad_order==o
-	
-		if render.render_hotkey_text({key=keys[o], text=get_squad_name(squad), highlight=should_highlight, highlight_col=COLOR_LIGHTCYAN}) then
-			if selected_squad == o then
-				selected_squad = -1
-			else
-				selected_squad_order = o
+			imgui.TableNextColumn();
+			
+			local order_str = ""
+			
+			for _,order in ipairs(squad.orders) do
+				order_str = order_str .. "[" .. utils.call_with_string(order, "getDescription") .. "]"
 			end
+			
+			if #order_str > 0 then				
+				imgui.Text(order_str)
+			end
+			
+			imgui.TableNextColumn();
+			
+			local count = 0
+			
+			for _,position in ipairs(squad.positions) do
+				if position.occupant ~= -1 then
+					count = count+1
+				end
+			end
+			
+			imgui.Text(count)
+			
+			imgui.TableNextRow();
+			imgui.TableNextColumn();
+			
+			::badsquad::
 		end
-				
-		::badsquad::
+		
+		imgui.EndTable()
 	end
 	
 	imgui.NewLine()
@@ -930,7 +974,19 @@ function render_squads()
 		squad.orders:resize(0)
 	end
 	
-	if render.get_menu_item() == "Move" and imgui.IsMouseClicked(0) then
+	if imgui.IsMouseClicked(1) and not imgui.WantCaptureMouse() then
+		render.set_menu_item(nil)
+	end
+	
+	local current_menu_item = render.get_menu_item()
+	
+	local current_menu_item_type = ""
+	
+	if current_menu_item ~= nil then
+		current_menu_item_type = current_menu_item.type
+	end
+	
+	if current_menu_item_type == "Move" and imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() then
 		local mouse_pos = render.get_mouse_world_coordinates()
 	
 		local move_order = df.squad_order_movest:new()
@@ -952,18 +1008,76 @@ function render_squads()
 		render.set_menu_item(nil)
 	end
 	
-	if render.get_menu_item() == "Move" then
+	if current_menu_item_type == "Move" then
 		imgui.BeginTooltip()
 		imgui.Text("Click to move here")
 		imgui.EndTooltip()
 	end
 	
+	if current_menu_item_type == "Attack" then
+		local valid_units = get_hostile_units()
+		
+		local mouse_pos = render.get_mouse_world_coordinates()
+	
+		local found_unit = nil
+			
+		--todo: cycle units under cursor with ,.
+		for _,unit in ipairs(valid_units) do		
+			if unit.pos.x == mouse_pos.x and unit.pos.y == mouse_pos.y and unit.pos.z == mouse_pos.z then
+				found_unit = unit
+			end
+		end
+		
+		if found_unit ~= nil then
+			imgui.BeginTooltip()
+			imgui.Text("Kill: " .. render.get_user_facing_name(found_unit) .. "?")
+			imgui.EndTooltip()
+		end
+		
+		function kill_unit(squad, unit)
+			cancel_orders(squad)
+			
+			local order = df.squad_order_kill_listst:new()
+			fill_order_default(order)
+			
+			order.units:insert('#', unit.id)
+			
+			local histfig = nobles.unit_to_histfig(unit)
+						
+			order.histfigs:insert('#', histfig.id)
+			order.title = "Killing " .. render.get_user_facing_name(unit)
+			
+			csquad.orders:insert('#', order)
+		end
+		
+		if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and found_unit then
+			kill_unit(csquad, found_unit)
+			render.set_menu_item(nil)
+		end
+		
+		imgui.Text("Click to kill, or select below")
+		
+		--todo: hotkeys
+		for _,unit in ipairs(valid_units) do
+			local col = render.get_unit_colour(unit)
+		
+			if imgui.ButtonColored({fg=col}, render.get_user_facing_name(unit) .. "##killy" ..tostring(unit.id)) then
+				kill_unit(csquad, unit)
+				render.set_menu_item(nil)
+			end
+		end
+	end
+	
 	if state == "Move" then
-		render.set_menu_item(state)
+		render.set_menu_item({type="Move"})
 	end
 	
 	if state == "Cancel orders" then
 		cancel_orders(csquad)
+	end
+	
+	if state == "Attack" then
+		render.set_menu_item({type="Attack"})
 	end
 	
 	::novalidselected::
