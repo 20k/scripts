@@ -883,6 +883,13 @@ function get_hostile_units()
 	return result
 end
 
+function cancel_orders(squad)
+	for i,j in ipairs(squad.orders) do
+		j:delete()
+	end
+	
+	squad.orders:resize(0)
+end
 
 function render_squads()
 	local entity = df.historical_entity.find(df.global.ui.group_id)
@@ -949,10 +956,25 @@ function render_squads()
 	end
 	
 	imgui.NewLine()
+	
+	
 
+	--want to cancel on right clicking anywhere
+	if imgui.IsMouseClicked(1) then
+		render.set_menu_item(nil)
+	end
+	
+	local current_menu_item = render.get_menu_item()
+	
+	local current_menu_item_type = ""
+	
+	if current_menu_item ~= nil then
+		current_menu_item_type = current_menu_item.type
+	end
+	
 	local to_render = {{key="k", text="Attack"}, {key="m", text="Move"}, {key="o", text="Cancel orders"}}
 	
-	local state = render.render_table_impl(to_render, "main")
+	local state = render.render_table_impl(to_render, current_menu_item_type)
 	
 	local csquad_id = sorted_squads[selected_squad_order]
 	
@@ -964,26 +986,6 @@ function render_squads()
 	
 	if csquad == nil then
 		goto novalidselected
-	end
-	
-	function cancel_orders(squad)
-		for i,j in ipairs(squad.orders) do
-			j:delete()
-		end
-		
-		squad.orders:resize(0)
-	end
-	
-	if imgui.IsMouseClicked(1) and not imgui.WantCaptureMouse() then
-		render.set_menu_item(nil)
-	end
-	
-	local current_menu_item = render.get_menu_item()
-	
-	local current_menu_item_type = ""
-	
-	if current_menu_item ~= nil then
-		current_menu_item_type = current_menu_item.type
 	end
 	
 	if current_menu_item_type == "Move" and imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() then
@@ -1008,7 +1010,7 @@ function render_squads()
 		render.set_menu_item(nil)
 	end
 	
-	if current_menu_item_type == "Move" then
+	if current_menu_item_type == "Move" and not imgui.WantCaptureMouse() then
 		imgui.BeginTooltip()
 		imgui.Text("Click to move here")
 		imgui.EndTooltip()
