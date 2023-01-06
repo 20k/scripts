@@ -422,6 +422,10 @@ function render_farm(building)
 		imgui.EndTable()
 	end
 	
+	if imgui.IsMouseClicked(1) and render.get_menu_item().screen == "base" then
+		render.pop_menu()
+	end
+	
 	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
 		render.set_menu_item({screen="base", pos=mouse_world_pos})
 	end
@@ -535,6 +539,10 @@ function render_setbuilding()
 	end
 	
 	render.set_menu_item(next_state)
+	
+	if imgui.IsMouseClicked(1) and state.screen == "base" then
+		render.pop_menu()
+	end
 	
 	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
 		render.set_menu_item({screen="base", pos=mouse_world_pos})
