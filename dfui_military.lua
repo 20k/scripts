@@ -246,7 +246,7 @@ function create_squad_from_noble(assignment)
 end
 
 function render_squad_unit_selection()
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	local squad_ids = {}
 	local dwarf_histfigs_in_squads = {}
@@ -475,16 +475,16 @@ selected_alert = 1
 selected_squad_alert = 1
 
 function render_alerts()
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
 
 	local alerts = {}
 	
-	for _,v in ipairs(df.global.ui.alerts.list) do
+	for _,v in ipairs(df.global.plotinfo.alerts.list) do
 		alerts[#alerts + 1] = v
 	end
 	
-	local civ_alert_idx = df.global.ui.alerts.civ_alert_idx + 1
+	local civ_alert_idx = df.global.plotinfo.alerts.civ_alert_idx + 1
 	
 	if imgui.BeginTable("Alerts", 1, (1<<13) | (1<<16)) then
 		imgui.TableNextRow();
@@ -549,7 +549,7 @@ function render_alerts()
 	imgui.NewLine()
 	
 	if render.render_hotkey_text({key="c", text="Set civilian alert"}) then 
-		df.global.ui.alerts.civ_alert_idx = math.min(math.max(0, selected_alert - 1), #alerts - 1)
+		df.global.plotinfo.alerts.civ_alert_idx = math.min(math.max(0, selected_alert - 1), #alerts - 1)
 	end
 	
 	imgui.SameLine()
@@ -692,7 +692,7 @@ end
 selected_squad_uniform = 1
 
 function render_assign_uniforms()
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	local uniforms = entity.uniforms
 	
@@ -892,7 +892,7 @@ function cancel_orders(squad)
 end
 
 function render_squads()
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 		
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
 	

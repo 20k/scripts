@@ -115,7 +115,15 @@ function render_stock()
 end
 
 function MyScreen:render()
-	self:renderParent()
+	--self:renderParent()
+	
+	if self._native and self._native.parent then
+        self._native.parent:render()
+    else
+        dfhack.screen.clear()
+    end
+
+	df.global.gps.force_full_display_count = 1
 	
 	--[[if(imgui.IsKeyPressed(6) and state == "main") then
 		self:dismiss()
@@ -126,7 +134,7 @@ function MyScreen:render()
 		--self:dismiss()
 	end]]--
 	
-	if imgui.IsKeyPressed(6) and imgui.WantCaptureInput() then
+	if imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() then
 		render.pop_menu()
 	end
 	
