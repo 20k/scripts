@@ -17,7 +17,7 @@ function fnd(array, fieldname, fieldvalue)
 end
 
 function assignment_to_position(assignment_id)
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	if entity == nil then
 		return nil
@@ -33,7 +33,7 @@ function assignment_to_position(assignment_id)
 end
 
 function assignment_id_to_assignment(assignment_id)
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	if entity == nil then
 		return nil
@@ -43,7 +43,7 @@ function assignment_id_to_assignment(assignment_id)
 end
 
 function position_id_to_position(id)
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	if entity == nil then
 		return nil
@@ -54,7 +54,7 @@ end
 
 --won't remove eg monarch
 function remove_fort_title(assignment_id)
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	if entity == nil then
 		return nil
@@ -113,7 +113,7 @@ function add_or_transfer_fort_title_to(unit, assignment_id)
 	
 	remove_fort_title(assignment_id)
 	
-	newfig.entity_links:insert("#",{new=df.histfig_entity_link_positionst,entity_id=df.global.ui.group_id,
+	newfig.entity_links:insert("#",{new=df.histfig_entity_link_positionst,entity_id=df.global.plotinfo.group_id,
 				link_strength=100,assignment_id=assignment_id,start_year=df.global.cur_year})
 
 	--as far as I can tell, histfig2 is never any different to histfig
@@ -211,7 +211,7 @@ function is_elected_position(position)
 end
 
 function number_in_position(position_id)
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	local count = 0
 	
@@ -280,7 +280,7 @@ function can_appoint(position)
 end
 
 function push_new_assignment(position_id)
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	if entity == nil then
 		return nil
@@ -318,7 +318,7 @@ function push_new_assignment(position_id)
 end
 
 function collect_commander_position_ids()
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	local result = {}
 	
@@ -338,7 +338,7 @@ function collect_commander_position_ids()
 end
 
 function collect_assignment_objects_with_possible_squads()
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	local result = {}
 	
@@ -455,7 +455,7 @@ function shallow_copy_to_array(t)
 end
 
 function render_titles()
-	local entity = df.historical_entity.find(df.global.ui.group_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	
 	if entity == nil then
 		return nil
