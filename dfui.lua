@@ -115,7 +115,7 @@ function render_stock()
 end
 
 function MyScreen:render()
-	--self:renderParent()
+	self:renderParent()
 	
 	if self._native and self._native.parent then
         self._native.parent:render()
@@ -233,6 +233,14 @@ function MyScreen:onIdle()
 end
 
 function MyScreen:onDismiss()
+	if self._native and self._native.parent then
+        self._native.parent:render()
+    else
+        dfhack.screen.clear()
+    end
+
+	df.global.gps.force_full_display_count = 1
+
 	state = "main"
     view = nil
 end
