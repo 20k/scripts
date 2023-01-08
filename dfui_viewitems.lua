@@ -160,26 +160,18 @@ function handle_building_mouseover()
 		return
 	end
 
-	local top_left = render.get_camera()
+	local mouse_world_pos = render.get_mouse_world_coordinates()
 
-	local mouse_pos = imgui.GetMousePos()
-
-	mouse_pos.x = math.floor(mouse_pos.x)
-	mouse_pos.y = math.floor(mouse_pos.y)
-
-	local lx = top_left.x+mouse_pos.x - 1
-	local ly = top_left.y+mouse_pos.y - 1
-
-	local building = dfhack.buildings.findAtTile(xyz2pos(lx, ly, top_left.z))
+	local building = dfhack.buildings.findAtTile(xyz2pos(mouse_world_pos.x, mouse_world_pos.y, mouse_world_pos.z))
 
 	local current_menu = render.get_menu()
 	local target_menu = "View Items In Buildings"
 
 	if building ~= nil then
 		if (current_menu == "main" or current_menu == target_menu) and imgui.IsMouseClicked(0) then
-			selected_building_pos.x = lx
-			selected_building_pos.y = ly
-			selected_building_pos.z = top_left.z
+			selected_building_pos.x = mouse_world_pos.x
+			selected_building_pos.y = mouse_world_pos.y
+			selected_building_pos.z = mouse_world_pos.z
 
 			if render.get_menu() ~= target_menu then
 				render.push_menu(target_menu)
@@ -195,7 +187,7 @@ function handle_building_mouseover()
 		imgui.EndTooltip()
 	end
 
-	local civzones = dfhack.buildings.findCivzonesAt(xyz2pos(lx, ly, top_left.z))
+	local civzones = dfhack.buildings.findCivzonesAt(xyz2pos(mouse_world_pos.x, mouse_world_pos.y, mouse_world_pos.z))
 
 	if civzones ~= nil and current_menu == "Zones" then
 		for _,civzone in ipairs(civzones) do
@@ -204,9 +196,9 @@ function handle_building_mouseover()
 			end
 
 			if (current_menu == "main" or current_menu == "Zones") and imgui.IsMouseClicked(0) then
-				selected_building_pos.x = lx
-				selected_building_pos.y = ly
-				selected_building_pos.z = top_left.z
+				selected_building_pos.x = mouse_world_pos.x
+				selected_building_pos.y = mouse_world_pos.y
+				selected_building_pos.z = mouse_world_pos.z
 
 				if render.get_menu() ~= "Zones" then
 					render.push_menu("Zones")
