@@ -1,4 +1,12 @@
 local gui = require('gui')
+local designations = reqscript('dfui_designations')
+local announcements = reqscript('dfui_announcements')
+local building = reqscript('dfui_building')
+local viewitems = reqscript('dfui_viewitems')
+local render = reqscript('dfui_render')
+local nobles = reqscript('dfui_nobles')
+local setbuilding = reqscript('dfui_setbuilding')
+local military = reqscript('dfui_military')
 
 MyScreen = defclass(MyScreen, gui.Screen)
 
@@ -7,7 +15,6 @@ last_hovered_announce_id = -1
 one_step = false
 
 function render_menu()
-	local render = reqscript('dfui_render')
 	local menus = {{key="097", text="View Announcements"},
 				   {key="098", text="Building"},
 				   {key="114", text="Reports"},
@@ -74,7 +81,6 @@ function render_menu()
 end
 
 function MyScreen:init()
-	local render = reqscript('dfui_render')
 	render.reset_menu_to("main")
 end
 
@@ -82,8 +88,6 @@ last_camera = {x=0, y=0}
 has_last_camera = false
 
 function render_stock()
-	local render = reqscript('dfui_render')
-
 	local zones = df.global.world.buildings.other[df.buildings_other_id.ACTIVITY_ZONE]
 
 	local camera = render.get_camera()
@@ -120,15 +124,6 @@ function MyScreen:render()
     end
 
 	df.global.gps.force_full_display_count = 1
-
-	local designations = reqscript('dfui_designations')
-	local announcements = reqscript('dfui_announcements')
-	local building = reqscript('dfui_building')
-	local viewitems = reqscript('dfui_viewitems')
-	local render = reqscript('dfui_render')
-	local nobles = reqscript('dfui_nobles')
-	local setbuilding = reqscript('dfui_setbuilding')
-	local military = reqscript('dfui_military')
 
 	--[[if(imgui.IsKeyPressed(6) and state == "main") then
 		self:dismiss()

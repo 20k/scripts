@@ -1,9 +1,13 @@
 --@ module = true
 
 imgui = dfhack.imgui
+quickfort = reqscript('internal/quickfort/build')
+quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
 --place = reqscript('internal/quickfort/place')
+zone = reqscript('internal/quickfort/zone')
 utils = require('utils')
+require('dfhack.buildings')
 
 --workaround
 function get_stockpile_db()
@@ -39,12 +43,7 @@ function get_stockpile_db()
 	return stockpile_db
 end
 
---dfhack.println(quickfort.building_db)
-
-local function get_building_db()
-	local quickfort = reqscript('internal/quickfort/build')
-	return quickfort.get_building_db()
-end
+building_db = quickfort.get_building_db()
 
 building_w = 3
 building_h = 3
@@ -323,7 +322,7 @@ function render_buildings()
 				end
 			end
 		else
-			name_hotkey[#name_hotkey+1] = {key=v, value=get_building_db()[v].label, is_cat=false}
+			name_hotkey[#name_hotkey+1] = {key=v, value=building_db[v].label, is_cat=false}
 		end
 
 		::skip::
@@ -426,8 +425,6 @@ function get_key(s)
 end
 
 function handle_construct(type, subtype, pos, size, use_extents, abstract, dry_run, init_fields)
-	local quickfort2 = reqscript('internal/quickfort/building')
-
 	local extent_grid = {}
 
 	for x = 1, size.x do
@@ -498,7 +495,7 @@ function render_make_building()
 
 	local building = render.get_menu_item()
 
-	local quickfort_building = get_building_db()[building]
+	local quickfort_building = building_db[building]
 
 	local label = quickfort_building.label
 	local build_type = quickfort_building.type --native df type, eg df.building_type.GrateWall
@@ -810,8 +807,6 @@ function trigger_zone(tl, size, dry_run)
 end
 
 function handle_specific_zone_render(building)
-	local zone = reqscript('internal/quickfort/zone')
-
 	local zone_db = zone.zone_db
 
 	zone_db.a.label = "Active"
