@@ -359,19 +359,8 @@ function check_start_mouse_drag()
 		return
 	end
 
-	local top_left = get_camera()
-
-	local mouse_pos = imgui.GetMousePos()
-	mouse_pos.x = math.floor(mouse_pos.x)
-	mouse_pos.y = math.floor(mouse_pos.y)
-
-	local lx = top_left.x+mouse_pos.x-1
-	local ly = top_left.y+mouse_pos.y-1
-
-	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
-
 	if imgui.IsMouseClicked(0) or imgui.IsMouseClicked(1) then
-		mouse_click_start = current_world_mouse_pos
+		mouse_click_start = get_mouse_world_coordinates()
 		mouse_has_drag = true
 
 		if imgui.IsMouseClicked(0) then
@@ -395,16 +384,7 @@ function get_dragged_tiles()
 		return {}
 	end
 
-	local top_left = get_camera()
-
-	local mouse_pos = imgui.GetMousePos()
-	mouse_pos.x = math.floor(mouse_pos.x)
-	mouse_pos.y = math.floor(mouse_pos.y)
-
-	local lx = top_left.x+mouse_pos.x-1
-	local ly = top_left.y+mouse_pos.y-1
-
-	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
+	local current_world_mouse_pos = get_mouse_world_coordinates()
 
 	local min_pos_x = math.min(mouse_click_start.x, current_world_mouse_pos.x)
 	local min_pos_y = math.min(mouse_click_start.y, current_world_mouse_pos.y)
@@ -425,8 +405,8 @@ function get_dragged_tiles()
 		end
 
 		for k, v in ipairs(tiles) do
-			if v.z == top_left.z then
-				render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=v.x+1, y=v.y+1, z=v.z})
+			if v.z == current_world_mouse_pos.z then
+				render_absolute_text("X", COLOR_BLACK, COLOR_YELLOW, {x=v.x, y=v.y, z=v.z})
 			end
 		end
 	end
@@ -435,23 +415,12 @@ function get_dragged_tiles()
 end
 
 function check_trigger_mouse()
-	local top_left = get_camera()
-
-	local mouse_pos = imgui.GetMousePos()
-	mouse_pos.x = math.floor(mouse_pos.x)
-	mouse_pos.y = math.floor(mouse_pos.y)
-
-	local lx = top_left.x+mouse_pos.x-1
-	local ly = top_left.y+mouse_pos.y-1
-
-	local current_world_mouse_pos = {x=lx, y=ly, z=top_left.z}
-
 	local should_trigger = false
 
 	if mouse_has_drag then
 		if imgui.IsMouseReleased(mouse_which_clicked) then
 			should_trigger = true
-			mouse_click_end = current_world_mouse_pos
+			mouse_click_end = get_mouse_world_coordinates()
 			mouse_has_drag = false
 		end
 	end
