@@ -486,7 +486,7 @@ local function make_track_entry(name, data, revmap, is_ramp)
 end
 
 -- grouped by type, generally in ui order
-local building_db = {
+building_db = {
     -- basic building types
     a={label='Armor Stand', type=df.building_type.Armorstand},
     b={label='Bed', type=df.building_type.Bed,
