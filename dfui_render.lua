@@ -16,9 +16,9 @@ function get_camera()
 end
 
 function set_camera(x, y, z)
-	df.global.window_x = x
-	df.global.window_y = y
-	df.global.window_z = z
+	df.global.window_x = math.floor(x)
+	df.global.window_y = math.floor(y)
+	df.global.window_z = math.floor(z)
 end
 
 -- must be part of network api
