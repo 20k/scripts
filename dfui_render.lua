@@ -362,6 +362,8 @@ function check_start_mouse_drag()
 	local top_left = get_camera()
 
 	local mouse_pos = imgui.GetMousePos()
+	mouse_pos.x = math.floor(mouse_pos.x)
+	mouse_pos.y = math.floor(mouse_pos.y)
 
 	local lx = top_left.x+mouse_pos.x-1
 	local ly = top_left.y+mouse_pos.y-1
@@ -396,6 +398,8 @@ function get_dragged_tiles()
 	local top_left = get_camera()
 
 	local mouse_pos = imgui.GetMousePos()
+	mouse_pos.x = math.floor(mouse_pos.x)
+	mouse_pos.y = math.floor(mouse_pos.y)
 
 	local lx = top_left.x+mouse_pos.x-1
 	local ly = top_left.y+mouse_pos.y-1
@@ -434,6 +438,8 @@ function check_trigger_mouse()
 	local top_left = get_camera()
 
 	local mouse_pos = imgui.GetMousePos()
+	mouse_pos.x = math.floor(mouse_pos.x)
+	mouse_pos.y = math.floor(mouse_pos.y)
 
 	local lx = top_left.x+mouse_pos.x-1
 	local ly = top_left.y+mouse_pos.y-1
