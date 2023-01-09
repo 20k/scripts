@@ -359,6 +359,8 @@ function check_start_mouse_drag()
 		return
 	end
 
+	imgui.EatMouseInputs()
+
 	if imgui.IsMouseClicked(0) or imgui.IsMouseClicked(1) then
 		mouse_click_start = get_mouse_world_coordinates()
 		mouse_has_drag = true
@@ -372,6 +374,10 @@ function check_start_mouse_drag()
 end
 
 function check_end_mouse_drag()
+	if mouse_has_drag then
+		imgui.EatMouseInputs()
+	end
+
 	if mouse_has_drag and imgui.IsMouseClicked((mouse_which_clicked + 1) % 2) then
 		mouse_has_drag = false
 	end

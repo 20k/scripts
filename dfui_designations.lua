@@ -84,8 +84,6 @@ function render_designations()
 
 	local should_trigger_mouse = render.check_trigger_mouse()
 
-	imgui.Text("Should Trigger " .. tostring(should_trigger_mouse))
-
 	local dirty_block = false
 
 	--todo: one pass job and tree searching
