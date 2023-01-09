@@ -143,12 +143,12 @@ function MyScreen:render()
 	imgui.PushStyleColor(text_style, {fg=COLOR_GREY, bg=COLOR_GREY})
 
 	--I really need to sort out the constants
-	imgui.Begin("Main")
+	imgui.Begin("Main", 0, 1)
 
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 
-	imgui.Text(tostring(mouse_world_pos.x));
-	imgui.Text(tostring(mouse_world_pos.y));
+	--imgui.Text(tostring(mouse_world_pos.x));
+	--imgui.Text(tostring(mouse_world_pos.y));
 
 	local state = render.get_menu()
 
