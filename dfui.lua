@@ -218,6 +218,7 @@ function MyScreen:render()
 	end
 
 	if imgui.IsMouseDragging(2) then
+		--need to convert to world coordinates
 		local delta = imgui.GetMouseDragDelta(2)
 
 		imgui.EatMouseInputs()
