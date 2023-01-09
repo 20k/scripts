@@ -1,11 +1,8 @@
 --@ module = true
 
 imgui = dfhack.imgui
-quickfort = reqscript('internal/quickfort/build')
-quickfort2 = reqscript('internal/quickfort/building')
 render = reqscript('dfui_render')
 --place = reqscript('internal/quickfort/place')
-zone = reqscript('internal/quickfort/zone')
 utils = require('utils')
 
 --workaround
@@ -44,7 +41,8 @@ end
 
 --dfhack.println(quickfort.building_db)
 
-function get_building_db()
+local function get_building_db()
+	local quickfort = reqscript('internal/quickfort/build')
 	return quickfort.get_building_db()
 end
 
@@ -428,6 +426,8 @@ function get_key(s)
 end
 
 function handle_construct(type, subtype, pos, size, use_extents, abstract, dry_run, init_fields)
+	local quickfort2 = reqscript('internal/quickfort/building')
+
 	local extent_grid = {}
 
 	for x = 1, size.x do
@@ -810,6 +810,8 @@ function trigger_zone(tl, size, dry_run)
 end
 
 function handle_specific_zone_render(building)
+	local zone = reqscript('internal/quickfort/zone')
+
 	local zone_db = zone.zone_db
 
 	zone_db.a.label = "Active"
