@@ -172,6 +172,10 @@ function MyScreen:render()
 		building.render_buildings()
 	end
 
+	if state == "Reports" then
+		announcements.render_reports()
+	end
+
 	if state == "make_building" then
 		building.render_make_building()
 	end
