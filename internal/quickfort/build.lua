@@ -17,7 +17,7 @@ if not dfhack_flags.module then
 end
 
 local utils = require('utils')
-local buildingplan = require('plugins.buildingplan')
+--local buildingplan = require('plugins.buildingplan')
 local quickfort_common = reqscript('internal/quickfort/common')
 local quickfort_building = reqscript('internal/quickfort/building')
 local quickfort_orders = reqscript('internal/quickfort/orders')
@@ -938,11 +938,11 @@ local function create_building(b, dry_run)
         -- is supposed to prevent this from ever happening
         error(string.format('unable to place %s: %s', db_entry.label, err))
     end
-    if buildingplan.isEnabled() and buildingplan.isPlannableBuilding(
+    --[[if buildingplan.isEnabled() and buildingplan.isPlannableBuilding(
             db_entry.type, db_entry.subtype or -1, db_entry.custom or -1) then
         log('registering %s with buildingplan', db_entry.label)
         buildingplan.addPlannedBuilding(bld)
-    end
+    end]]--
 end
 
 local warning_shown = false
@@ -954,12 +954,12 @@ function do_run(zlevel, grid, ctx)
     stats.build_unsuitable = stats.build_unsuitable or
             {label='Unsuitable tiles for building', value=0}
 
-    if not warning_shown and not buildingplan.isEnabled() then
+   --[[ if not warning_shown and not buildingplan.isEnabled() then
         dfhack.printerr('the buildingplan plugin is not enabled. buildings '
                         ..'placed with #build blueprints will disappear if you '
                         ..'do not have required building materials in stock.')
         warning_shown = true
-    end
+    end]]--
 
     local buildings = {}
     stats.invalid_keys.value =
@@ -979,9 +979,9 @@ function do_run(zlevel, grid, ctx)
             stats.build_designated.value = stats.build_designated.value + 1
         end
     end
-    if not ctx.dry_run then
+    --[[if not ctx.dry_run then
         buildingplan.scheduleCycle()
-    end
+    end]]--
 end
 
 function do_orders(zlevel, grid, ctx)
