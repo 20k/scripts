@@ -242,6 +242,7 @@ function get_unit_report_type_color(type)
 	return COLOR_WHITE
 end
 
+--todo: recency
 function render_reports()
 	local reportable = get_reportable_units()
 
