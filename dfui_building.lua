@@ -491,6 +491,8 @@ function handle_resizable()
 end
 
 function render_make_building()
+	imgui.EatMouseInputs()
+
 	local building = render.get_menu_item()
 
 	local quickfort_building = building_db[building]
@@ -533,8 +535,6 @@ function render_make_building()
 
 	end
 
-	imgui.Text("Hover")
-
 	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false, true, none) then
 		build_col = COLOR_GREEN
 	end
@@ -552,8 +552,6 @@ function render_make_building()
 	if not is_clicked then
 		return
 	end
-
-	imgui.Text("Build")
 
 	local a, b = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, false, false, none)
 
