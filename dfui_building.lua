@@ -7,7 +7,6 @@ render = reqscript('dfui_render')
 --place = reqscript('internal/quickfort/place')
 zone = reqscript('internal/quickfort/zone')
 utils = require('utils')
-require('dfhack.buildings')
 
 --workaround
 function get_stockpile_db()
@@ -43,7 +42,11 @@ function get_stockpile_db()
 	return stockpile_db
 end
 
-building_db = quickfort.get_building_db()
+--dfhack.println(quickfort.building_db)
+
+function get_building_db()
+	return quickfort.get_building_db()
+end
 
 building_w = 3
 building_h = 3
@@ -322,7 +325,7 @@ function render_buildings()
 				end
 			end
 		else
-			name_hotkey[#name_hotkey+1] = {key=v, value=building_db[v].label, is_cat=false}
+			name_hotkey[#name_hotkey+1] = {key=v, value=get_building_db()[v].label, is_cat=false}
 		end
 
 		::skip::
@@ -495,7 +498,7 @@ function render_make_building()
 
 	local building = render.get_menu_item()
 
-	local quickfort_building = building_db[building]
+	local quickfort_building = get_building_db()[building]
 
 	local label = quickfort_building.label
 	local build_type = quickfort_building.type --native df type, eg df.building_type.GrateWall
