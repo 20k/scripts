@@ -38,21 +38,21 @@ end
 
 function ordinal_suffix(which)
 	local as_str = tostring(which)
-	
+
 	local back = as_str[#as_str]
-	
+
 	if back == 1 then
 		return "st"
 	end
-	
+
 	if back == 2 then
 		return "nd"
 	end
-	
+
 	if back == 3 then
 		return "rd"
 	end
-		
+
 	return "th"
 end
 
@@ -61,71 +61,71 @@ function time_to_ymd(t)
 	local fday = (t / ticks_in_day()) % 28
 	local fmonth = (t / ticks_in_month()) % 12
 	local fyear = (t / (ticks_in_month() * 12))
-	
+
 	fhour = math.floor(fhour)
 	fday = math.floor(fday)
 	fmonth = math.floor(fmonth)
 	fyear = math.floor(fyear)
-	
+
 	return {year=fyear, month=fmonth, day=fday, hour=fhour}
 end
 
 function render_announcements()
-	local reports = df.global.world.status.reports
+	local reports = df.global.world.status.announcements
 	local count = #reports
-		
+
 	local df_year = -1
 	local df_time = -1
-	
+
 	local any_hovered_yet = false
-	
+
 	for i=0,(count-1) do
 		local report = reports[i]
-	
+
 		local a_type = report.type
 		local text = dfhack.df2utf(report.text)
 		local col = report.color
 		local bright = report.bright
-		
+
 		local lx = report.pos.x
 		local ly = report.pos.y
 		local lz = report.pos.z
-				
+
 		col = brighten(col, bright)
-		
+
 		imgui.ButtonColored({fg=col}, text)
-		
-		if imgui.IsItemHovered() or (not any_hovered_yet and report.id == last_hovered_announce_id) then 
+
+		if imgui.IsItemHovered() or (not any_hovered_yet and report.id == last_hovered_announce_id) then
 			df_year = report.year
 			df_time = report.time
-			
+
 			last_hovered_announce_id = report.id
-			
+
 			local pos = {x=lx+1, y=ly+1, z=lz}
-			
+
 			render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
-			
+
 			if imgui.Shortcut("STRING_A122") and imgui.IsItemHovered() then
 				render.centre_camera(lx, ly, lz)
 			end
 		end
-		
-		if imgui.IsItemClicked(0) then 
+
+		if imgui.IsItemClicked(0) then
 			render.centre_camera(lx, ly, lz)
 		end
 	end
-	
+
 	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
 		render.pop_menu()
 	end
-	
+
 	if df_time ~= -1 then
 		local ymd = time_to_ymd(df_time)
-		
+
 		imgui.Text("Date: " .. tostring(ymd.day+1) .. ordinal_suffix(ymd.day+1) .. " "
 							.. months()[ymd.month + 1]
 							.. ", " .. tostring(df_year))
-	
+
 		--imgui.Text("Date: " .. tostring(df_time) .. ", " .. tostring(df_year))
 	end
 end
