@@ -255,7 +255,7 @@ function MyScreen:onDismiss()
 end
 
 function MyScreen:onInput(keys)
-	if not imgui.WantCaptureInput()then
+	if not imgui.WantCaptureInput() then
 		imgui.FeedUpwards()
 	end
 end
