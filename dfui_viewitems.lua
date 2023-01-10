@@ -83,47 +83,6 @@ function debug_stock(building)
 	if df.building_stockpilest:is_instance(building) then
 		local settings = building.settings
 
-		--[[imgui.Text("Type " .. tostring(#settings.refuse.type))
-		imgui.Text(tostring(#settings.refuse.corpses))
-		imgui.Text(tostring(#settings.refuse.body_parts))
-		imgui.Text(tostring(#settings.refuse.skulls))
-		imgui.Text(tostring(#settings.refuse.bones))
-		imgui.Text(tostring(#settings.refuse.hair))
-		imgui.Text(tostring(#settings.refuse.shells))
-		imgui.Text(tostring(#settings.refuse.teeth))
-		imgui.Text(tostring(#settings.refuse.horns))
-		imgui.Text(tostring(#settings.refuse.anon_1))
-
-		for _,v in ipairs(settings.refuse.corpses) do
-			imgui.Text(tostring(v))
-		end]]--
-
-		--[[local gcount = 0
-
-		for id,v in pairs(df.global.world.raws.mat_table.builtin) do
-			if v and v.flags.IS_GLASS then
-				gcount = gcount+1
-			end
-		end
-
-		imgui.Text("Looky " .. tostring(gcount))
-
-		for id,v in ipairs(settings.gems.rough_other_mats) do
-			if v == 0 then
-				imgui.Text("Hello")
-			end
-		end]]--
-
-		--[[local gcount = 0
-
-		for id,v in pairs(df.global.world.raws.mat_table.builtin) do
-			if v and v.flags.IS_GLASS then
-				gcount = gcount+1
-			end
-		end]]--
-
-		--local gcount = #df.historical_entity.find(df.global.plotinfo.group_id).resources.organic.leather.mat_type
-
 		local gcount = 0
 
 		--gcount = #df.historical_entity.find(df.global.plotinfo.group_id).resources.organic.silk.mat_type
@@ -177,25 +136,6 @@ function debug_stock(building)
 		--end
 
 		imgui.Text("Dbg " .. tostring(gcount))
-		--imgui.Text("Creatures " .. tostring(#df.global.world.raws.creatures.all))
-
-		--[[local silks = 0
-
-		for _,c in pairs(df.creature_raw.get_vector()) do
-			for d,v in pairs(c.material) do
-				if v and v.flags.SILK then
-					silks = silks+1
-				end
-			end
-		end
-
-		for _,c in pairs(df.global.world.raws.inorganics) do
-			if c and c.material.flags.SILK then
-				silks = silks+1
-			end
-		end
-
-		imgui.Text("Silks " .. tostring(silks))]]--
 
 		for name,v in pairs(settings) do
 			if name == "flags" then
