@@ -739,7 +739,24 @@ function setup_stockpile_type(sett, type)
 	end
 
 	if type == df.stockpile_group_set.cloth then
+		local silks = 0
 
+		for _,c in pairs(df.creature_raw.get_vector()) do
+			for d,v in pairs(c.material) do
+				if v and v.flags.SILK then
+					silks = silks+1
+				end
+			end
+		end
+
+		for _,c in pairs(df.global.world.raws.inorganics) do
+			if c and c.material.flags.SILK then
+				silks = silks+1
+			end
+		end
+
+		fill_vec1(sett.cloth.thread_silk, silks)
+		fill_vec1(sett.cloth.cloth_silk, silks)
 	end
 end
 
