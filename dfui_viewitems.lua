@@ -140,9 +140,84 @@ function debug_stock(building)
 			end
 		end]]--
 
-		gcount = #df.global.world.raws.itemdefs.armor
+		--gcount = #df.global.world.raws.body_detail_plans
 
-		imgui.Text("Dbg " .. tostring(gcount))
+		--[[for _,v in pairs(df.global.world.raws.itemdefs.all) do
+			if v.base_flags.
+		end]]--
+
+		local cmap = {}
+
+		--[[for _,v in pairs(df.global.world.raws.creatures.all) do
+			for d,c in pairs(v.caste) do
+				--if c.flags.
+
+				cmap[tostring(c.misc.itemcorpse_materialindex).. "_" .. tostring(c.misc.itemcorpse_itemsubtype) .. "_" .. tostring(c.misc.itemcorpse_quality)] = 1
+			end
+		end]]--
+
+		for _,v in pairs(df.global.world.raws.creatures.all) do
+			for d,c in pairs(v.caste) do
+				if #c.remains[0] > 0 then
+					--imgui.Text(c.remains[1])
+				end
+
+				--[[if not c.flags.CAN_LEARN then
+					gcount = gcount+1
+				end]]--
+
+				--[[if c.flags.SMALL_RACE then
+					gcount = gcount+1
+				end]]--
+
+				--[[if c.remains[0] == "remains" then
+					gcount = gcount+1
+				end]]--
+
+				if c.flags.ITEMCORPSE then
+					goto nope
+				end
+			end
+
+			--if v.flags.SMALL_RACE and not v.flags.HAS_ANY_INTELLIGENT_LEARNS then
+			--[[if (v.flags.VERMIN_EATER or v.flags.VERMIN_GROUNDER or v.flags.VERMIN_ROTTER or v.flags.VERMIN_SOIL or v.flags.VERMIN_SOIL_COLONY or v.flags.VERMIN_FISH) and not v.flags.HAS_ANY_INTELLIGENT_LEARNS  then
+				gcount = gcount+1
+			end]]--
+
+			if v.flags.SMALL_RACE then
+				for a,b in pairs(v.flags) do
+					if b then
+						if cmap[a] == nil then
+							cmap[a] = 0
+						end
+
+						cmap[a] = cmap[a] + 1
+					end
+				end
+			end
+
+			::nope::
+
+			--[[if v.flags.SMALL_RACE == false then
+				gcount = gcount+1
+			end]]--
+		end
+
+		--[[for f,v in pairs(cmap) do
+			if v == 1 then
+				imgui.Text(f)
+			end
+		end]]--
+
+		--[[for _,v in pairs(cmap) do
+			gcount = gcount+1
+		end]]--
+
+		--gcount = #cmap
+
+		--gcount = #df.global.world.raws.creatures.list_creature
+
+		--imgui.Text("Dbg " .. tostring(gcount))
 		--imgui.Text("Creatures " .. tostring(#df.global.world.raws.creatures.all))
 
 		for name,v in pairs(settings) do
