@@ -190,6 +190,8 @@ function handle_building_mouseover()
 	local target_menu = "View Items In Buildings"
 
 	if building ~= nil then
+		imgui.EatMouseInputs()
+
 		if (current_menu == "main" or current_menu == target_menu) and imgui.IsMouseClicked(0) then
 			selected_building_pos.x = mouse_world_pos.x
 			selected_building_pos.y = mouse_world_pos.y
@@ -212,6 +214,8 @@ function handle_building_mouseover()
 	local civzones = dfhack.buildings.findCivzonesAt(xyz2pos(mouse_world_pos.x, mouse_world_pos.y, mouse_world_pos.z))
 
 	if civzones ~= nil and current_menu == "Zones" then
+		imgui.EatMouseInputs()
+
 		for _,civzone in ipairs(civzones) do
 			if civzone.type ~= df.civzone_type.ActivityZone then
 				goto skip
