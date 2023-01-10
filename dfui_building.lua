@@ -627,6 +627,18 @@ function setup_stockpile_type(sett, type)
 		fill_vec1(sett.gems.rough_other_mats, #other_mats)
 		fill_vec1(sett.gems.cut_other_mats, #other_mats)
 	end
+
+	if type == df.stockpile_group_set.animals then
+		sett.animals.empty_cages = true
+		sett.animals.empty_traps = true
+
+		fill_vec1(sett.animals.enabled, #df.global.world.raws.creatures.all)
+
+		sett.food.prepared_meals = true
+		sett.refuse..fresh_raw_hide = true
+		sett.weapons.usable = true
+		sett.armor.usable = true
+	end
 end
 
 function trigger_stockpile(tl, size, dry_run)
