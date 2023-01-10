@@ -79,6 +79,27 @@ function b2n(b)
 	end
 end
 
+function debug_stock(building)
+	if df.building_stockpilest:is_instance(building) then
+		local settings = building.settings
+
+		imgui.Text(tostring(#settings.refuse.type))
+		imgui.Text(tostring(#settings.refuse.corpses))
+		imgui.Text(tostring(#settings.refuse.body_parts))
+		imgui.Text(tostring(#settings.refuse.skulls))
+		imgui.Text(tostring(#settings.refuse.bones))
+		imgui.Text(tostring(#settings.refuse.hair))
+		imgui.Text(tostring(#settings.refuse.shells))
+		imgui.Text(tostring(#settings.refuse.teeth))
+		imgui.Text(tostring(#settings.refuse.horns))
+		imgui.Text(tostring(#settings.refuse.anon_1))
+
+		for _,v in ipairs(settings.refuse.horns) do
+			imgui.Text(tostring(v))
+		end
+	end
+end
+
 function render_viewitems()
 	imgui.EatMouseInputs()
 
@@ -104,6 +125,8 @@ function render_viewitems()
 
 	if building ~= nil then
 		--jobinspector.inspect_workshop(building)
+
+		debug_stock(building)
 
 		local str = utils.getBuildingName(building)
 		imgui.Text(str)
