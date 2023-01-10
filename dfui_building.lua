@@ -568,6 +568,20 @@ function fill_vec1(vec, num)
 	end
 end
 
+function get_leathers_count()
+	local leather_count = 0
+
+	for _,c in pairs(df.creature_raw.get_vector()) do
+		for d,v in pairs(c.material) do
+			if v and v.flags.LEATHER then
+				leather_count = leather_count+1
+			end
+		end
+	end
+
+	return leather_count
+end
+
 function setup_stockpile_type(sett, type)
 	for i=0,6 do
 		sett.quality_core[i] = true
@@ -643,15 +657,7 @@ function setup_stockpile_type(sett, type)
 	end
 
 	if type == df.stockpile_group_set.leather then
-		local leather_count = 0
-
-		for _,c in pairs(df.creature_raw.get_vector()) do
-			for d,v in pairs(c.material) do
-				if v and v.flags.LEATHER then
-					leather_count = leather_count+1
-				end
-			end
-		end
+		local leather_count = get_leathers_count()
 
 		--811
 		fill_vec1(sett.leather.mats, leather_count)
@@ -718,6 +724,16 @@ function setup_stockpile_type(sett, type)
 
 		fill_vec1(sett.bars_blocks.bars_mats, #df.global.world.raws.inorganics)
 		fill_vec1(sett.bars_blocks.blocks_mats, #df.global.world.raws.inorganics)
+	end
+
+	if type == df.stockpile_group_set.sheet then
+		--appears to be:
+		--cotton, help, jute, kenaf, linen, papyrus, pig tail, ramie, and rope reed
+		fill_vec1(sett.sheet.paper, 9)
+
+		local leather_count = get_leathers_count()
+
+		fill_vec1(sett.sheet.parchment, leather_count)
 	end
 end
 
