@@ -731,7 +731,7 @@ function add_mat_job(result, job_type, category, material_info, is_magma)
 end
 
 function add_clothes_to(result, category, material_info, permiss, is_magma)
-    local entity = df.historical_entity.find(df.global.ui.civ_id)
+    local entity = df.historical_entity.find(df.global.plotinfo.civ_id)
     local itemdefs = df.global.world.raws.itemdefs
 
     add_jobs_to(result, entity.resources.armor_type, itemdefs.armor, df.job_type.MakeArmor, category, material_info, permiss, is_magma)
@@ -744,7 +744,7 @@ end
 function get_forge(is_magma)
     local result = {}
 
-    local entity = df.historical_entity.find(df.global.ui.civ_id)
+    local entity = df.historical_entity.find(df.global.plotinfo.civ_id)
     local itemdefs = df.global.world.raws.itemdefs
     local rock_types = df.global.world.raws.inorganics
 
@@ -876,7 +876,7 @@ function get_siege()
         job_fields={job_type=df.job_type.ConstructCatapultParts}
     }}
 
-    local entity = df.historical_entity.find(df.global.ui.civ_id)
+    local entity = df.historical_entity.find(df.global.plotinfo.civ_id)
     local itemdefs = df.global.world.raws.itemdefs
     local rock_types = df.global.world.raws.inorganics
 
