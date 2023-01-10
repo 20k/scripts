@@ -574,16 +574,16 @@ function setup_stockpile_type(sett, type)
 		sett.quality_total[i] = true
 	end
 
-	if type == df.stockpile_group_set.Furniture then
+	sett.allow_organic = true
+	sett.allow_inorganic = true
+
+	if type == df.stockpile_group_set.furniture then
 		sett.animals.empty_cages = true
 		sett.animals.empty_traps = true
 
 		sett.food.prepared_meals = true
 		sett.refuse.fresh_raw_hide = true
 		sett.refuse.rotten_raw_hide = true
-
-		sett.allow_organic = true
-		sett.allow_inorganic = true
 
 		--not sure why +2
 		local type_c = df.furniture_type.last_item_value + 2
@@ -597,6 +597,35 @@ function setup_stockpile_type(sett, type)
 
 		--stockpileserializer furniture_setup_other_mats
 		fill_vec1(sett.furniture.other_mats, 15)
+	end
+
+	if type == df.stockpile_group_set.ammo then
+		sett.animals.empty_traps = true
+		sett.refuse.rotten_raw_hide = true
+
+		fill_vec1(sett.ammo.type, #df.global.world.raws.itemdefs.ammo)
+
+		--wood + bone
+		fill_vec1(sett.ammo.other_mats, 2)
+
+		fill_vec1(sett.ammo.mats, #df.global.world.raws.inorganics)
+	end
+
+	if type == df.stockpile_group_set.gems then
+		sett.animals.empty_cages = true
+		sett.animals.empty_traps = true
+		sett.food.prepared_meals = true
+		sett.refuse.fresh_raw_hide = true
+		sett.refuse.rotten_raw_hide = true
+
+		fill_vec1(sett.gems.rough_mats, #df.global.world.raws.inorganics)
+		fill_vec1(sett.gems.cut_mats, #df.global.world.raws.inorganics)
+
+		--don't really understand why its all mats, but the numbers line up!
+		local other_mats = #df.global.world.raws.mat_table.builtin
+
+		fill_vec1(sett.gems.rough_other_mats, #other_mats)
+		fill_vec1(sett.gems.cut_other_mats, #other_mats)
 	end
 end
 
