@@ -116,8 +116,32 @@ function debug_stock(building)
 		end
 		]]--
 
-		for _,v in pairs(df.global.world.raws.plants.all) do
+		--[[for _,v in pairs(df.global.world.raws.plants.all) do
 			if v.flags.THREAD then
+				gcount = gcount + 1
+			end
+		end]]--
+
+		--[[for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.caste) do
+				local layers = #v.shearable_tissue_layer
+
+				layers = math.min(layers, 1)
+
+				gcount = gcount + layers
+
+				if layers == 1 then
+					goto done
+				end
+			end
+
+			::done::
+		end]]--
+
+		local gcount = 0
+
+		for k,v in pairs(df.global.world.raws.inorganics) do
+			if #v.thread_metal.mat_index > 0 then
 				gcount = gcount + 1
 			end
 		end
