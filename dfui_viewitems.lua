@@ -115,11 +115,11 @@ function debug_stock(building)
 
 					if type(vec) == "userdata" or type(vec) == "table" then
 						if #vec ~= 0 then
-							imgui.Text(vecname .. " " .. tostring(#vec))
+							imgui.Text(name .. "." .. vecname .. " " .. tostring(#vec))
 						end
 					else
 						if vec then
-							imgui.Text(vecname .. " " .. tostring(vec))
+							imgui.Text(name .. "." .. vecname .. " " .. tostring(vec))
 						end
 					end
 
