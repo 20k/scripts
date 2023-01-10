@@ -98,7 +98,50 @@ function debug_stock(building)
 			imgui.Text(tostring(v))
 		end]]--
 
-		--imgui.Text("Looky " .. tostring(#df.global.world.raws.material_templates))
+		--[[local gcount = 0
+
+		for id,v in pairs(df.global.world.raws.mat_table.builtin) do
+			if v and v.flags.IS_GLASS then
+				gcount = gcount+1
+			end
+		end
+
+		imgui.Text("Looky " .. tostring(gcount))
+
+		for id,v in ipairs(settings.gems.rough_other_mats) do
+			if v == 0 then
+				imgui.Text("Hello")
+			end
+		end]]--
+
+		--[[local gcount = 0
+
+		for id,v in pairs(df.global.world.raws.mat_table.builtin) do
+			if v and v.flags.IS_GLASS then
+				gcount = gcount+1
+			end
+		end]]--
+
+		--local gcount = #df.historical_entity.find(df.global.plotinfo.group_id).resources.organic.leather.mat_type
+
+		local gcount = 0
+
+		--[[for _,v in pairs(df.global.world.raws.mat_table.builtin) do
+			if v and v.flags.LEATHER then
+				gcount = gcount+1
+			end
+		end]]--
+
+		for _,c in pairs(df.creature_raw.get_vector()) do
+			for d,v in pairs(c.material) do
+				if v and v.flags.LEATHER then
+					gcount = gcount+1
+				end
+			end
+		end
+
+		imgui.Text("Leathers " .. tostring(gcount))
+		--imgui.Text("Creatures " .. tostring(#df.global.world.raws.creatures.all))
 
 		for name,v in pairs(settings) do
 			if name == "flags" then
