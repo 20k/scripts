@@ -99,23 +99,37 @@ function debug_stock(building)
 		end]]--
 
 		for name,v in pairs(settings) do
-			if type(v) == "userdata" then
-				imgui.Text(name)
+			if name == "flags" then
+				goto skip
+			end
 
-				imgui.SameLine()
+			if type(v) == "userdata" then
+				--imgui.Text(name)
+
+				--imgui.SameLine()
 
 				for vecname,vec in pairs(v) do
+					if vecname == "quality_core" or vecname == "quality_total" then
+						goto lskip
+					end
+
 					if type(vec) == "userdata" or type(vec) == "table" then
 						if #vec ~= 0 then
 							imgui.Text(vecname .. " " .. tostring(#vec))
 						end
 					else
-						imgui.Text(vecname .. " " .. tostring(vec))
+						if vec then
+							imgui.Text(vecname .. " " .. tostring(vec))
+						end
 					end
+
+					::lskip::
 				end
 			else
 				imgui.Text(name .. " " .. tostring(v))
 			end
+
+			::skip::
 		end
 	end
 end
