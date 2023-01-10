@@ -130,7 +130,32 @@ function render_viewitems()
 			imgui.SameLine(0,0)
 
 			if imgui.Button("Deconstruct") or imgui.Shortcut("STRING_A120") then
-				dfhack.buildings.deconstruct(building)
+				if not dfhack.buildings.markedForRemoval(building) then
+
+					if building.room and building.room.extents then
+						for idx,v in ipairs(building.room.extents) do
+							local lx  = idx % building.room.width
+							local ly = math.floor(idx / building.room.width)
+
+							local tx = building.room.x
+							local ty = building.room.y
+
+							local nx = lx + tx
+							local ny = ly + ty
+
+							local chunk = dfhack.maps.getTileBlock({x=nx, y=ny, z=check_z})
+
+							local des = chunk.designation[nx&15][ny&15]
+							local occ = chunk.occupancy[nx&15][ny&15]
+
+							building.room.extents[idx] = df.building_extents_type.None
+							des.pile = false
+							occ.building = df.tile_building_occ.None
+						end
+					end
+
+					dfhack.buildings.deconstruct(building)
+				end
 			end
 		else
 			imgui.Text("Slated for removal")
