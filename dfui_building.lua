@@ -624,6 +624,7 @@ function setup_stockpile_type(sett, type)
 		--don't really understand why its all mats, but the numbers line up!
 		local other_mats = #df.global.world.raws.mat_table.builtin
 
+		--600 something
 		fill_vec1(sett.gems.rough_other_mats, #other_mats)
 		fill_vec1(sett.gems.cut_other_mats, #other_mats)
 	end
@@ -632,10 +633,11 @@ function setup_stockpile_type(sett, type)
 		sett.animals.empty_cages = true
 		sett.animals.empty_traps = true
 
+		--1109
 		fill_vec1(sett.animals.enabled, #df.global.world.raws.creatures.all)
 
 		sett.food.prepared_meals = true
-		sett.refuse..fresh_raw_hide = true
+		sett.refuse.fresh_raw_hide = true
 		sett.weapons.usable = true
 		sett.armor.usable = true
 	end
@@ -674,6 +676,39 @@ function setup_stockpile_type(sett, type)
 		fill_vec1(sett.armor.other_mats, 10)
 
 		fill_vec1(sett.armor.mats, #df.global.world.raws.inorganics)
+	end
+
+	if type == df.stockpile_group_set.refuse then
+		sett.refuse.fresh_raw_hide = true
+		sett.refuse.rotten_raw_hide = true
+		sett.weapons.usable = true
+		sett.weapons.unusable = true
+
+		local corpse_guess = 0
+
+		for _,v in pairs(df.global.world.raws.creatures.all) do
+			--not sure about the second flag
+			if v.flags.SMALL_RACE and not v.flags.ARTIFICIAL_HIVEABLE then
+				corpse_guess = corpse_guess + 1
+			end
+		end
+
+		if corpse_guess ~= 113 then
+			dfhack.println("Warning: Corpse guess is not 113, not sure if it works")
+		end
+
+		fill_vec1(sett.refuse.corpses, corpse_guess)
+
+		local animals = #df.global.world.raws.creatures.all
+
+		fill_vec1(sett.refuse.body_parts, animals)
+		fill_vec1(sett.refuse.skulls, animals)
+		fill_vec1(sett.refuse.bones, animals)
+		fill_vec1(sett.refuse.hair, animals)
+		fill_vec1(sett.refuse.shells, animals)
+		fill_vec1(sett.refuse.teeth, animals)
+		fill_vec1(sett.refuse.horns, animals)
+		fill_vec1(sett.refuse.anon_1, animals)
 	end
 end
 
