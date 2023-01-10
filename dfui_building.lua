@@ -801,6 +801,13 @@ function setup_stockpile_type(sett, type)
 		fill_vec1(sett.cloth.thread_metal, metal)
 		fill_vec1(sett.cloth.cloth_metal, metal)
 	end
+
+	if type == df.stockpile_group_set.stone then
+		sett.refuse.fresh_raw_hide = true
+		sett.refuse.rotten_raw_hide = true
+
+		fill_vec1(sett.stone.mats, #df.global.world.raws.inorganics)
+	end
 end
 
 function trigger_stockpile(tl, size, dry_run)
