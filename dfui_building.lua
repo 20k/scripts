@@ -710,6 +710,15 @@ function setup_stockpile_type(sett, type)
 		fill_vec1(sett.refuse.horns, animals)
 		fill_vec1(sett.refuse.anon_1, animals)
 	end
+
+	if type == df.stockpile_group_set.bars_blocks then
+		--bars_blocks_setup_other_mats
+		fill_vec1(sett.bars_blocks.bars_other_mats, 5)
+		fill_vec1(sett.bars_blocks.blocks_other_mats, 4)
+
+		fill_vec1(sett.bars_blocks.bars_mats, #df.global.world.raws.inorganics)
+		fill_vec1(sett.bars_blocks.blocks_mats, #df.global.world.raws.inorganics)
+	end
 end
 
 function trigger_stockpile(tl, size, dry_run)
