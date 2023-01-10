@@ -562,6 +562,44 @@ function render_make_building()
 	--render.pop_menu()
 end
 
+function fill_vec1(vec, num)
+	for i=0,(num-1) do
+		vec:insert('#', 1)
+	end
+end
+
+function setup_stockpile_type(sett, type)
+	for i=0,6 do
+		sett.quality_core[i] = true
+		sett.quality_total[i] = true
+	end
+
+	if type == df.stockpile_group_set.Furniture then
+		sett.animals.empty_cages = true
+		sett.animals.empty_traps = true
+
+		sett.food.prepared_meals = true
+		sett.refuse.fresh_raw_hide = true
+		sett.refuse.rotten_raw_hide = true
+
+		sett.allow_organic = true
+		sett.allow_inorganic = true
+
+		--not sure why +2
+		local type_c = df.furniture_type.last_item_value + 2
+
+		fill_vec1(sett.furniture.type, type_c)
+
+		--313 in current save
+		local mats = df.global.world.raws.inorganics
+
+		fill_vec1(sett.furniture.mats, #mats)
+
+		--stockpileserializer furniture_setup_other_mats
+		fill_vec1(sett.furniture.other_mats, 15)
+	end
+end
+
 function trigger_stockpile(tl, size, dry_run)
 	local stockpile_type = render.get_menu_item()
 	local quickfort_building = get_stockpile_db()[stockpile_type]
@@ -625,6 +663,8 @@ function trigger_stockpile(tl, size, dry_run)
 		local bit = get_stockpile_db()[stockpile_type].bit
 
 		building.settings.flags[bit] = true
+
+		setup_stockpile_type(building.settings, bit)
 	end
 
 	--imgui.Text(tostring(a))

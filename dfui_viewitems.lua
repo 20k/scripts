@@ -98,6 +98,8 @@ function debug_stock(building)
 			imgui.Text(tostring(v))
 		end]]--
 
+		--imgui.Text("Looky " .. tostring(#df.global.world.raws.material_templates))
+
 		for name,v in pairs(settings) do
 			if name == "flags" then
 				goto skip
