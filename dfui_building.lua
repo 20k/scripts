@@ -654,6 +654,27 @@ function setup_stockpile_type(sett, type)
 		--811
 		fill_vec1(sett.leather.mats, leather_count)
 	end
+
+	if type == df.stockpile_group_set.armor then
+		sett.animals.empty_cages = true
+		sett.animals.empty_traps = true
+		sett.food.prepared_meals = true
+		sett.refuse.fresh_raw_hide = true
+		sett.refuse.rotten_raw_hide = true
+		sett.armor.usable = true
+		sett.armor.unusable = true
+
+		fill_vec1(sett.armor.body, #df.global.world.raws.armor)
+		fill_vec1(sett.armor.head, #df.global.world.raws.helms)
+		fill_vec1(sett.armor.feet, #df.global.world.raws.shoes)
+		fill_vec1(sett.armor.hands, #df.global.world.raws.gloves)
+		fill_vec1(sett.armor.legs, #df.global.world.raws.shoes)
+		fill_vec1(sett.armor.shield, #df.global.world.raws.shields)
+		--weapons_armor_setup_other_mats
+		fill_vec1(sett.armor.other_mats, 10)
+
+		fill_vec1(sett.armor.mats, #df.global.world.raws.inorganics)
+	end
 end
 
 function trigger_stockpile(tl, size, dry_run)
