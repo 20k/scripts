@@ -126,99 +126,76 @@ function debug_stock(building)
 
 		local gcount = 0
 
-		--[[for _,v in pairs(df.global.world.raws.mat_table.builtin) do
-			if v and v.flags.LEATHER then
-				gcount = gcount+1
-			end
-		end]]--
+		--gcount = #df.historical_entity.find(df.global.plotinfo.group_id).resources.organic.silk.mat_type
 
 		--[[for _,c in pairs(df.creature_raw.get_vector()) do
 			for d,v in pairs(c.material) do
-				if v and v.flags.LEATHER then
+				if v and v.flags.SILK then
 					gcount = gcount+1
 				end
 			end
 		end]]--
 
-		--gcount = #df.global.world.raws.body_detail_plans
-
-		--[[for _,v in pairs(df.global.world.raws.itemdefs.all) do
-			if v.base_flags.
-		end]]--
-
-		local cmap = {}
-
-		--[[for _,v in pairs(df.global.world.raws.creatures.all) do
-			for d,c in pairs(v.caste) do
-				--if c.flags.
-
-				cmap[tostring(c.misc.itemcorpse_materialindex).. "_" .. tostring(c.misc.itemcorpse_itemsubtype) .. "_" .. tostring(c.misc.itemcorpse_quality)] = 1
-			end
-		end]]--
-
-		for _,v in pairs(df.global.world.raws.creatures.all) do
-			for d,c in pairs(v.caste) do
-				if #c.remains[0] > 0 then
-					--imgui.Text(c.remains[1])
-				end
-
-				--[[if not c.flags.CAN_LEARN then
-					gcount = gcount+1
-				end]]--
-
-				--[[if c.flags.SMALL_RACE then
-					gcount = gcount+1
-				end]]--
-
-				--[[if c.remains[0] == "remains" then
-					gcount = gcount+1
-				end]]--
-
-				if c.flags.ITEMCORPSE then
-					goto nope
-				end
-			end
-
-			--if v.flags.SMALL_RACE and not v.flags.HAS_ANY_INTELLIGENT_LEARNS then
-			--[[if (v.flags.VERMIN_EATER or v.flags.VERMIN_GROUNDER or v.flags.VERMIN_ROTTER or v.flags.VERMIN_SOIL or v.flags.VERMIN_SOIL_COLONY or v.flags.VERMIN_FISH) and not v.flags.HAS_ANY_INTELLIGENT_LEARNS  then
+		--[[for _,v in pairs(df.global.world.raws.mat_table.builtin) do
+			if v and v.flags.SILK then
 				gcount = gcount+1
-			end]]--
-
-			if v.flags.SMALL_RACE then
-				for a,b in pairs(v.flags) do
-					if b then
-						if cmap[a] == nil then
-							cmap[a] = 0
-						end
-
-						cmap[a] = cmap[a] + 1
-					end
-				end
 			end
+		end]]--
 
-			::nope::
-
-			--[[if v.flags.SMALL_RACE == false then
+		--[[for _,v in pairs(df.global.world.raws.inorganics) do
+			if v and v.flags.DIVINE then
 				gcount = gcount+1
-			end]]--
+
+				imgui.Text(v.str[5][0])
+			end
+		end]]--
+
+		for _,v in pairs(df.global.world.raws.inorganics) do
+			if v and v.material.flags.SILK then
+				gcount = gcount+1
+			end
 		end
 
-		--[[for f,v in pairs(cmap) do
-			if v == 1 then
-				imgui.Text(f)
+		--[[for _,v in pairs(df.entity_raw.get_vector()) do
+			if v.flags.DIVINE_MAT_CRAFTS then
+				gcount = gcount + 1
+
+				imgui.Text(v.code)
 			end
 		end]]--
 
-		--[[for _,v in pairs(cmap) do
-			gcount = gcount+1
-		end]]--
+		--for _,v in pairs(df.global.world.raws.plants.all) do
+			--[[for b,m in pairs(v.material) do
+				if m and m.flags.SILK then
+					gcount = gcount+1
+				end
+			end]]--
 
-		--gcount = #cmap
+			--[[if v.flags.THREAD then
+				gcount = gcount + 1
+			end]]--
+		--end
 
-		--gcount = #df.global.world.raws.creatures.list_creature
-
-		--imgui.Text("Dbg " .. tostring(gcount))
+		imgui.Text("Dbg " .. tostring(gcount))
 		--imgui.Text("Creatures " .. tostring(#df.global.world.raws.creatures.all))
+
+		--[[local silks = 0
+
+		for _,c in pairs(df.creature_raw.get_vector()) do
+			for d,v in pairs(c.material) do
+				if v and v.flags.SILK then
+					silks = silks+1
+				end
+			end
+		end
+
+		for _,c in pairs(df.global.world.raws.inorganics) do
+			if c and c.material.flags.SILK then
+				silks = silks+1
+			end
+		end
+
+		imgui.Text("Silks " .. tostring(silks))]]--
 
 		for name,v in pairs(settings) do
 			if name == "flags" then
