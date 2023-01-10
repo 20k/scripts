@@ -18,24 +18,24 @@ function get_stockpile_db()
 	}
 
 	local stockpile_db = {
-		a={label='Animal', indices={0}},
-		f={label='Food', indices={1}, want_barrels=true},
-		u={label='Furniture', indices={2}},
-		n={label='Coins', indices={7}, want_bins=true},
-		y={label='Corpses', indices={3}},
-		r={label='Refuse', indices={4}},
-		s={label='Stone', indices={5}, want_wheelbarrows=true},
-		w={label='Wood', indices={13}},
-		e={label='Gem', indices={9}, want_bins=true},
-		b={label='Bar/Block', indices={8}, want_bins=true},
-		h={label='Cloth', indices={12}, want_bins=true},
-		l={label='Leather', indices={11}, want_bins=true},
-		z={label='Ammo', indices={6}, want_bins=true},
-		S={label='Sheets', indices={16}, want_bins=true},
-		g={label='Finished Goods', indices={10}, want_bins=true},
-		p={label='Weapons', indices={14}, want_bins=true},
-		d={label='Armor', indices={15}, want_bins=true},
-		c={label='Custom', indices={}}
+		a={label='Animal', bit=df.stockpile_group_set.animals},
+		f={label='Food', bit=df.stockpile_group_set.food, want_barrels=true},
+		u={label='Furniture', bit=df.stockpile_group_set.furniture},
+		n={label='Coins', bit=df.stockpile_group_set.coins, want_bins=true},
+		y={label='Corpses', bit=df.stockpile_group_set.corpses},
+		r={label='Refuse', bit=df.stockpile_group_set.refuse},
+		s={label='Stone', bit=df.stockpile_group_set.stone, want_wheelbarrows=true},
+		w={label='Wood', bit=df.stockpile_group_set.wood},
+		e={label='Gem', bit=df.stockpile_group_set.gems, want_bins=true},
+		b={label='Bar/Block', bit=df.stockpile_group_set.bars_blocks, want_bins=true},
+		h={label='Cloth', bit=df.stockpile_group_set.cloth, want_bins=true},
+		l={label='Leather', bit=df.stockpile_group_set.leather, want_bins=true},
+		z={label='Ammo', bit=df.stockpile_group_set.ammo, want_bins=true},
+		S={label='Sheets', bit=df.stockpile_group_set.sheet, want_bins=true},
+		g={label='Finished Goods', bit=df.stockpile_group_set.finished_goods, want_bins=true},
+		p={label='Weapons', bit=df.stockpile_group_set.weapons, want_bins=true},
+		d={label='Armor', bit=df.stockpile_group_set.armor, want_bins=true},
+		c={label='Custom', bit=nil}
 	}
 
 	for _, v in pairs(stockpile_db) do utils.assign(v, stockpile_template) end
@@ -620,7 +620,11 @@ function trigger_stockpile(tl, size, dry_run)
 	end
 
 	if not dry_run then
-		handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
+		local building = handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
+
+		local bit = get_stockpile_db()[stockpile_type].bit
+
+		building.settings.flags[bit] = true
 	end
 
 	--imgui.Text(tostring(a))
