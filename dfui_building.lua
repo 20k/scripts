@@ -768,6 +768,38 @@ function setup_stockpile_type(sett, type)
 
 		fill_vec1(sett.cloth.thread_plant, plant)
 		fill_vec1(sett.cloth.cloth_plant, plant)
+
+		local yarnable = 0
+
+		for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.caste) do
+				local layers = #v.shearable_tissue_layer
+
+				layers = math.min(layers, 1)
+
+				yarnable = yarnable + layers
+
+				if layers == 1 then
+					goto done
+				end
+			end
+
+			::done::
+		end
+
+		fill_vec1(sett.cloth.thread_yarn, yarnable)
+		fill_vec1(sett.cloth.cloth_yarn, yarnable)
+
+		local metal = 0
+
+		for k,v in pairs(df.global.world.raws.inorganics) do
+			if #v.thread_metal.mat_index > 0 then
+				metal = metal + 1
+			end
+		end
+
+		fill_vec1(sett.cloth.thread_metal, metal)
+		fill_vec1(sett.cloth.cloth_metal, metal)
 	end
 end
 
