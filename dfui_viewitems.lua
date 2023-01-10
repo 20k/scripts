@@ -132,15 +132,17 @@ function debug_stock(building)
 			end
 		end]]--
 
-		for _,c in pairs(df.creature_raw.get_vector()) do
+		--[[for _,c in pairs(df.creature_raw.get_vector()) do
 			for d,v in pairs(c.material) do
 				if v and v.flags.LEATHER then
 					gcount = gcount+1
 				end
 			end
-		end
+		end]]--
 
-		imgui.Text("Leathers " .. tostring(gcount))
+		gcount = #df.global.world.raws.itemdefs.armor
+
+		imgui.Text("Dbg " .. tostring(gcount))
 		--imgui.Text("Creatures " .. tostring(#df.global.world.raws.creatures.all))
 
 		for name,v in pairs(settings) do
