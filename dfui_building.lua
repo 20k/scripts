@@ -563,6 +563,8 @@ function render_make_building()
 end
 
 function fill_vec1(vec, num)
+	vec:resize(0)
+
 	for i=0,(num-1) do
 		vec:insert('#', 1)
 	end
@@ -734,6 +736,10 @@ function setup_stockpile_type(sett, type)
 		local leather_count = get_leathers_count()
 
 		fill_vec1(sett.sheet.parchment, leather_count)
+	end
+
+	if type == df.stockpile_group_set.cloth then
+
 	end
 end
 
