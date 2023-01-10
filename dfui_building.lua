@@ -757,6 +757,17 @@ function setup_stockpile_type(sett, type)
 
 		fill_vec1(sett.cloth.thread_silk, silks)
 		fill_vec1(sett.cloth.cloth_silk, silks)
+
+		local plant = 0
+
+		for _,v in pairs(df.global.world.raws.plants.all) do
+			if v.flags.THREAD then
+				plant = plant + 1
+			end
+		end
+
+		fill_vec1(sett.cloth.thread_plant, plant)
+		fill_vec1(sett.cloth.cloth_plant, plant)
 	end
 end
 

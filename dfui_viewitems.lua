@@ -109,31 +109,18 @@ function debug_stock(building)
 			end
 		end]]--
 
-		for _,v in pairs(df.global.world.raws.inorganics) do
+		--[[for _,v in pairs(df.global.world.raws.inorganics) do
 			if v and v.material.flags.SILK then
 				gcount = gcount+1
 			end
 		end
+		]]--
 
-		--[[for _,v in pairs(df.entity_raw.get_vector()) do
-			if v.flags.DIVINE_MAT_CRAFTS then
+		for _,v in pairs(df.global.world.raws.plants.all) do
+			if v.flags.THREAD then
 				gcount = gcount + 1
-
-				imgui.Text(v.code)
 			end
-		end]]--
-
-		--for _,v in pairs(df.global.world.raws.plants.all) do
-			--[[for b,m in pairs(v.material) do
-				if m and m.flags.SILK then
-					gcount = gcount+1
-				end
-			end]]--
-
-			--[[if v.flags.THREAD then
-				gcount = gcount + 1
-			end]]--
-		--end
+		end
 
 		imgui.Text("Dbg " .. tostring(gcount))
 
