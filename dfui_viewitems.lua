@@ -83,7 +83,7 @@ function debug_stock(building)
 	if df.building_stockpilest:is_instance(building) then
 		local settings = building.settings
 
-		imgui.Text(tostring(#settings.refuse.type))
+		--[[imgui.Text("Type " .. tostring(#settings.refuse.type))
 		imgui.Text(tostring(#settings.refuse.corpses))
 		imgui.Text(tostring(#settings.refuse.body_parts))
 		imgui.Text(tostring(#settings.refuse.skulls))
@@ -94,8 +94,28 @@ function debug_stock(building)
 		imgui.Text(tostring(#settings.refuse.horns))
 		imgui.Text(tostring(#settings.refuse.anon_1))
 
-		for _,v in ipairs(settings.refuse.horns) do
+		for _,v in ipairs(settings.refuse.corpses) do
 			imgui.Text(tostring(v))
+		end]]--
+
+		for name,v in pairs(settings) do
+			if type(v) == "userdata" then
+				imgui.Text(name)
+
+				imgui.SameLine()
+
+				for vecname,vec in pairs(v) do
+					if type(vec) == "userdata" or type(vec) == "table" then
+						if #vec ~= 0 then
+							imgui.Text(vecname .. " " .. tostring(#vec))
+						end
+					else
+						imgui.Text(vecname .. " " .. tostring(vec))
+					end
+				end
+			else
+				imgui.Text(name .. " " .. tostring(v))
+			end
 		end
 	end
 end
