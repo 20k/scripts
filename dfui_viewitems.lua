@@ -159,29 +159,30 @@ function render_viewitems()
 			imgui.Text("1 " .. tostring(v.anon_1))
 			imgui.Text("2 " .. tostring(v.anon_2))
 			imgui.Text("3 " .. tostring(v.anon_3))
+			--imgui.Text("5 " .. tostring(v.anon_5))
+			--imgui.Text("6 " .. tostring(v.anon_6))
+			imgui.Text("'dir_x " .. tostring(v.dir_x))
+			imgui.Text("'dir_y " .. tostring(v.dir_y))
 			imgui.Text("4 " .. tostring(v.anon_4))
-			imgui.Text("5 " .. tostring(v.anon_5))
-			imgui.Text("6 " .. tostring(v.anon_6))
-			imgui.Text("7 " .. tostring(v.anon_7))
-			imgui.Text("8 " .. tostring(#v.anon_8))
-			imgui.Text("9 " .. tostring(#v.anon_9))
+			imgui.Text("5 " .. tostring(#v.anon_5))
+			imgui.Text("6 " .. tostring(#v.anon_6))
 
-			for k,d in pairs(v.anon_9) do
+			for k,d in pairs(v.anon_7) do
 				imgui.Text(tostring(d))
 			end
 
+			imgui.Text("8 " .. tostring(v.anon_8))
+			imgui.Text("9 " .. tostring(v.anon_9))
 			imgui.Text("10 " .. tostring(v.anon_10))
 			imgui.Text("11 " .. tostring(v.anon_11))
-			imgui.Text("12 " .. tostring(v.anon_12))
-			imgui.Text("13 " .. tostring(v.anon_13))
-			imgui.Text("14 " .. tostring(#v.anon_14))
+			imgui.Text("12 " .. tostring(#v.anon_12))
 
-			for k,d in pairs(v.anon_14) do
+			for k,d in pairs(v.anon_12) do
 				imgui.Text(tostring(d))
 			end
 
-			imgui.Text("15 " .. tostring(v.anon_15))
-			imgui.Text("16 " .. tostring(v.anon_16))
+			imgui.Text("13 " .. tostring(v.anon_13))
+			imgui.Text("14 " .. tostring(v.anon_14))
 
 			--imgui.Text("Building_next " .. tostring(df.global.building_next_id))
 
