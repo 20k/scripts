@@ -887,6 +887,68 @@ function setup_stockpile_type(sett, type)
 
 		fill_vec1(sett.food.fish, fish_count)
 		fill_vec1(sett.food.unprepared_fish, fish_count)
+
+		local egg_count = 0
+
+		for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.caste) do
+				if v.misc.egg_mat_index ~= -1 then
+					egg_count = egg_count + 1
+				end
+			end
+		end
+
+		fill_vec1(sett.food.egg, egg_count)
+
+		fill_vec1(sett.food.plants, #df.global.world.raws.plants.all)
+
+		local drink_plant = 0
+
+		for _,v in pairs(df.global.world.raws.plants.all) do
+			if v.flags.DRINK then
+				drink_plant = drink_plant+1
+			end
+		end
+
+		fill_vec1(sett.food.drink_plant, drink_plant)
+
+		local drink_animal = 0
+
+		for _, c in pairs(df.global.world.raws.creatures.all) do
+			for _, m in pairs(c.material) do
+				if m.flags.ALCOHOL then
+					drink_animal = drink_animal + 1
+				end
+			end
+		end
+
+		fill_vec1(sett.food.drink_animal, drink_animal)
+
+		local cheese_plants = 0
+
+		for _,c in pairs(df.global.world.raws.plants.all) do
+			for _, m in pairs(c.material) do
+				if m.flags.CHEESE_PLANT then
+					cheese_plants = cheese_plants + 1
+				end
+			end
+		end
+
+		fill_vec1(sett.food.cheese_plant, cheese_plants)
+
+		local cheese_animals = 0
+
+		for _, c in pairs(df.global.world.raws.creatures.all) do
+			for _, m in pairs(c.material) do
+				if m.flags.CHEESE_CREATURE then
+					cheese_animals = cheese_animals + 1
+				end
+			end
+		end
+
+		fill_vec1(sett.food.cheese_animal, cheese_animals)
+
+
 	end
 end
 
