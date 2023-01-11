@@ -627,14 +627,26 @@ function count_mats(list, flags)
 	return count
 end
 
+function set_quality(q, a, b, c, d, e f, g)
+	q[0] = a
+	q[1] = b
+	q[2] = c
+	q[3] = d
+	q[4] = e
+	q[5] = f
+	q[6] = g
+end
+
 --tested in 50.05
 function setup_stockpile_type(sett, type)
+	dfhack.println(type)
+
 	sett.flags[type] = true
 
-	for i=0,6 do
+	--[[for i=0,6 do
 		sett.quality_core[i] = true
 		sett.quality_total[i] = true
-	end
+	end]]--
 
 	sett.allow_organic = true
 	sett.allow_inorganic = true
@@ -659,6 +671,21 @@ function setup_stockpile_type(sett, type)
 
 		--stockpileserializer furniture_setup_other_mats
 		fill_vec1(sett.furniture.other_mats, 15)
+
+		set_quality(sett.furniture.quality_core, true, true, true, true, true, true, true)
+		set_quality(sett.furniture.quality_total, true, true, true, true, true, true, true)
+
+		set_quality(sett.ammo.quality_core, true, true, true, true, true, true, false)
+		set_quality(sett.ammo.quality_total, false, true, true, true, true, true, true)
+
+		set_quality(sett.finished_goods.quality_core, true, true, true, true, true, true, false)
+		set_quality(sett.finished_goods.quality_total, false, true, true, true, true, true, true)
+
+		set_quality(sett.weapons.quality_core, true, true, true, true, true, true, false)
+		set_quality(sett.weapons.quality_total, false, true, true, true, true, true, true)
+
+		set_quality(sett.armor.quality_core, false, false, false, false, false, false, false)
+		set_quality(sett.armor.quality_total, false, false, false, false, false, false, false)
 	end
 
 	if type == df.stockpile_group_set.ammo then
@@ -1085,10 +1112,8 @@ function trigger_stockpile(tl, size, dry_run)
 		local bit = get_stockpile_db()[stockpile_type].bit
 
 		for _,v in ipairs(bit) do
-			setup_stockpile_type(building.settings, bit)
+			setup_stockpile_type(building.settings, v)
 		end
-
-		setup_stockpile_type(building.settings, bit)
 	end
 
 	--imgui.Text(tostring(a))
@@ -1141,7 +1166,7 @@ function render_stockpiles()
 	local value_to_key = {None="a", ["Remove Designation"]="x"}
 	local key_to_value = {x="Remove Designation"}
 
-	local render_order = {"a","f","u","n","y","r","s","w","e","b","h","l","z","S","g","p","d","c"}
+	local render_order = {"a","f","u","n","y","r","s","w","e","b","h","l","z","S","g","p","d","c","q"}
 
 	for k, v in ipairs(render_order) do
 		local d = {key=v, text=get_stockpile_db()[v].label}

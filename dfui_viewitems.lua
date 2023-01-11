@@ -93,9 +93,9 @@ function debug_stock(building)
 
 			if type(v) == "userdata" then
 				for vecname,vec in pairs(v) do
-					if vecname == "quality_core" or vecname == "quality_total" then
+					--[[if vecname == "quality_core" or vecname == "quality_total" then
 						goto lskip
-					end
+					end]]--
 
 					if type(vec) == "userdata" or type(vec) == "table" then
 						if #vec ~= 0 then
@@ -104,6 +104,12 @@ function debug_stock(building)
 					else
 						if vec then
 							imgui.Text(name .. "." .. vecname .. " " .. tostring(vec))
+						end
+					end
+
+					if vecname == "quality_core" or vecname == "quality_total" then
+						for _, k in ipairs(vec) do
+							imgui.Text(tostring(k))
 						end
 					end
 
@@ -144,7 +150,7 @@ function render_viewitems()
 	if building ~= nil then
 		--jobinspector.inspect_workshop(building)
 
-		--debug_stock(building)
+		debug_stock(building)
 
 		local str = utils.getBuildingName(building)
 		imgui.Text(str)
