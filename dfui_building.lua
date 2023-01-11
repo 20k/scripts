@@ -849,7 +849,17 @@ function setup_stockpile_type(sett, type)
 		fill_vec1(sett.wood.mats, #df.global.world.raws.plants.all)
 	end
 
-
+	if type == df.stockpile_group_set.finished_goods then
+		--so, the stockpile serializer just hardcodes 112 in
+		--and I found this was 113 across two saves on 50.xx
+		--suspiciously, exactly the same as the number of corpses in a refuse pile
+		--the stockpile serialiser also sets type to be 112 large in a refuse stockpile
+		--but observed it as always being 0
+		fill_vec1(sett.finished_goods.type, 113)
+		--finished_goods_setup_other_mats
+		fill_vec1(sett.finished_goods.other_mats, 16)
+		fill_vec1(sett.finished_goods.mats, #df.global.world.raws.inorganics)
+	end
 end
 
 function trigger_stockpile(tl, size, dry_run)
