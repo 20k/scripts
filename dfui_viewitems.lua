@@ -4,6 +4,7 @@ render = reqscript('dfui_render')
 imgui = dfhack.imgui
 utils = require('utils')
 buildingd = reqscript('dfui_building')
+nobles = reqscript('dfui_nobles')
 --jobinspector = reqscript('jobinspector')
 
 selected_building_pos = {x=-1, y=-1, z=-1}
@@ -179,17 +180,59 @@ function render_viewitems()
 			imgui.Text("12 " .. tostring(#v.anon_12))
 
 			for k,d in pairs(v.anon_12) do
-				imgui.Text(tostring(d))
+				imgui.Text("12 " .. tostring(d))
+
+				local rptr = df.reinterpret_cast('uintptr_t', d)
+
+				imgui.Text(tostring(rptr[0]))
 			end
 
 			imgui.Text("13 " .. tostring(v.anon_13))
 			imgui.Text("14 " .. tostring(v.anon_14))
 
+			--[[for k,v in pairs(df.global.world.schedules.all) do
+				imgui.Text(tostring(d))
+			end]]--
+
 			--imgui.Text("Building_next " .. tostring(df.global.building_next_id))
 
+			--[[for k,d in pairs(df.squad.get_vector()) do
+				for s,v in pairs(d.positions) do
+					imgui.Text(tostring(v))
+				end
+			end]]--
+
 			for k,d in pairs(df.squad.get_vector()) do
-				imgui.Text(tostring(d))
+				if #d.rooms > 0 then
+					--imgui.Text(d.id)
+					for r,v in pairs(d.rooms) do
+						--render.dump_flags(v.mode)
+						--imgui.Text(tostring(v.mode))
+						imgui.Text("hi " .. v.building_id)
+					end
+				end
 			end
+
+			--[[for k,d in pairs(df.global.plotinfo.main.fortress_entity.positions.own) do
+				imgui.Text(tostring(d))
+			end]]--
+
+			--[[for k,d in pairs(df.squad.get_vector()) do
+				imgui.Text(tostring(d))
+			end]]--
+
+			--[[for k,v in ipairs(df.global.world.units.active) do
+				imgui.Text("hi")
+				imgui.Text(tostring(v.id))
+
+				local val = nobles.unit_to_histfig(v)
+
+				if val ~= nil then
+					imgui.Text(tostring(val.id))
+				end
+			end]]--
+
+
 		end
 	end
 
