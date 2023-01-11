@@ -10,6 +10,14 @@ mouse_click_end = {x=-1, y=-1, z=-1}
 mouse_has_drag = false
 mouse_which_clicked = 0
 
+function dump_flags(f)
+	for k,v in pairs(f) do
+		if v and v ~= 0 then
+			imgui.Text("Flag: " .. tostring(k) .. " : " .. tostring(v))
+		end
+	end
+end
+
 -- must be part of network api
 function get_camera()
 	return {x=df.global.window_x, y=df.global.window_y, z=df.global.window_z}
