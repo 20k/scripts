@@ -277,7 +277,25 @@ function debug_stock(building)
 
 		--gcount = gcount + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB})
 
-		gcount = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PASTE})
+		--gcount = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PASTE})
+
+		--gcount = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.LIQUID_MISC_PLANT})
+		gcount = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.LIQUID_MISC_OTHER}) +
+				 buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_OTHER})
+
+		for _,m in pairs(df.global.world.raws.inorganics) do
+			if m.material.flags.LIQUID_MISC_OTHER then
+				imgui.Text(m.id)
+				gcount = gcount + 1
+			end
+		end
+
+		for _,m in pairs(df.global.world.raws.mat_table.builtin) do
+			if m and m.flags.LIQUID_MISC_OTHER then
+				gcount = gcount + 1
+			end
+		end
+
 
 		imgui.Text("Dbg " .. tostring(gcount))
 

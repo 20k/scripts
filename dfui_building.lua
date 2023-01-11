@@ -963,6 +963,38 @@ function setup_stockpile_type(sett, type)
 
 		fill_vec1(sett.food.glob_paste, paste)
 		fill_vec1(sett.food.glob_pressed, pressed)
+
+		local liquid_plant = count_mats(df.global.world.raws.plants.all, {df.material_flags.LIQUID_MISC_PLANT})
+		local liquid_animal = count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_CREATURE})
+		--local liquid_animal = count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_CREATURE})
+
+		fill_vec1(sett.food.liquid_plant, liquid_plant)
+		fill_vec1(sett.food.liquid_animal, liquid_animal)
+
+		local liquid_misc = 0
+
+		liquid_misc = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.LIQUID_MISC_OTHER}) +
+				 buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_OTHER})
+
+		--milk of lime
+		for _,m in pairs(df.global.world.raws.inorganics) do
+			if m.material.flags.LIQUID_MISC_OTHER then
+				liquid_misc = liquid_misc + 1
+			end
+		end
+
+		for _,m in pairs(df.global.world.raws.mat_table.builtin) do
+			if m and m.flags.LIQUID_MISC_OTHER then
+				liquid_misc = liquid_misc + 1
+			end
+		end
+
+		--LYE. Doesn't seem to exist in the raws anywhere I can find?
+		liquid_misc = liquid_misc + 1
+
+		fill_vec1(sett.food.liquid_misc, liquid_misc)
+
+		sett.food.prepared_meals = true
 	end
 end
 
