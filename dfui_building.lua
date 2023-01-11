@@ -1006,7 +1006,6 @@ function setup_stockpile_type(sett, type)
 
 		local liquid_plant = count_mats(df.global.world.raws.plants.all, {df.material_flags.LIQUID_MISC_PLANT})
 		local liquid_animal = count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_CREATURE})
-		--local liquid_animal = count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_CREATURE})
 
 		fill_vec1(sett.food.liquid_plant, liquid_plant)
 		fill_vec1(sett.food.liquid_animal, liquid_animal)
