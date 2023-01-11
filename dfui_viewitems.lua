@@ -140,11 +140,13 @@ function debug_stock(building)
 
 		local gcount = 0
 
-		for k,v in pairs(df.global.world.raws.inorganics) do
+		--[[for k,v in pairs(df.global.world.raws.inorganics) do
 			if #v.thread_metal.mat_index > 0 then
 				gcount = gcount + 1
 			end
-		end
+		end]]--
+
+		--gcount = #df.global.world.raws.itemdefs.weapons
 
 		imgui.Text("Dbg " .. tostring(gcount))
 

@@ -674,12 +674,12 @@ function setup_stockpile_type(sett, type)
 		sett.armor.usable = true
 		sett.armor.unusable = true
 
-		fill_vec1(sett.armor.body, #df.global.world.raws.armor)
-		fill_vec1(sett.armor.head, #df.global.world.raws.helms)
-		fill_vec1(sett.armor.feet, #df.global.world.raws.shoes)
-		fill_vec1(sett.armor.hands, #df.global.world.raws.gloves)
-		fill_vec1(sett.armor.legs, #df.global.world.raws.shoes)
-		fill_vec1(sett.armor.shield, #df.global.world.raws.shields)
+		fill_vec1(sett.armor.body, #df.global.world.raws.itemdefs.armor)
+		fill_vec1(sett.armor.head, #df.global.world.raws.itemdefs.helms)
+		fill_vec1(sett.armor.feet, #df.global.world.raws.itemdefs.shoes)
+		fill_vec1(sett.armor.hands, #df.global.world.raws.itemdefs.gloves)
+		fill_vec1(sett.armor.legs, #df.global.world.raws.itemdefs.shoes)
+		fill_vec1(sett.armor.shield, #df.global.world.raws.itemdefs.shields)
 		--weapons_armor_setup_other_mats
 		fill_vec1(sett.armor.other_mats, 10)
 
@@ -817,6 +817,18 @@ function setup_stockpile_type(sett, type)
 		sett.refuse.rotten_raw_hide = true
 
 		fill_vec1(sett.coins.mats, #df.global.world.raws.inorganics)
+	end
+
+	if type == df.stockpile_group_set.weapons then
+		fill_vec1(sett.weapons.weapon_type, #df.global.world.raws.itemdefs.weapons)
+		fill_vec1(sett.weapons.weapon_type, #df.global.world.raws.itemdefs.trapcomps)
+
+		--weapons_armor_setup_other_mats
+		fill_vec1(sett.weapons.other_mats, 10)
+		fill_vec1(sett.weapons.mats, #df.global.world.raws.inorganics)
+
+		sett.weapons.usable = true
+		sett.weapons.unusable = true
 	end
 end
 
