@@ -93,9 +93,9 @@ function debug_stock(building)
 
 			if type(v) == "userdata" then
 				for vecname,vec in pairs(v) do
-					--[[if vecname == "quality_core" or vecname == "quality_total" then
+					if vecname == "quality_core" or vecname == "quality_total" then
 						goto lskip
-					end]]--
+					end
 
 					if type(vec) == "userdata" or type(vec) == "table" then
 						if #vec ~= 0 then

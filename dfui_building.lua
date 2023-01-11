@@ -666,7 +666,7 @@ function setup_stockpile_type(sett, type)
 		sett.refuse.rotten_raw_hide = true
 
 		--not sure why +2
-		local type_c = df.furniture_type.last_item_value + 2
+		local type_c = df.furniture_type._last_item + 2
 
 		fill_vec1(sett.furniture.type, type_c)
 
@@ -705,8 +705,8 @@ function setup_stockpile_type(sett, type)
 		local other_mats = #df.global.world.raws.mat_table.builtin
 
 		--600 something
-		fill_vec1(sett.gems.rough_other_mats, #other_mats)
-		fill_vec1(sett.gems.cut_other_mats, #other_mats)
+		fill_vec1(sett.gems.rough_other_mats, other_mats)
+		fill_vec1(sett.gems.cut_other_mats, other_mats)
 	end
 
 	if type == df.stockpile_group_set.animals then
@@ -742,7 +742,7 @@ function setup_stockpile_type(sett, type)
 		fill_vec1(sett.armor.head, #df.global.world.raws.itemdefs.helms)
 		fill_vec1(sett.armor.feet, #df.global.world.raws.itemdefs.shoes)
 		fill_vec1(sett.armor.hands, #df.global.world.raws.itemdefs.gloves)
-		fill_vec1(sett.armor.legs, #df.global.world.raws.itemdefs.shoes)
+		fill_vec1(sett.armor.legs, #df.global.world.raws.itemdefs.pants)
 		fill_vec1(sett.armor.shield, #df.global.world.raws.itemdefs.shields)
 		--weapons_armor_setup_other_mats
 		fill_vec1(sett.armor.other_mats, 10)
@@ -875,7 +875,7 @@ function setup_stockpile_type(sett, type)
 
 	if type == df.stockpile_group_set.coins then
 		sett.animals.empty_cages = true
-		sett.animals.empty_Traps = true
+		sett.animals.empty_traps = true
 		sett.food.prepared_meals = true
 		sett.refuse.fresh_raw_hide = true
 		sett.refuse.rotten_raw_hide = true
@@ -885,7 +885,7 @@ function setup_stockpile_type(sett, type)
 
 	if type == df.stockpile_group_set.weapons then
 		fill_vec1(sett.weapons.weapon_type, #df.global.world.raws.itemdefs.weapons)
-		fill_vec1(sett.weapons.weapon_type, #df.global.world.raws.itemdefs.trapcomps)
+		fill_vec1(sett.weapons.trapcomp_type, #df.global.world.raws.itemdefs.trapcomps)
 
 		--weapons_armor_setup_other_mats
 		fill_vec1(sett.weapons.other_mats, 10)
@@ -996,12 +996,12 @@ function setup_stockpile_type(sett, type)
 
 		fill_vec1(sett.food.powder_creature, powder_creature)
 
-		local glob = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB}) + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB})
+		local glob = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB}) + count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB})
 
 		fill_vec1(sett.food.glob, glob)
 
-		local paste = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PASTE}) + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB_PASTE})
-		local pressed = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PRESSED}) + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB_PRESSED})
+		local paste = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PASTE}) + count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB_PASTE})
+		local pressed = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PRESSED}) + count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB_PRESSED})
 
 		fill_vec1(sett.food.glob_paste, paste)
 		fill_vec1(sett.food.glob_pressed, pressed)
@@ -1015,8 +1015,8 @@ function setup_stockpile_type(sett, type)
 
 		local liquid_misc = 0
 
-		liquid_misc = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.LIQUID_MISC_OTHER}) +
-				 buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_OTHER})
+		liquid_misc = count_mats(df.global.world.raws.plants.all, {df.material_flags.LIQUID_MISC_OTHER}) +
+				 count_mats(df.global.world.raws.creatures.all, {df.material_flags.LIQUID_MISC_OTHER})
 
 		--milk of lime
 		for _,m in pairs(df.global.world.raws.inorganics) do
@@ -1100,10 +1100,12 @@ function trigger_stockpile(tl, size, dry_run)
 	if not dry_run then
 		local building = handle_construct(build_type, nil, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
 
-		local bit = get_stockpile_db()[stockpile_type].bit
+		if building then
+			local bit = get_stockpile_db()[stockpile_type].bit
 
-		for _,v in ipairs(bit) do
-			setup_stockpile_type(building.settings, v)
+			for _,v in ipairs(bit) do
+				setup_stockpile_type(building.settings, v)
+			end
 		end
 	end
 
