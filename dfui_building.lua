@@ -606,6 +606,7 @@ function count_mats(list, flags)
 	return count
 end
 
+--tested in 50.05
 function setup_stockpile_type(sett, type)
 	for i=0,6 do
 		sett.quality_core[i] = true
