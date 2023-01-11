@@ -635,8 +635,6 @@ end
 
 --tested in 50.05
 function setup_stockpile_type(sett, type)
-	dfhack.println(type)
-
 	sett.flags[type] = true
 
 	set_quality(sett.furniture.quality_core)
