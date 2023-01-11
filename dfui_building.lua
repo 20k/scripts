@@ -649,7 +649,7 @@ function setup_stockpile_type(sett, type)
 	set_quality(sett.finished_goods.quality_total)
 
 	set_quality(sett.weapons.quality_core)
-	set_quality(sett.weapons.quality_total
+	set_quality(sett.weapons.quality_total)
 
 	set_quality(sett.armor.quality_core)
 	set_quality(sett.armor.quality_total)
