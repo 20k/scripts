@@ -237,6 +237,31 @@ function debug_stock(building)
 			end
 		end]]--
 
+		--[[for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.caste) do
+				if v.misc.egg_mat_index ~= -1 then
+					gcount = gcount + 1
+				end
+			end
+		end]]--
+
+
+		--[[for _, c in pairs(df.global.world.raws.creatures.all) do
+			for _, m in pairs(c.material) do
+				if m.flags.ALCOHOL then
+					gcount = gcount + 1
+				end
+			end
+		end]]--
+
+		for _, c in pairs(df.global.world.raws.creatures.all) do
+			for _, m in pairs(c.material) do
+				if m.flags.CHEESE_CREATURE then
+					gcount = gcount + 1
+				end
+			end
+		end
+
 		imgui.Text("Dbg " .. tostring(gcount))
 
 		for name,v in pairs(settings) do
