@@ -584,6 +584,28 @@ function get_leathers_count()
 	return leather_count
 end
 
+function count_mats(list, flags)
+	local count = 0
+
+	for _,v in pairs(list) do
+		for _,m in pairs(v.material) do
+			local all_flags = true
+
+			for name,k in pairs(flags) do
+				if m.flags[k] ~= true then
+					all_flags = false
+				end
+			end
+
+			if all_flags == true then
+				count = count + 1
+			end
+		end
+	end
+
+	return count
+end
+
 function setup_stockpile_type(sett, type)
 	for i=0,6 do
 		sett.quality_core[i] = true
@@ -862,15 +884,7 @@ function setup_stockpile_type(sett, type)
 	end
 
 	if type == df.stockpile_group_set.food then
-		local meat_count = 0
-
-		for _,c in pairs(df.creature_raw.get_vector()) do
-			for k,v in pairs(c.material) do
-				if v.flags.MEAT then
-					meat_count = meat_count + 1
-				end
-			end
-		end
+		local meat_count = count_mats(df.global.world.raws.creatures.all, {df.material_flags.MEAT})
 
 		--no idea why the +2 is there other than to make numbers work. Stable across 2 saves
 		fill_vec1(sett.food.meat, meat_count + 2)
@@ -912,43 +926,43 @@ function setup_stockpile_type(sett, type)
 
 		fill_vec1(sett.food.drink_plant, drink_plant)
 
-		local drink_animal = 0
-
-		for _, c in pairs(df.global.world.raws.creatures.all) do
-			for _, m in pairs(c.material) do
-				if m.flags.ALCOHOL then
-					drink_animal = drink_animal + 1
-				end
-			end
-		end
+		local drink_animal = count_mats(df.global.world.raws.creatures.all, {df.material_flags.ALCOHOL})
 
 		fill_vec1(sett.food.drink_animal, drink_animal)
 
-		local cheese_plants = 0
-
-		for _,c in pairs(df.global.world.raws.plants.all) do
-			for _, m in pairs(c.material) do
-				if m.flags.CHEESE_PLANT then
-					cheese_plants = cheese_plants + 1
-				end
-			end
-		end
+		local cheese_plants = count_mats(df.global.world.raws.plants.all, {df.material_flags.CHEESE_PLANT})
 
 		fill_vec1(sett.food.cheese_plant, cheese_plants)
 
-		local cheese_animals = 0
-
-		for _, c in pairs(df.global.world.raws.creatures.all) do
-			for _, m in pairs(c.material) do
-				if m.flags.CHEESE_CREATURE then
-					cheese_animals = cheese_animals + 1
-				end
-			end
-		end
+		local cheese_animals = count_mats(df.global.world.raws.creatures.all, {df.material_flags.CHEESE_CREATURE})
 
 		fill_vec1(sett.food.cheese_animal, cheese_animals)
 
+		local seeds = count_mats(df.global.world.raws.plants.all, {df.material_flags.SEED_MAT})
 
+		fill_vec1(sett.food.seeds, seeds)
+
+		local leaf_mat = count_mats(df.global.world.raws.plants.all, {df.material_flags.LEAF_MAT})
+
+		fill_vec1(sett.food.leaves, leaf_mat)
+
+		local powder_plant = count_mats(df.global.world.raws.plants.all, {df.material_flags.POWDER_MISC_PLANT})
+
+		fill_vec1(sett.food.powder_plant, powder_plant)
+
+		local powder_creature = count_mats(df.global.world.raws.creatures.all, {df.material_flags.POWDER_MISC_CREATURE})
+
+		fill_vec1(sett.food.powder_creature, powder_creature)
+
+		local glob = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB}) + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB})
+
+		fill_vec1(sett.food.glob, glob)
+
+		local paste = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PASTE}) + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB_PASTE})
+		local pressed = count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PRESSED}) + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB_PRESSED})
+
+		fill_vec1(sett.food.glob_paste, paste)
+		fill_vec1(sett.food.glob_pressed, pressed)
 	end
 end
 
