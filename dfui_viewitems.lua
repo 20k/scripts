@@ -125,7 +125,7 @@ function debug_stock(building)
 end
 
 function render_viewitems()
-	imgui.EatMouseInputs()
+	--imgui.EatMouseInputs()
 
 	local world_pos = render.get_mouse_world_coordinates()
 
@@ -141,7 +141,59 @@ function render_viewitems()
 		check_z = world_pos.z
 	end
 
+	for _,v in ipairs(df.building.get_vector()) do
+		if df.building_civzonest:is_instance(v) then
+			imgui.Text("Civzonebuilding")
+
+			imgui.Text(v.name)
+			imgui.Text(tostring(v.x1))
+			imgui.Text(tostring(v.y1))
+			imgui.Text(tostring(v.x2))
+			imgui.Text(tostring(v.y2))
+
+			if v.room.extents then
+				imgui.Text("Extents " .. tostring(v.room.extents[0]))
+			end
+
+			--imgui.Text(tostring(v.id))
+			imgui.Text("1 " .. tostring(v.anon_1))
+			imgui.Text("2 " .. tostring(v.anon_2))
+			imgui.Text("3 " .. tostring(v.anon_3))
+			imgui.Text("4 " .. tostring(v.anon_4))
+			imgui.Text("5 " .. tostring(v.anon_5))
+			imgui.Text("6 " .. tostring(v.anon_6))
+			imgui.Text("7 " .. tostring(v.anon_7))
+			imgui.Text("8 " .. tostring(#v.anon_8))
+			imgui.Text("9 " .. tostring(#v.anon_9))
+
+			for k,d in pairs(v.anon_9) do
+				imgui.Text(tostring(d))
+			end
+
+			imgui.Text("10 " .. tostring(v.anon_10))
+			imgui.Text("11 " .. tostring(v.anon_11))
+			imgui.Text("12 " .. tostring(v.anon_12))
+			imgui.Text("13 " .. tostring(v.anon_13))
+			imgui.Text("14 " .. tostring(#v.anon_14))
+
+			for k,d in pairs(v.anon_14) do
+				imgui.Text(tostring(d))
+			end
+
+			imgui.Text("15 " .. tostring(v.anon_15))
+			imgui.Text("16 " .. tostring(v.anon_16))
+
+			--imgui.Text("Building_next " .. tostring(df.global.building_next_id))
+
+			for k,d in pairs(df.squad.get_vector()) do
+				imgui.Text(tostring(d))
+			end
+		end
+	end
+
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
+
+	imgui.Text("Hovered: " .. tostring(building))
 
 	function item_sort(a, b)
 		return b2n(a.flags.in_building) > b2n(b.flags.in_building)
