@@ -3,6 +3,7 @@
 render = reqscript('dfui_render')
 imgui = dfhack.imgui
 utils = require('utils')
+buildingd = reqscript('dfui_building')
 --jobinspector = reqscript('jobinspector')
 
 selected_building_pos = {x=-1, y=-1, z=-1}
@@ -254,13 +255,29 @@ function debug_stock(building)
 			end
 		end]]--
 
-		for _, c in pairs(df.global.world.raws.creatures.all) do
+		--[[for _, c in pairs(df.global.world.raws.creatures.all) do
 			for _, m in pairs(c.material) do
 				if m.flags.CHEESE_CREATURE then
 					gcount = gcount + 1
 				end
 			end
-		end
+		end]]--
+
+		--[[for _,c in pairs(df.global.world.raws.plants.all) do
+			for _, m in pairs(c.material) do
+				--render.dump_flags(m.flags)
+
+				if m.flags.DO_NOT_CLEAN_GLOB then
+					gcount = gcount + 1
+				end
+			end
+		end]]--
+
+		--gcount = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB})
+
+		--gcount = gcount + buildingd.count_mats(df.global.world.raws.creatures.all, {df.material_flags.STOCKPILE_GLOB})
+
+		gcount = buildingd.count_mats(df.global.world.raws.plants.all, {df.material_flags.STOCKPILE_GLOB_PASTE})
 
 		imgui.Text("Dbg " .. tostring(gcount))
 
