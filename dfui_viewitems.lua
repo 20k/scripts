@@ -140,13 +140,68 @@ function debug_stock(building)
 
 		local gcount = 0
 
+		--[[for _,v in pairs(df.global.world.raws.plants.all) do
+			for d,m in pairs(v.material) do
+				if m.flags.WOOD then
+					gcount = gcount + 1
+					imgui.Text(v.name)
+					goto done
+				end
+			end]]--
+
+			--imgui.Text(v.name)
+
+			--[[if v.name == "abaca tree" then
+				imgui.Text(v.name)
+				--render.dump_flags(v.flags)
+			end]]--
+
+			--[[if v.flags.TREE or v.flags.TREE_HAS_MUSHROOM_CAP then
+				imgui.Text(v.name)
+				gcount = gcount + 1
+			end
+			::done::
+		end]]--
+
+		imgui.Text("dbpg " .. #df.global.world.raws.plants.all)
+
+		--[[for _,v in pairs(df.global.world.raws.mat_table.builtin) do
+			if v and v.flags.WOOD then
+				gcount = gcount+1
+			end
+		end]]--
+
 		--[[for k,v in pairs(df.global.world.raws.inorganics) do
-			if #v.thread_metal.mat_index > 0 then
+			if v.material.flags.WOOD then
 				gcount = gcount + 1
 			end
 		end]]--
 
 		--gcount = #df.global.world.raws.itemdefs.weapons
+
+		--[[for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.material) do
+				if v.flags.WOOD then
+					gcount = gcount + 1
+				end
+			end
+		end]]--
+
+		--gcount = #df.historical_entity.find(df.global.plotinfo.group_id).resources.misc_mat.wood2.mat_type
+
+		--gcount = #df.global.world.raws.plants.trees
+
+		--[[for _,c in pairs(df.global.world.raws.inorganics) do
+			if c and c.material.flags.WOOD then
+				gcount = gcount + 1
+			end
+		end]]--
+
+		--[[for a,b in pairs(settings.wood.mats) do
+			if b == false or b == 0 then
+				imgui.Text("False")
+			end
+		end]]--
 
 		imgui.Text("Dbg " .. tostring(gcount))
 

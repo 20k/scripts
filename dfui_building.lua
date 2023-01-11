@@ -841,6 +841,15 @@ function setup_stockpile_type(sett, type)
 		sett.refuse.fresh_raw_hide = true
 		sett.refuse.rotten_raw_hide = true
 	end
+
+	if type == df.stockpile_group_set.wood then
+		--this makes 0 sense to me. Why is it all plants? I mean it *is* all plants, but I don't get it
+		--because eg thread isn't all metals, its just specifically filtered threads
+		--<insert shrug>
+		fill_vec1(sett.wood.mats, #df.global.world.raws.plants.all)
+	end
+
+
 end
 
 function trigger_stockpile(tl, size, dry_run)
