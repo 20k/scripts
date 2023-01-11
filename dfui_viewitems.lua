@@ -165,6 +165,21 @@ function debug_stock(building)
 
 		imgui.Text("dbpg " .. #df.global.world.raws.plants.all)
 
+		local corpse_guess = 0
+
+		for _,v in pairs(df.global.world.raws.creatures.all) do
+			--not sure about the second flag
+			if v.flags.SMALL_RACE and not v.flags.ARTIFICIAL_HIVEABLE then
+				corpse_guess = corpse_guess + 1
+			end
+		end
+
+		if corpse_guess ~= 113 then
+			dfhack.println("Warning: Corpse guess is not 113, not sure if it works")
+		end
+
+		imgui.Text("Cguess " .. tostring(corpse_guess))
+
 		--[[for _,v in pairs(df.global.world.raws.mat_table.builtin) do
 			if v and v.flags.WOOD then
 				gcount = gcount+1
@@ -204,6 +219,8 @@ function debug_stock(building)
 		end]]--
 
 		imgui.Text("Dbg " .. tostring(gcount))
+
+		imgui.Text("Dbg3 " .. tostring(#settings.refuse.type))
 
 		for name,v in pairs(settings) do
 			if name == "flags" then
