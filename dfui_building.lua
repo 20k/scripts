@@ -860,6 +860,34 @@ function setup_stockpile_type(sett, type)
 		fill_vec1(sett.finished_goods.other_mats, 16)
 		fill_vec1(sett.finished_goods.mats, #df.global.world.raws.inorganics)
 	end
+
+	if type == df.stockpile_group_set.food then
+		local meat_count = 0
+
+		for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.material) do
+				if v.flags.MEAT then
+					meat_count = meat_count + 1
+				end
+			end
+		end
+
+		--no idea why the +2 is there other than to make numbers work. Stable across 2 saves
+		fill_vec1(sett.food.meat, meat_count + 2)
+
+		local fish_count = 0
+
+		for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.caste) do
+				if v.misc.fish_mat_index ~= -1 then
+					fish_count = fish_count + 1
+				end
+			end
+		end
+
+		fill_vec1(sett.food.fish, fish_count)
+		fill_vec1(sett.food.unprepared_fish, fish_count)
+	end
 end
 
 function trigger_stockpile(tl, size, dry_run)

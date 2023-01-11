@@ -163,23 +163,6 @@ function debug_stock(building)
 			::done::
 		end]]--
 
-		imgui.Text("dbpg " .. #df.global.world.raws.plants.all)
-
-		local corpse_guess = 0
-
-		for _,v in pairs(df.global.world.raws.creatures.all) do
-			--not sure about the second flag
-			if v.flags.SMALL_RACE and not v.flags.ARTIFICIAL_HIVEABLE then
-				corpse_guess = corpse_guess + 1
-			end
-		end
-
-		if corpse_guess ~= 113 then
-			dfhack.println("Warning: Corpse guess is not 113, not sure if it works")
-		end
-
-		imgui.Text("Cguess " .. tostring(corpse_guess))
-
 		--[[for _,v in pairs(df.global.world.raws.mat_table.builtin) do
 			if v and v.flags.WOOD then
 				gcount = gcount+1
@@ -218,9 +201,43 @@ function debug_stock(building)
 			end
 		end]]--
 
-		imgui.Text("Dbg " .. tostring(gcount))
+		--[[for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.material) do
+				if v.flags.MEAT then
+					gcount = gcount + 1
+				end
+			end
+		end]]--
 
-		imgui.Text("Dbg3 " .. tostring(#settings.refuse.type))
+		--[[for _,c in pairs(df.global.world.raws.mat_table.builtin) do
+			if c and c.flags.MEAT then
+				gcount = gcount + 1
+			end
+		end]]--
+
+		--[[for k,v in pairs(df.global.world.raws.itemdefs.food) do
+
+		end]]--
+
+		--gcount = #df.historical_entity.find(df.global.plotinfo.group_id).resources.misc_mat.wood2.mat_type
+
+		--gcount = #df.global.world.raws.itemdefs.all
+
+		--[[for _,c in pairs(df.creature_raw.get_vector()) do
+			if c.flags.HAS_ANY_CANNOT_BREATHE_AIR and c.flags.HAS_ANY_NOT_FLIER and c.flags.HAS_ANY_CAN_SWIM then
+				gcount = gcount+1
+			end
+		end]]--
+
+		--[[for _,c in pairs(df.creature_raw.get_vector()) do
+			for k,v in pairs(c.caste) do
+				if v.misc.fish_mat_index ~= -1 then
+					gcount = gcount + 1
+				end
+			end
+		end]]--
+
+		imgui.Text("Dbg " .. tostring(gcount))
 
 		for name,v in pairs(settings) do
 			if name == "flags" then
