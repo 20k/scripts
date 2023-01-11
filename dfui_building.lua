@@ -627,14 +627,10 @@ function count_mats(list, flags)
 	return count
 end
 
-function set_quality(q, a, b, c, d, e f, g)
-	q[0] = a
-	q[1] = b
-	q[2] = c
-	q[3] = d
-	q[4] = e
-	q[5] = f
-	q[6] = g
+function set_quality(q)
+	for _,v in ipairs(q) do
+		v = true
+	end
 end
 
 --tested in 50.05
@@ -643,10 +639,20 @@ function setup_stockpile_type(sett, type)
 
 	sett.flags[type] = true
 
-	--[[for i=0,6 do
-		sett.quality_core[i] = true
-		sett.quality_total[i] = true
-	end]]--
+	set_quality(sett.furniture.quality_core)
+	set_quality(sett.furniture.quality_total)
+
+	set_quality(sett.ammo.quality_core)
+	set_quality(sett.ammo.quality_total)
+
+	set_quality(sett.finished_goods.quality_core)
+	set_quality(sett.finished_goods.quality_total)
+
+	set_quality(sett.weapons.quality_core)
+	set_quality(sett.weapons.quality_total
+
+	set_quality(sett.armor.quality_core)
+	set_quality(sett.armor.quality_total)
 
 	sett.allow_organic = true
 	sett.allow_inorganic = true
@@ -671,21 +677,6 @@ function setup_stockpile_type(sett, type)
 
 		--stockpileserializer furniture_setup_other_mats
 		fill_vec1(sett.furniture.other_mats, 15)
-
-		set_quality(sett.furniture.quality_core, true, true, true, true, true, true, true)
-		set_quality(sett.furniture.quality_total, true, true, true, true, true, true, true)
-
-		set_quality(sett.ammo.quality_core, true, true, true, true, true, true, false)
-		set_quality(sett.ammo.quality_total, false, true, true, true, true, true, true)
-
-		set_quality(sett.finished_goods.quality_core, true, true, true, true, true, true, false)
-		set_quality(sett.finished_goods.quality_total, false, true, true, true, true, true, true)
-
-		set_quality(sett.weapons.quality_core, true, true, true, true, true, true, false)
-		set_quality(sett.weapons.quality_total, false, true, true, true, true, true, true)
-
-		set_quality(sett.armor.quality_core, false, false, false, false, false, false, false)
-		set_quality(sett.armor.quality_total, false, false, false, false, false, false, false)
 	end
 
 	if type == df.stockpile_group_set.ammo then
