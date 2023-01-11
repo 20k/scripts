@@ -17,25 +17,46 @@ function get_stockpile_db()
 		is_valid_extent_fn = is_valid_stockpile_extent
 	}
 
+	local all_bits = {
+		df.stockpile_group_set.animals,
+		df.stockpile_group_set.food,
+		df.stockpile_group_set.furniture,
+		df.stockpile_group_set.coins,
+		df.stockpile_group_set.corpses,
+		df.stockpile_group_set.refuse,
+		df.stockpile_group_set.stone,
+		df.stockpile_group_set.wood,
+		df.stockpile_group_set.gems,
+		df.stockpile_group_set.bars_blocks,
+		df.stockpile_group_set.cloth,
+		df.stockpile_group_set.leather,
+		df.stockpile_group_set.ammo,
+		df.stockpile_group_set.sheet,
+		df.stockpile_group_set.finished_goods,
+		df.stockpile_group_set.weapons,
+		df.stockpile_group_set.armor
+	}
+
 	local stockpile_db = {
-		a={label='Animal', bit=df.stockpile_group_set.animals},
-		f={label='Food', bit=df.stockpile_group_set.food, want_barrels=true},
-		u={label='Furniture', bit=df.stockpile_group_set.furniture},
-		n={label='Coins', bit=df.stockpile_group_set.coins, want_bins=true},
-		y={label='Corpses', bit=df.stockpile_group_set.corpses},
-		r={label='Refuse', bit=df.stockpile_group_set.refuse},
-		s={label='Stone', bit=df.stockpile_group_set.stone, want_wheelbarrows=true},
-		w={label='Wood', bit=df.stockpile_group_set.wood},
-		e={label='Gem', bit=df.stockpile_group_set.gems, want_bins=true},
-		b={label='Bar/Block', bit=df.stockpile_group_set.bars_blocks, want_bins=true},
-		h={label='Cloth', bit=df.stockpile_group_set.cloth, want_bins=true},
-		l={label='Leather', bit=df.stockpile_group_set.leather, want_bins=true},
-		z={label='Ammo', bit=df.stockpile_group_set.ammo, want_bins=true},
-		S={label='Sheets', bit=df.stockpile_group_set.sheet, want_bins=true},
-		g={label='Finished Goods', bit=df.stockpile_group_set.finished_goods, want_bins=true},
-		p={label='Weapons', bit=df.stockpile_group_set.weapons, want_bins=true},
-		d={label='Armor', bit=df.stockpile_group_set.armor, want_bins=true},
-		c={label='Custom', bit=nil}
+		a={label='Animal', bit={df.stockpile_group_set.animals}},
+		f={label='Food', bit={df.stockpile_group_set.food}, want_barrels=true},
+		u={label='Furniture', bit={df.stockpile_group_set.furniture}},
+		n={label='Coins', bit={df.stockpile_group_set.coins}, want_bins=true},
+		y={label='Corpses', bit={df.stockpile_group_set.corpses}},
+		r={label='Refuse', bit={df.stockpile_group_set.refuse}},
+		s={label='Stone', bit={df.stockpile_group_set.stone}, want_wheelbarrows=true},
+		w={label='Wood', bit={df.stockpile_group_set.wood}},
+		e={label='Gem', bit={df.stockpile_group_set.gems}, want_bins=true},
+		b={label='Bar/Block', bit={df.stockpile_group_set.bars_blocks}, want_bins=true},
+		h={label='Cloth', bit={df.stockpile_group_set.cloth}, want_bins=true},
+		l={label='Leather', bit={df.stockpile_group_set.leather}, want_bins=true},
+		z={label='Ammo', bit={df.stockpile_group_set.ammo}, want_bins=true},
+		S={label='Sheets', bit={df.stockpile_group_set.sheet}, want_bins=true},
+		g={label='Finished Goods', bit={df.stockpile_group_set.finished_goods}, want_bins=true},
+		p={label='Weapons', bit={df.stockpile_group_set.weapons}, want_bins=true},
+		d={label='Armor', bit={df.stockpile_group_set.armor}, want_bins=true},
+		q={label='All', bit=all_bits, want_bins=true},
+		c={label='Custom', bit={}}
 	}
 
 	for _, v in pairs(stockpile_db) do utils.assign(v, stockpile_template) end
@@ -608,6 +629,8 @@ end
 
 --tested in 50.05
 function setup_stockpile_type(sett, type)
+	sett.flags[type] = true
+
 	for i=0,6 do
 		sett.quality_core[i] = true
 		sett.quality_total[i] = true
@@ -1061,7 +1084,9 @@ function trigger_stockpile(tl, size, dry_run)
 
 		local bit = get_stockpile_db()[stockpile_type].bit
 
-		building.settings.flags[bit] = true
+		for _,v in ipairs(bit) do
+			setup_stockpile_type(building.settings, bit)
+		end
 
 		setup_stockpile_type(building.settings, bit)
 	end
