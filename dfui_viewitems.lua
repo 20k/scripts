@@ -161,14 +161,15 @@ function render_viewitems()
 			imgui.Text("3 " .. tostring(v.anon_3))
 			--imgui.Text("5 " .. tostring(v.anon_5))
 			--imgui.Text("6 " .. tostring(v.anon_6))
+
+			imgui.Text("4 " .. tostring(v.anon_4))
 			imgui.Text("'dir_x " .. tostring(v.dir_x))
 			imgui.Text("'dir_y " .. tostring(v.dir_y))
-			imgui.Text("4 " .. tostring(v.anon_4))
-			imgui.Text("5 " .. tostring(#v.anon_5))
+			imgui.Text("5 " .. tostring(v.anon_5))
 			imgui.Text("6 " .. tostring(#v.anon_6))
 
 			for k,d in pairs(v.anon_7) do
-				imgui.Text(tostring(d))
+				imgui.Text("7 " .. tostring(d))
 			end
 
 			imgui.Text("8 " .. tostring(v.anon_8))
