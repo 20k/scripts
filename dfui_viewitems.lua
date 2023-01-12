@@ -157,38 +157,41 @@ function render_viewitems()
 			end
 
 			--imgui.Text(tostring(v.id))
+			imgui.Text("is_active " .. tostring(v.is_active))
 			imgui.Text("1 " .. tostring(v.anon_1))
 			imgui.Text("2 " .. tostring(v.anon_2))
-			imgui.Text("3 " .. tostring(v.anon_3))
 			--imgui.Text("5 " .. tostring(v.anon_5))
 			--imgui.Text("6 " .. tostring(v.anon_6))
 
-			imgui.Text("4 " .. tostring(v.anon_4))
+			imgui.Text("zone_num " .. tostring(v.zone_num))
 			imgui.Text("'dir_x " .. tostring(v.dir_x))
 			imgui.Text("'dir_y " .. tostring(v.dir_y))
+			imgui.Text("3 " .. tostring(v.anon_3))
+			imgui.Text("4 " .. tostring(#v.anon_4))
+
+			for k,d in pairs(v.contained_buildings) do
+				imgui.Text("b " .. tostring(d))
+			end
+
+			imgui.Text("assigned " .. tostring(v.assigned_unit_id))
 			imgui.Text("5 " .. tostring(v.anon_5))
-			imgui.Text("6 " .. tostring(#v.anon_6))
 
-			for k,d in pairs(v.anon_7) do
-				imgui.Text("7 " .. tostring(d))
+			if v.assigned_unit_id ~= -1 then
+				imgui.Text("unit " .. v.assigned_unit.id)
 			end
 
-			imgui.Text("8 " .. tostring(v.anon_8))
-			imgui.Text("9 " .. tostring(v.anon_9))
-			imgui.Text("10 " .. tostring(v.anon_10))
-			imgui.Text("11 " .. tostring(v.anon_11))
-			imgui.Text("12 " .. tostring(#v.anon_12))
+			--imgui.Text("6 " .. tostring(v.anon_6))
+			--imgui.Text("7 " .. tostring(v.anon_7))
+			imgui.Text("rinfo " .. tostring(#v.squad_room_info))
 
-			for k,d in pairs(v.anon_12) do
-				imgui.Text("12 " .. tostring(d))
-
-				local rptr = df.reinterpret_cast('uintptr_t', d)
-
-				imgui.Text(tostring(rptr[0]))
+			for k,d in pairs(v.squad_room_info) do
+				imgui.Text("id " .. tostring(d.squad_id))
+				--imgui.Text("flags " .. tostring(d.flags))
+				render.dump_flags(d.mode)
 			end
 
-			imgui.Text("13 " .. tostring(v.anon_13))
-			imgui.Text("14 " .. tostring(v.anon_14))
+			imgui.Text("6 " .. tostring(v.anon_6))
+			imgui.Text("7 " .. tostring(v.anon_7))
 
 			--[[for k,v in pairs(df.global.world.schedules.all) do
 				imgui.Text(tostring(d))
@@ -361,10 +364,6 @@ function handle_building_mouseover()
 		imgui.EatMouseInputs()
 
 		for _,civzone in ipairs(civzones) do
-			if civzone.type ~= df.civzone_type.ActivityZone then
-				goto skip
-			end
-
 			if (current_menu == "main" or current_menu == "Zones") and imgui.IsMouseClicked(0) then
 				selected_building_pos.x = mouse_world_pos.x
 				selected_building_pos.y = mouse_world_pos.y
@@ -384,8 +383,6 @@ function handle_building_mouseover()
 			imgui.BeginTooltip()
 			imgui.Text(str)
 			imgui.EndTooltip()
-
-			::skip::
 		end
 	end
 end
