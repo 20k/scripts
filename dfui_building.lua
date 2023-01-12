@@ -1298,7 +1298,9 @@ function max_zone_num()
 	local max_id = 0
 
 	for _,v in ipairs(df.building.get_vector()) do
-		max_id = math.max(max_id, v.zone_num)
+		if df.building_civzonest:is_instance(v) then
+			max_id = math.max(max_id, v.zone_num)
+		end
 	end
 
 	return max_id
@@ -1320,7 +1322,7 @@ function finalise_zone(building, subtype)
 	building.anon_3 = -1
 
 	building.assigned_unit_id = -1
-	building.anon_4 = -1
+	--building.anon_4 = -1
 	building.anon_5 = -1
 	building.anon_6 = -1
 	building.anon_7 = -1
@@ -1385,6 +1387,24 @@ function render_zones()
 					 	 {key="T", text="Tomb"}, {key="f", text="Fishing"}, {key="g", text="Gather Fruit"},
 					  	 {key="s", text="Sand"}, {key="c", text="Clay"}}
 
+	local subtype_map = {
+		["Meeting Area"]=df.civzone_type.MeetingHall,
+		["Office"]=df.civzone_type.Office,
+		["Bedroom"]=df.civzone_type.Bedroom,
+		["Dormitory"]=df.civzone_type.Dormitory,
+		["Dining Hall"]=df.civzone_type.DiningHall,
+		["Barracks"]=df.civzone_type.Barracks,
+		["Pen/Pasture"]=df.civzone_type.Pen,
+		["Archery Range"]=df.civzone_type.ArcheryRange,
+		["Pit/Pond"]=df.civzone_type.Pond,
+		["Garbage Dump"]=df.civzone_type.Dump,
+		["Tomb"]=df.civzone_type.Tomb,
+		["Fishing"]=df.civzone_type.FishingArea,
+		["Gather Fruit"]=df.civzone_type.PlantGathering,
+		["Sand"]=df.civzone_type.SandCollection,
+		["Clay"]=df.civzone_type.ClayCollection
+	}
+
 	local current_state = render.get_menu_item()
 
 	if current_state == nil then
@@ -1411,6 +1431,7 @@ function render_zones()
 	end
 
 	current_state.type = render.render_table_impl(to_render, current_state.type)
+	current_state.zone_type = render.render_table_impl(zone_render, current_state.zone_type)
 
 	render.set_menu_item(current_state)
 
@@ -1436,6 +1457,8 @@ function render_zones()
 
 		local size = {x=end_pos.x - start_pos.x + 1, y=end_pos.y-start_pos.y + 1}
 
-		trigger_zone(start_pos, size, false)
+		local subtype = subtype_map[current_state.zone_type]
+
+		trigger_zone(start_pos, size, false, subtype)
 	end
 end
