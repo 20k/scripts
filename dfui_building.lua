@@ -1375,6 +1375,8 @@ function render_zones()
 	local in_zone_cfg = false
 
 	if current_state.type == "Selected" then
+		render.cancel_mouse_drag()
+
 		local zone_id = current_state.id
 
 		local building = df.building.find(zone_id)
@@ -1406,9 +1408,7 @@ function render_zones()
 			render.pop_menu()
 		end
 
-		if current_state.type == "Place Zone" then
-			render.check_start_mouse_drag()
-		end
+		render.check_start_mouse_drag()
 
 		local tiles = render.get_dragged_tiles()
 
