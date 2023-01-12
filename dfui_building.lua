@@ -1349,8 +1349,53 @@ function finalise_zone(building, subtype)
 end
 
 function handle_specific_zone_render(building)
-	local to_render = {}
+	if building.type == df.civzone_type.ArcheryRange then
+		local base_render = {{key="l", text="L"}, {key="r", text="R"}, {key="t", text="T"}, {key="b", text="B"}}
 
+		local highlight_index = 0
+
+		if building.zone_settings.archery.dir_x == -1 then
+			highlight_index = 0
+		end
+
+		if building.zone_settings.archery.dir_x == 1 then
+			highlight_index = 1
+		end
+
+		if building.zone_settings.archery.dir_y == -1 then
+			highlight_index = 2
+		end
+
+		if building.zone_settings.archery.dir_y == 1 then
+			highlight_index = 3
+		end
+
+		base_render[highlight_index + 1].highlight = true
+
+		local rendered = render.render_table_impl(base_render, "None")
+
+		if rendered == "L" then
+			building.zone_settings.archery.dir_x = -1
+			building.zone_settings.archery.dir_y = 0
+		end
+
+		if rendered == "R" then
+			building.zone_settings.archery.dir_x = 1
+			building.zone_settings.archery.dir_y = 0
+		end
+
+		if rendered == "T" then
+			building.zone_settings.archery.dir_x = 0
+			building.zone_settings.archery.dir_y = -1
+		end
+
+		if rendered == "B" then
+			building.zone_settings.archery.dir_x = 0
+			building.zone_settings.archery.dir_y = 1
+		end
+	end
+
+	local to_render = {}
 	to_render[#to_render+1] = {key="R", text="Delete Zone"}
 
 	local picked = render.render_table_impl(to_render, "None")
