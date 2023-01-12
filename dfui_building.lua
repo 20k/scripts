@@ -1248,9 +1248,10 @@ function render_stockpiles()
 	end
 end
 
-function trigger_zone(tl, size, dry_run)
+--building subtypes are the low level subtypes, tomb, meeting hall etc
+function trigger_zone(tl, size, dry_run, subtype)
 	local build_type = df.building_type.Civzone
-	local build_subtype = df.civzone_type.ActivityZone
+	--local build_subtype = df.civzone_type.ActivityZone
 
 	local use_extents = true
 
@@ -1260,12 +1261,12 @@ function trigger_zone(tl, size, dry_run)
 	local build_pos = {x=tl.x, y=tl.y, z=tl.z}
 
 	function setup(fields, ntiles)
-		fields.is_room = true
+		--fields.is_room = true
 	end
 
 	local build_col = COLOR_RED
 
-	if handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, true, setup) then
+	if handle_construct(build_type, subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, true, setup) then
 		build_col = COLOR_GREEN
 	end
 
@@ -1278,26 +1279,62 @@ function trigger_zone(tl, size, dry_run)
 	end
 
 	if not dry_run then
-		local bld, err = handle_construct(build_type, build_subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
+		local bld, err = handle_construct(build_type, subtype, build_pos, {x=building_w, y=building_h}, use_extents, true, false, setup)
 
 		if bld then
+			finalise_zone(bld, subtype)
+		end
+
+		--[[if bld then
 			bld.zone_flags.active = true
 			bld.gather_flags.pick_trees = true
 			bld.gather_flags.pick_shrubs = true
 			bld.gather_flags.gather_fallen = true
-		end
+		end]]--
 	end
 end
 
+function max_zone_num()
+	local max_id = 0
+
+	for _,v in ipairs(df.building.get_vector()) do
+		max_id = math.max(max_id, v.zone_num)
+	end
+
+	return max_id
+end
+
+function finalise_zone(building, subtype)
+	if not df.building_civzonest:is_instance(building) then
+		dfhack.println("WTF")
+		return
+	end
+
+	building.type = subtype
+	building.is_active = 8
+	building.anon_1 = -1
+	building.anon_2 = -1
+	building.zone_num = max_zone_num() + 1
+	building.dir_x = 0
+	building.dir_y = -1
+	building.anon_3 = -1
+
+	building.assigned_unit_id = -1
+	building.anon_4 = -1
+	building.anon_5 = -1
+	building.anon_6 = -1
+	building.anon_7 = -1
+end
+
 function handle_specific_zone_render(building)
-	local zone_db = zone.zone_db
+	local to_render = {}
+
+	--[[local zone_db = zone.zone_db
 
 	zone_db.a.label = "Active"
 
 	local render_order = {"w", "f", "g", "d", "n", "p", "s", "c", "m", "h", "t", "a"}
 	local label_to_key = {}
-
-	local to_render = {}
 
 	for _,v in ipairs(render_order) do
 		local elem = {key=v, text=zone_db[v].label}
@@ -1313,7 +1350,7 @@ function handle_specific_zone_render(building)
 		end
 
 		to_render[#to_render+1] = elem
-	end
+	end]]--
 
 	to_render[#to_render+1] = {key="R", text="Delete Zone"}
 
@@ -1325,7 +1362,8 @@ function handle_specific_zone_render(building)
 		end
 
 		dfhack.buildings.deconstruct(building)
-	elseif picked ~= "None" then
+	end
+	--[[elseif picked ~= "None" then
 		--imgui.Text("HI there")
 
 		local key = label_to_key[picked]
@@ -1335,16 +1373,22 @@ function handle_specific_zone_render(building)
 		for key,_ in pairs(flag) do
 			building.zone_flags[key] = not building.zone_flags[key]
 		end
-	end
+	end]]--
 end
 
 function render_zones()
 	local to_render = {{key="s", text="Select Zone"}, {key="z", text="Place Zone"}, {key="x", text="Remove Zones"}}
+	local zone_render = {{key="m", text="Meeting Area"}, {key="o", text="Office"}, {key="b", text="Bedroom"}, {key="r", text="Dormitory"},
+						 {key="i", text="Dining Hall"}, {key="k", text="Barracks"}, {key="n", text="Pen/Pasture"},
+						 {key="y", text="Archery Range"}, {key="p", text="Pit/Pond"}, {key="d", text="Garbage Dump"},
+					  	 {key="w", text="Water Source"}, {key="t", text="Animal Training"}, {key="u", text="Dungeon"},
+					 	 {key="T", text="Tomb"}, {key="f", text="Fishing"}, {key="g", text="Gather Fruit"},
+					  	 {key="s", text="Sand"}, {key="c", text="Clay"}}
 
 	local current_state = render.get_menu_item()
 
 	if current_state == nil then
-		current_state = {type='Select Zone', id=nil}
+		current_state = {type='Select Zone', zone_type="Meeting Area", id=nil}
 	end
 
 	if current_state.type == "Selected" then
