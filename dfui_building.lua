@@ -1312,13 +1312,33 @@ function finalise_zone(building, subtype)
 	building.anon_1 = -1
 	building.anon_2 = -1
 	building.zone_num = max_zone_num() + 1
-	--building.dir_x = 0
 
-	--[[if subtype == df.civzone_type.PlantGathering then
+	building.zone_settings.whole.i1 = 0
+	building.zone_settings.whole.i2 = 0
 
-	end]]--
+	if building.type == df.civzone_type.ArcheryRange then
+		building.zone_settings.archery.dir_x = 1
+		building.zone_settings.archery.dir_y = 0
+	end
 
-	building.dir_y = 0
+	if building.type == df.civzone_type.PlantGathering then
+		building.zone_settings.gather.pick_trees = true
+		building.zone_settings.gather.pick_shrubs = true
+		building.zone_settings.gather.gather_fallen = true
+	end
+
+	if building.type == df.civzone_type.Pen then
+		building.zone_settings.pen.unk = 1
+	end
+
+	if building.type == df.civzone_type.Tomb then
+		building.zone_settings.tomb.no_pets = true
+	end
+
+	if building.type == df.civzone_type.Pond then
+		building.zone_settings.pit_pond = df.building_civzonest.T_zone_settings.T_pit_pond.top_of_pit
+	end
+
 	building.anon_3 = -1
 
 	building.assigned_unit_id = -1

@@ -227,17 +227,6 @@ function render_viewitems()
 				end
 			end]]--
 
-			for k,d in pairs(df.squad.get_vector()) do
-				if #d.rooms > 0 then
-					--imgui.Text(d.id)
-					for r,v in pairs(d.rooms) do
-						--render.dump_flags(v.mode)
-						--imgui.Text(tostring(v.mode))
-						imgui.Text("hi " .. v.building_id)
-					end
-				end
-			end
-
 			--[[for k,d in pairs(df.global.plotinfo.main.fortress_entity.positions.own) do
 				imgui.Text(tostring(d))
 			end]]--
