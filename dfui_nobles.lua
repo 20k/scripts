@@ -337,6 +337,18 @@ function collect_commander_position_ids()
 	return result
 end
 
+function squad_id_to_assignment(squad_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
+
+	for _,v in ipairs(entity.positions.assignments) do
+		if v.squad_id == squad_id then
+			return v
+		end
+	end
+
+	return nil
+end
+
 function collect_assignment_objects_with_possible_squads()
 	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 
