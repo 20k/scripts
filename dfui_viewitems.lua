@@ -261,7 +261,7 @@ function render_viewitems()
 	if building ~= nil then
 		--jobinspector.inspect_workshop(building)
 
-		debug_stock(building)
+		--debug_stock(building)
 
 		local str = utils.getBuildingName(building)
 		imgui.Text(str)
