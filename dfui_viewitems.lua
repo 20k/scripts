@@ -164,8 +164,30 @@ function render_viewitems()
 			--imgui.Text("6 " .. tostring(v.anon_6))
 
 			imgui.Text("zone_num " .. tostring(v.zone_num))
-			imgui.Text("'dir_x " .. tostring(v.dir_x))
-			imgui.Text("'dir_y " .. tostring(v.dir_y))
+			--imgui.Text("'dir_x " .. tostring(v.zone_settings.whole.i1))
+			--imgui.Text("'dir_y " .. tostring(v.zone_settings.whole.i2))
+
+			if v.type == df.civzone_type.ArcheryRange then
+				imgui.Text("Dir_x " .. tostring(v.zone_settings.archery.dir_x))
+				imgui.Text("Dir_y " .. tostring(v.zone_settings.archery.dir_y))
+			end
+
+			if v.type == df.civzone_type.PlantGathering then
+				render.dump_flags(v.zone_settings.gather)
+			end
+
+			if v.type == df.civzone_type.Pen then
+				imgui.Text("Pen " .. tostring(v.zone_settings.pen.unk))
+			end
+
+			if v.type == df.civzone_type.Tomb then
+				render.dump_flags(v.zone_settings.tomb)
+			end
+
+			if v.type == df.civzone_type.Pond then
+				imgui.Text("Pond: " .. tostring(v.zone_settings.pit_pond))
+			end
+
 			imgui.Text("3 " .. tostring(v.anon_3))
 			imgui.Text("4 " .. tostring(#v.anon_4))
 
