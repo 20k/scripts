@@ -1151,6 +1151,43 @@ function kill_ifempty_building(building)
 	dfhack.buildings.deconstruct(building)
 end
 
+function remove_extent(building, v, is_zone)
+	if building == nil then
+		return
+	end
+
+	if building.room == nil or building.room.extents == nil then
+		return
+	end
+
+	local lx = v.x - building.room.x
+	local ly = v.y - building.room.y
+
+	if lx < 0 or ly < 0 or lx >= building.room.width or ly >= building.room.height then
+		return
+	end
+
+	local idx = lx + ly * building.room.width
+
+	if building.room.extents[idx] == df.building_extents_type.None then
+		return
+	end
+
+	building.room.extents[idx] = df.building_extents_type.None
+
+	local chunk = dfhack.maps.getTileBlock({x=v.x, y=v.y, z=v.z})
+
+	local des = chunk.designation[(v.x)&15][(v.y)&15]
+	local occ = chunk.occupancy[(v.x)&15][(v.y)&15]
+
+	if not is_zone then
+		des.pile = false
+		occ.building = df.tile_building_occ.None
+	end
+
+	kill_ifempty_building(building)
+end
+
 function render_stockpiles()
 	local to_render = {}
 	local value_to_key = {None="a", ["Remove Designation"]="x"}
@@ -1210,40 +1247,7 @@ function render_stockpiles()
 		for k, v in ipairs(tiles) do
 			local building = dfhack.buildings.findAtTile(xyz2pos(v.x, v.y, v.z))
 
-			if building == nil then
-				goto continue
-			end
-
-			if building.room == nil or building.room.extents == nil then
-				goto continue
-			end
-
-			local lx = v.x - building.room.x
-			local ly = v.y - building.room.y
-
-			if lx < 0 or ly < 0 or lx >= building.room.width or ly >= building.room.height then
-				goto continue
-			end
-
-			local idx = lx + ly * building.room.width
-
-			if building.room.extents[idx] == df.building_extents_type.None then
-				goto continue
-			end
-
-			building.room.extents[idx] = df.building_extents_type.None
-
-			local chunk = dfhack.maps.getTileBlock({x=v.x, y=v.y, z=v.z})
-
-			local des = chunk.designation[(v.x)&15][(v.y)&15]
-			local occ = chunk.occupancy[(v.x)&15][(v.y)&15]
-
-			des.pile = false
-			occ.building = df.tile_building_occ.None
-
-			kill_ifempty_building(building)
-
-			::continue::
+			remove_extent(building, v, false)
 		end
 	end
 end
@@ -1443,7 +1447,7 @@ function render_zones()
 
 	local should_trigger_mouse = render.check_trigger_mouse()
 
-	if should_trigger_mouse and current_state.type == "Place Zone" then
+	if should_trigger_mouse and current_state.type == "Place Zone" and render.mouse_which_clicked == 0  then
 		local start_pos = render.mouse_click_start
 		local end_pos = render.mouse_click_end
 
@@ -1454,5 +1458,17 @@ function render_zones()
 		local subtype = subtype_map[current_state.zone_type]
 
 		trigger_zone(start_pos, size, false, subtype)
+	end
+
+	if should_trigger_mouse and (current_state.type == "Remove Zones" or render.mouse_which_clicked == 1) then
+		for k, v in ipairs(tiles) do
+			local zones = dfhack.buildings.findCivzonesAt(xyz2pos(v.x, v.y, v.z))
+
+			if zones then
+				for _,building in ipairs(zones) do
+					remove_extent(building, v, true)
+				end
+			end
+		end
 	end
 end
