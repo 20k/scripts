@@ -125,23 +125,7 @@ function debug_stock(building)
 	end
 end
 
-function render_viewitems()
-	--imgui.EatMouseInputs()
-
-	local world_pos = render.get_mouse_world_coordinates()
-
-	local check_x = selected_building_pos.x
-	local check_y = selected_building_pos.y
-	local check_z = selected_building_pos.z
-
-	local has_item = render.get_menu_item()
-
-	if not has_item then
-		check_x = world_pos.x
-		check_y = world_pos.y
-		check_z = world_pos.z
-	end
-
+function debug_zones()
 	for _,v in ipairs(df.building.get_vector()) do
 		if df.building_civzonest:is_instance(v) then
 			imgui.Text("Civzonebuilding")
@@ -245,9 +229,25 @@ function render_viewitems()
 					imgui.Text(tostring(val.id))
 				end
 			end]]--
-
-
 		end
+	end
+end
+
+function render_viewitems()
+	--imgui.EatMouseInputs()
+
+	local world_pos = render.get_mouse_world_coordinates()
+
+	local check_x = selected_building_pos.x
+	local check_y = selected_building_pos.y
+	local check_z = selected_building_pos.z
+
+	local has_item = render.get_menu_item()
+
+	if not has_item then
+		check_x = world_pos.x
+		check_y = world_pos.y
+		check_z = world_pos.z
 	end
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
