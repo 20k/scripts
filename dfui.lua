@@ -106,7 +106,7 @@ function render_stock()
 
 		for x=tl.x,br.x do
 			for y=tl.y,br.y do
-				render.render_absolute_text("=", COLOR_GREY, COLOR_BLACK, {x=x+1, y=y+1, z=camera.z})
+				render.render_absolute_text("=", COLOR_GREY, COLOR_BLACK, {x=x, y=y, z=camera.z})
 			end
 		end
 
