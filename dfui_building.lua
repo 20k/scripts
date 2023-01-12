@@ -1251,17 +1251,18 @@ end
 --building subtypes are the low level subtypes, tomb, meeting hall etc
 function trigger_zone(tl, size, dry_run, subtype)
 	local build_type = df.building_type.Civzone
-	--local build_subtype = df.civzone_type.ActivityZone
 
 	local use_extents = true
 
-	local building_w = clamp(size.x, 1, 31)
-	local building_h = clamp(size.y, 1, 31)
+	--local building_w = clamp(size.x, 1, 31)
+	--local building_h = clamp(size.y, 1, 31)
+
+	building_w = math.max(building_w, 1)
+	building_h = math.max(building_h, 1)
 
 	local build_pos = {x=tl.x, y=tl.y, z=tl.z}
 
 	function setup(fields, ntiles)
-		--fields.is_room = true
 	end
 
 	local build_col = COLOR_RED
@@ -1284,13 +1285,6 @@ function trigger_zone(tl, size, dry_run, subtype)
 		if bld then
 			finalise_zone(bld, subtype)
 		end
-
-		--[[if bld then
-			bld.zone_flags.active = true
-			bld.gather_flags.pick_trees = true
-			bld.gather_flags.pick_shrubs = true
-			bld.gather_flags.gather_fallen = true
-		end]]--
 	end
 end
 
