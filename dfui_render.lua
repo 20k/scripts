@@ -286,6 +286,7 @@ function render_table_impl(menus, old_state)
 
 	local last_merged = false
 	local just_changed = false
+	local clicked_idx = -1
 
 	if imgui.BeginTable("Table", 2, (1 << 20)) then
 		imgui.TableNextRow();
@@ -327,6 +328,7 @@ function render_table_impl(menus, old_state)
 				--else
 					state = description
 					just_changed = true
+					clicked_idx = k
 				--end
 			end
 
@@ -350,7 +352,7 @@ function render_table_impl(menus, old_state)
 		imgui.EndTable()
 	end
 
-	return state, just_changed
+	return state, just_changed, clicked_idx
 end
 
 -- ideally should be part of network api
