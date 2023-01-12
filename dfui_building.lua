@@ -1329,29 +1329,6 @@ end
 function handle_specific_zone_render(building)
 	local to_render = {}
 
-	--[[local zone_db = zone.zone_db
-
-	zone_db.a.label = "Active"
-
-	local render_order = {"w", "f", "g", "d", "n", "p", "s", "c", "m", "h", "t", "a"}
-	local label_to_key = {}
-
-	for _,v in ipairs(render_order) do
-		local elem = {key=v, text=zone_db[v].label}
-
-		label_to_key[elem.text] = elem.key
-
-		local flag = zone_db[v].zone_flags
-
-		for key,_ in pairs(flag) do
-			if building.zone_flags[key] then
-				elem.highlight = true
-			end
-		end
-
-		to_render[#to_render+1] = elem
-	end]]--
-
 	to_render[#to_render+1] = {key="R", text="Delete Zone"}
 
 	local picked = render.render_table_impl(to_render, "None")
@@ -1363,17 +1340,6 @@ function handle_specific_zone_render(building)
 
 		dfhack.buildings.deconstruct(building)
 	end
-	--[[elseif picked ~= "None" then
-		--imgui.Text("HI there")
-
-		local key = label_to_key[picked]
-
-		local flag = zone_db[key].zone_flags
-
-		for key,_ in pairs(flag) do
-			building.zone_flags[key] = not building.zone_flags[key]
-		end
-	end]]--
 end
 
 function render_zones()
@@ -1409,6 +1375,8 @@ function render_zones()
 		current_state = {type='Select Zone', zone_type="Meeting Area", id=nil}
 	end
 
+	local in_zone_cfg = false
+
 	if current_state.type == "Selected" then
 		local zone_id = current_state.id
 
@@ -1422,51 +1390,56 @@ function render_zones()
 			imgui.Text(name)
 
 			handle_specific_zone_render(building)
+
+			in_zone_cfg = true
 		else
 			--reset ui
 			current_state.type = 'Select Zone'
+			render.set_menu_item(current_state)
 		end
 	end
 
-	current_state.type = render.render_table_impl(to_render, current_state.type)
-	current_state.zone_type = render.render_table_impl(zone_render, current_state.zone_type)
+	if not in_zone_cfg then
+		current_state.type = render.render_table_impl(to_render, current_state.type)
+		current_state.zone_type = render.render_table_impl(zone_render, current_state.zone_type)
 
-	render.set_menu_item(current_state)
+		render.set_menu_item(current_state)
 
-	if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then
-		render.pop_menu()
-	end
+		if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then
+			render.pop_menu()
+		end
 
-	if next_description ~= "None" then
-		render.check_start_mouse_drag()
-	end
+		if next_description ~= "None" then
+			render.check_start_mouse_drag()
+		end
 
-	local tiles = render.get_dragged_tiles()
+		local tiles = render.get_dragged_tiles()
 
-	render.check_end_mouse_drag()
+		render.check_end_mouse_drag()
 
-	local should_trigger_mouse = render.check_trigger_mouse()
+		local should_trigger_mouse = render.check_trigger_mouse()
 
-	if should_trigger_mouse and current_state.type == "Place Zone" and render.mouse_which_clicked == 0  then
-		local start_pos = render.mouse_click_start
-		local end_pos = render.mouse_click_end
+		if should_trigger_mouse and current_state.type == "Place Zone" and render.mouse_which_clicked == 0  then
+			local start_pos = render.mouse_click_start
+			local end_pos = render.mouse_click_end
 
-		start_pos, end_pos = min3(start_pos, end_pos)
+			start_pos, end_pos = min3(start_pos, end_pos)
 
-		local size = {x=end_pos.x - start_pos.x + 1, y=end_pos.y-start_pos.y + 1}
+			local size = {x=end_pos.x - start_pos.x + 1, y=end_pos.y-start_pos.y + 1}
 
-		local subtype = subtype_map[current_state.zone_type]
+			local subtype = subtype_map[current_state.zone_type]
 
-		trigger_zone(start_pos, size, false, subtype)
-	end
+			trigger_zone(start_pos, size, false, subtype)
+		end
 
-	if should_trigger_mouse and (current_state.type == "Remove Zones" or render.mouse_which_clicked == 1) then
-		for k, v in ipairs(tiles) do
-			local zones = dfhack.buildings.findCivzonesAt(xyz2pos(v.x, v.y, v.z))
+		if should_trigger_mouse and (current_state.type == "Remove Zones" or render.mouse_which_clicked == 1) then
+			for k, v in ipairs(tiles) do
+				local zones = dfhack.buildings.findCivzonesAt(xyz2pos(v.x, v.y, v.z))
 
-			if zones then
-				for _,building in ipairs(zones) do
-					remove_extent(building, v, true)
+				if zones then
+					for _,building in ipairs(zones) do
+						remove_extent(building, v, true)
+					end
 				end
 			end
 		end
