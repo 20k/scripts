@@ -1312,8 +1312,13 @@ function finalise_zone(building, subtype)
 	building.anon_1 = -1
 	building.anon_2 = -1
 	building.zone_num = max_zone_num() + 1
-	building.dir_x = 0
-	building.dir_y = -1
+	--building.dir_x = 0
+
+	--[[if subtype == df.civzone_type.PlantGathering then
+
+	end]]--
+
+	building.dir_y = 0
 	building.anon_3 = -1
 
 	building.assigned_unit_id = -1
