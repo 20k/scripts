@@ -381,7 +381,7 @@ function handle_building_mouseover()
 			local str = building_name(civzone)
 
 			imgui.BeginTooltip()
-			imgui.Text(str)
+			imgui.Text(str .. " " .. tostring(civzone:getSubtype()))
 			imgui.EndTooltip()
 		end
 	end
