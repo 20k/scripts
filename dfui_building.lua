@@ -1395,6 +1395,36 @@ function handle_specific_zone_render(building)
 		end
 	end
 
+	if building.type == df.civzone_type.PlantGathering then
+		local base_render = {{key="1", text="Gather Fruit From Trees"}, {key="2", text="Gather Plants From Shrubs"}, {key="3", text="Gather Fallen Fruit"}}
+
+		if building.zone_settings.gather.pick_trees then
+			base_render[1].highlight = true
+		end
+
+		if building.zone_settings.gather.pick_shrubs then
+			base_render[2].highlight = true
+		end
+
+		if building.zone_settings.gather.gather_fallen then
+			base_render[3].highlight = true
+		end
+
+		local text, clicked, which_clicked = render.render_table_impl(base_render, "None")
+
+		if which_clicked == 1 then
+			building.zone_settings.gather.pick_trees = not building.zone_settings.gather.pick_trees
+		end
+
+		if which_clicked == 2 then
+			building.zone_settings.gather.pick_shrubs = not building.zone_settings.gather.pick_shrubs
+		end
+
+		if which_clicked == 3 then
+			building.zone_settings.gather.gather_fallen = not building.zone_settings.gather.gather_fallen
+		end
+	end
+
 	local to_render = {}
 	to_render[#to_render+1] = {key="R", text="Delete Zone"}
 
