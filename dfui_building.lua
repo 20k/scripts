@@ -1258,11 +1258,8 @@ function trigger_zone(tl, size, dry_run, subtype)
 
 	local use_extents = true
 
-	--local building_w = clamp(size.x, 1, 31)
-	--local building_h = clamp(size.y, 1, 31)
-
-	building_w = math.max(building_w, 1)
-	building_h = math.max(building_h, 1)
+	building_w = math.max(size.x, 1)
+	building_h = math.max(size.y, 1)
 
 	local build_pos = {x=tl.x, y=tl.y, z=tl.z}
 
@@ -1409,7 +1406,7 @@ function render_zones()
 			render.pop_menu()
 		end
 
-		if next_description ~= "None" then
+		if current_state.type == "Place Zone" then
 			render.check_start_mouse_drag()
 		end
 
