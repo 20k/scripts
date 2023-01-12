@@ -106,7 +106,14 @@ function render_stock()
 
 		for x=tl.x,br.x do
 			for y=tl.y,br.y do
-				render.render_absolute_text("=", COLOR_GREY, COLOR_BLACK, {x=x, y=y, z=camera.z})
+				local lx = x - tl.x
+				local ly = y - tl.y
+
+				local extent = zone.room.extents[lx + ly * zone.room.width]
+
+				if extent > 0 then
+					render.render_absolute_text("=", COLOR_GREY, COLOR_BLACK, {x=x, y=y, z=camera.z})
+				end
 			end
 		end
 
