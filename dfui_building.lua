@@ -1447,6 +1447,28 @@ function handle_specific_zone_render(building)
 		end
 	end
 
+	if building.type == df.civzone_type.Pond then
+		local base_render = {{key="1", text="Top of Pit"}, {key="2", text="Top of Pond"}}
+
+		if building.zone_settings.pit_pond == df.building_civzonest.T_zone_settings.T_pit_pond.top_of_pit then
+			base_render[1].highlight = true
+		end
+
+		if building.zone_settings.pit_pond == df.building_civzonest.T_zone_settings.T_pit_pond.top_of_pond then
+			base_render[2].highlight = true
+		end
+
+		local text, clicked, which_clicked = render.render_table_impl(base_render, "None")
+
+		if which_clicked == 1 then
+			building.zone_settings.pit_pond = df.building_civzonest.T_zone_settings.T_pit_pond.top_of_pit
+		end
+
+		if which_clicked == 2 then
+			building.zone_settings.pit_pond = df.building_civzonest.T_zone_settings.T_pit_pond.top_of_pond
+		end
+	end
+
 	local to_render = {}
 	to_render[#to_render+1] = {key="R", text="Delete Zone"}
 
