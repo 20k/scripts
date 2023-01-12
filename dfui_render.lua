@@ -360,6 +360,10 @@ function render_absolute_text(str, fg, bg, pos)
 	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, str, pos)
 end
 
+function cancel_mouse_drag()
+	mouse_has_drag = false
+end
+
 function check_start_mouse_drag()
 	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
 
