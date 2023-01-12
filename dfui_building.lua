@@ -1425,6 +1425,28 @@ function handle_specific_zone_render(building)
 		end
 	end
 
+	if building.type == df.civzone_type.Tomb then
+		local base_render = {{key="1", text="No Pets"}, {key="2", text="No Citizens"}}
+
+		if building.zone_settings.tomb.no_pets then
+			base_render[1].highlight = true
+		end
+
+		if building.zone_settings.tomb.no_citizens then
+			base_render[2].highlight = true
+		end
+
+		local text, clicked, which_clicked = render.render_table_impl(base_render, "None")
+
+		if which_clicked == 1 then
+			building.zone_settings.tomb.no_pets = not building.zone_settings.tomb.no_pets
+		end
+
+		if which_clicked == 2 then
+			building.zone_settings.tomb.no_citizens = not building.zone_settings.tomb.no_citizens
+		end
+	end
+
 	local to_render = {}
 	to_render[#to_render+1] = {key="R", text="Delete Zone"}
 
