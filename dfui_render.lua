@@ -113,6 +113,11 @@ end
 
 function pop_submenu()
 	local current = menu_substate[#menu_state]
+
+	if #current == 0 then
+		return
+	end
+
 	table.remove(current, #current)
 	reset_pop()
 end
@@ -125,6 +130,14 @@ function get_submenu()
 	end
 
 	return current[#current]
+end
+
+function get_all_submenus()
+	return menu_substate[#menu_state]
+end
+
+function pop_all_submenus()
+	menu_substate[#menu_state] = {}
 end
 
 function can_pop()
