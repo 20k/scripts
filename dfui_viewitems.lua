@@ -360,7 +360,7 @@ function handle_building_mouseover()
 			end
 
 			render.pop_all_submenus()
-			render.push_submenu(true)
+			render.push_transparent_submenu(true)
 		end
 
 		local str = building_name(building)
