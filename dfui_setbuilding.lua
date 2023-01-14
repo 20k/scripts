@@ -440,6 +440,7 @@ end
 
 function render_setbuilding()
 	render.set_can_window_pop(true)
+	render.menu_popping_pops_everything = true
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 
 	local state = {screen="base"}
@@ -504,6 +505,8 @@ function render_setbuilding()
 	end
 
 	if #submenu_stack >= 2 and submenu_stack[2] == "Add new task" and jobs ~= nil then
+		render.menu_popping_pops_everything = false
+
 		local real_jobs, categories = jobs_by_menu(jobs, subscreen)
 
 		for k,v in pairs(categories) do
