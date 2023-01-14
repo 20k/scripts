@@ -82,8 +82,6 @@ function render_designations()
 
 	local should_trigger_mouse = render.check_trigger_mouse()
 
-	local dirty_block = false
-
 	--todo: one pass job and tree searching
 	if should_trigger_mouse then
 		for k, v in ipairs(tiles) do
