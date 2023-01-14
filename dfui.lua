@@ -178,55 +178,33 @@ function MyScreen:render()
 
 	if state == "main" then
 		render_menu()
-	end
-
-	if state == "View Items In Buildings" then
+	elseif state == "View Items In Buildings" then
 		viewitems.render_viewitems()
-	end
-
-	if state == "View Announcements" then
+	elseif state == "View Announcements" then
 		announcements.render_announcements()
-	end
-
-	if state == "Building" then
+	elseif state == "Building" then
 		building.render_buildings()
-	end
-
-	if state == "Reports" then
+	elseif state == "Reports" then
 		announcements.render_reports()
-	end
-
-	if state == "make_building" then
+	elseif state == "make_building" then
 		building.render_make_building()
-	end
-
-	if state == "Designations" then
+	elseif state == "Designations" then
 		designations.render_designations()
-	end
-
-	if state == "Stockpiles" then
+	elseif state == "Stockpiles" then
 		building.render_stockpiles()
-	end
-
-	if state == "Zones" then
+	elseif state == "Zones" then
 		render_stock()
 		building.render_zones()
-	end
-
-	if state == "Nobles and Administrators" then
+	elseif state == "Nobles and Administrators" then
 		nobles.render_titles()
-	end
-
-	if state == "Set Building Tasks/Prefs" then
+	elseif state == "Set Building Tasks/Prefs" then
 		setbuilding.render_setbuilding()
-	end
-
-	if state == "Military" then
+	elseif state == "Military" then
 		military.render_military()
-	end
-
-	if state == "Squads" then
+	elseif state == "Squads" then
 		military.render_squads()
+	else
+		render.pop_menu()
 	end
 
 	viewitems.handle_building_mouseover()
