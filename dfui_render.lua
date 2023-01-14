@@ -436,9 +436,9 @@ end
 
 -- ideally should be part of network api
 function render_absolute_text(str, fg, bg, pos)
-	local draw_list = imgui.GetForegroundDrawList()
+	local off = get_camera()
 
-	imgui.AddTextBackgroundColoredAbsolute(draw_list, {fg=fg, bg=bg}, str, pos)
+	dfhack.screen.paintTile({fg=fg, bg=bg, ch=str}, pos.x - off.x, pos.y - off.y, nil, nil, true)
 end
 
 function cancel_mouse_drag()
