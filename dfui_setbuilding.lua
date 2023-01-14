@@ -45,6 +45,11 @@ function add_job(building, job)
 			goto skip
 		end
 
+		if v == nil then
+			dfhack.println("Bad job", k)
+			return false
+		end
+
 		out_job[k] = v
 
 		::skip::
