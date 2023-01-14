@@ -3,10 +3,6 @@
 imgui = dfhack.imgui
 render = reqscript('dfui_render')
 
-function onLoad() -- global variables are exported
-    -- do initialization here
-end
-
 function brighten(col, should_bright)
 	if not should_bright then
 		return col
@@ -119,8 +115,8 @@ function render_announcements()
 		render_report(report)
 	end
 
-	if imgui.Button("Back") or ((imgui.IsWindowFocused(0) or imgui.IsWindowHovered(0)) and imgui.IsMouseClicked(1)) then
-		render.pop_menu()
+	if imgui.Button("Back") then
+		render.pop_incremental()
 	end
 
 	if df_time ~= -1 then
@@ -229,15 +225,16 @@ end
 
 --todo: recency
 function render_reports()
+	render.set_can_window_pop(true)
 	local reportable = get_reportable_units()
 
-	if render.get_menu_item() then
-		local menu = render.get_menu_item()
+	if render.get_submenu() then
+		local menu = render.get_submenu()
 
 		local unit = df.unit.find(menu.id)
 
 		if unit == nil then
-			render.set_menu_item(nil)
+			render.pop_submenu()
 			return
 		end
 
@@ -260,18 +257,10 @@ function render_reports()
 					local to_display = display_name .. " " .. dfhack.df2utf(report_str)
 
 					if imgui.ButtonColored({fg=report_col}, to_display .. "##" .. tostring(unit.id)) then
-						render.set_menu_item({id=unit.id, type=i})
+						render.push_submenu({id=unit.id, type=i})
 					end
 				end
 			end
-		end
-	end
-
-	if imgui.IsMouseClicked(1) and imgui.WantCaptureMouse() then
-		if render.get_menu_item() ~= nil then
-			render.set_menu_item(nil)
-		else
-			render.pop_menu()
 		end
 	end
 end
