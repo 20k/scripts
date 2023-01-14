@@ -99,7 +99,7 @@ function get_carpenter_workshop()
     return {
         defaults={item_type=df.item_type.WOOD,vector_id=df.job_item_vector_id.WOOD},
         --make_carpentry("Make wooden shield", df.job_type.)
-        make_carpentry("Make wooden barrel", df.job_type.Makebarrel),
+        make_carpentry("Make wooden barrel", df.job_type.MakeBarrel),
         make_carpentry("Construct wooden blocks", df.job_type.ConstructBlocks),
         make_carpentry("Make wooden Bucket", df.job_type.MakeBucket),
         make_carpentry("Make wooden Animal Trap", df.job_type.MakeAnimalTrap),
