@@ -1037,8 +1037,7 @@ function setup_stockpile_type(sett, type)
 	end
 end
 
-function trigger_stockpile(tl, size, dry_run)
-	local stockpile_type = render.get_menu_item()
+function trigger_stockpile(tl, size, dry_run, stockpile_type)
 	local quickfort_building = get_stockpile_db()[stockpile_type]
 
 	local build_type = df.building_type.Stockpile
@@ -1189,6 +1188,9 @@ function remove_extent(building, v, is_zone)
 end
 
 function render_stockpiles()
+	render.set_can_window_pop(true)
+	render.menu_popping_pops_everything = true
+
 	local to_render = {}
 	local value_to_key = {None="a", ["Remove Designation"]="x"}
 	local key_to_value = {x="Remove Designation"}
@@ -1216,9 +1218,9 @@ function render_stockpiles()
 
 	local next_description = render.render_table_impl(to_render, key_to_value[current_state])
 
-	render.set_menu_item(value_to_key[next_description])
+	local stockpile_type = value_to_key[next_description]
 
-	if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then
+	if imgui.Button("Back") then
 		render.pop_menu()
 	end
 
@@ -1240,7 +1242,7 @@ function render_stockpiles()
 
 		local size = {x=end_pos.x - start_pos.x + 1, y=end_pos.y-start_pos.y + 1}
 
-		trigger_stockpile(start_pos, size, false)
+		trigger_stockpile(start_pos, size, false, stockpile_type)
 	end
 
 	if should_trigger_mouse and (next_description == "Remove Designation" or render.mouse_which_clicked == 1) then
@@ -1510,10 +1512,11 @@ function render_zones()
 		["Clay"]=df.civzone_type.ClayCollection
 	}
 
-	local current_state = render.get_menu_item()
+	local current_state = render.get_submenu()
 
 	if current_state == nil then
 		current_state = {type='Select Zone', zone_type="Meeting Area", id=nil}
+		render.push_transparent_submenu(current_state)
 	end
 
 	local in_zone_cfg = false
@@ -1537,8 +1540,7 @@ function render_zones()
 			in_zone_cfg = true
 		else
 			--reset ui
-			current_state.type = 'Select Zone'
-			render.set_menu_item(current_state)
+			render.pop_all_submenus()
 		end
 	end
 
@@ -1546,9 +1548,10 @@ function render_zones()
 		current_state.type = render.render_table_impl(to_render, current_state.type)
 		current_state.zone_type = render.render_table_impl(zone_render, current_state.zone_type)
 
-		render.set_menu_item(current_state)
+		render.pop_all_submenus()
+		render.push_transparent_submenu(current_state)
 
-		if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then
+		if imgui.Button("Back") then
 			render.pop_menu()
 		end
 
@@ -1585,4 +1588,7 @@ function render_zones()
 			end
 		end
 	end
+
+	render.set_can_window_pop(true)
+	render.set_can_mouse_pop(true)
 end

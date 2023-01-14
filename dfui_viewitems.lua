@@ -234,7 +234,7 @@ function debug_zones()
 end
 
 function render_viewitems()
-	--imgui.EatMouseInputs()
+	render.set_can_window_pop(true)
 
 	local world_pos = render.get_mouse_world_coordinates()
 
@@ -242,7 +242,7 @@ function render_viewitems()
 	local check_y = selected_building_pos.y
 	local check_z = selected_building_pos.z
 
-	local has_item = render.get_menu_item()
+	local has_item = render.get_submenu()
 
 	if not has_item then
 		check_x = world_pos.x
@@ -252,7 +252,7 @@ function render_viewitems()
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 
-	imgui.Text("Hovered: " .. tostring(building))
+	--imgui.Text("Hovered: " .. tostring(building))
 
 	function item_sort(a, b)
 		return b2n(a.flags.in_building) > b2n(b.flags.in_building)
@@ -327,10 +327,10 @@ function render_viewitems()
 			end
 		end
 	else
-		render.set_menu_item(false)
+		render.pop_submenu()
 	end
 
-	if imgui.Button("Back") or imgui.IsMouseClicked(1) then
+	if imgui.Button("Back") then
 		render.pop_menu()
 	end
 end
@@ -359,7 +359,8 @@ function handle_building_mouseover()
 				render.push_menu(target_menu)
 			end
 
-			render.set_menu_item(true)
+			render.pop_all_submenus()
+			render.push_submenu(true)
 		end
 
 		local str = building_name(building)
@@ -376,17 +377,18 @@ function handle_building_mouseover()
 
 		for _,civzone in ipairs(civzones) do
 			if (current_menu == "main" or current_menu == "Zones") and imgui.IsMouseClicked(0) then
-				selected_building_pos.x = mouse_world_pos.x
-				selected_building_pos.y = mouse_world_pos.y
-				selected_building_pos.z = mouse_world_pos.z
-
 				if render.get_menu() ~= "Zones" then
 					render.push_menu("Zones")
 				end
 
-				local data = {type="Selected", id=civzone.id}
+				local current = render.get_submenu()
 
-				render.set_menu_item(data)
+				if current == nil or (current and current.type == "Selected" or current.type == "Select Zone") then
+					local data = {type="Selected", id=civzone.id}
+
+					render.pop_all_submenus()
+					render.push_submenu(data)
+				end
 			end
 
 			local str = building_name(civzone)
