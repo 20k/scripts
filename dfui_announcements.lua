@@ -147,22 +147,7 @@ function valid_unit(unit)
 end
 
 function lookup_report(id)
-	local announce = df.global.world.status.announcements
-	local report = df.global.world.status.reports
-
-	for _,v in ipairs(announce) do
-		if v.id == id then
-			return v
-		end
-	end
-
-	for _,v in ipairs(report) do
-		if v.id == id then
-			return v
-		end
-	end
-
-	return nil
+	return df.report.find(id)
 end
 
 function get_reportable_units()
