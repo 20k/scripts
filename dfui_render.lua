@@ -8,6 +8,7 @@ menu_can_global_pop = false
 menu_item = nil
 menu_changed = true
 mouse_rclick_poppable = false
+menu_popping_pops_everything = false
 
 mouse_click_start = {x=-1, y=-1, z=-1}
 mouse_click_end = {x=-1, y=-1, z=-1}
@@ -62,6 +63,7 @@ local function reset_pop()
 	menu_can_window_pop = false
 	menu_can_global_pop = false
 	mouse_rclick_poppable = false
+	menu_popping_pops_everything = false
 end
 
 function push_menu(st)

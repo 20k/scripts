@@ -150,14 +150,19 @@ function MyScreen:render()
 
 	local can_pop = render.can_pop()
 
-	if imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() and render.can_pop() then
-		render.pop_incremental()
+	local should_pop = imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() and render.can_pop()
+
+	should_pop = should_pop or imgui.IsMouseClicked(1) and render.can_pop() and render.mouse_rclick_poppable
+
+	if should_pop then
+		if render.menu_popping_pops_everything then
+			render.pop_menu()
+		else
+			render.pop_incremental()
+		end
 	end
 
-	if imgui.IsMouseClicked(1) and render.can_pop() and render.mouse_rclick_poppable then
-		render.pop_incremental()
-	end
-
+	render.menu_popping_pops_everything = false
 	render.set_can_mouse_pop(true)
 
 	local text_style = imgui.StyleIndex("Text")
