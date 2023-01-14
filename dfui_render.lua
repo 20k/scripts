@@ -107,7 +107,7 @@ end
 function push_submenu(st)
 	local current = menu_substate[#menu_state]
 	current[#current + 1] = st
-	menu_was_changed = true
+	menu_changed = true
 	reset_pop()
 end
 

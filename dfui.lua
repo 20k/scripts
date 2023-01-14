@@ -148,6 +148,8 @@ function MyScreen:render()
 		render.pop_menu()
 	end]]--
 
+	local can_pop = render.can_pop()
+
 	if imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() and render.can_pop() then
 		render.pop_incremental()
 	end
@@ -164,6 +166,8 @@ function MyScreen:render()
 
 	--I really need to sort out the constants
 	imgui.Begin("Main", 0, 1)
+
+	--imgui.Text(tostring(render.menu_can_window_pop))
 
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 
