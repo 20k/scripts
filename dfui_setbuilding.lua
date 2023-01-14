@@ -499,16 +499,6 @@ function render_setbuilding()
 	end
 
 	if #submenu_stack >= 2 and submenu_stack[2] == "Add new task" and jobs ~= nil then
-		--[[for _,v in pairs(jobs) do
-			dfhack.println(v.menu)
-
-			if v.menu ~= nil then
-				for _,k in pairs(v.menu) do
-					dfhack.println(k)
-				end
-			end
-		end]]--
-
 		local real_jobs, categories = jobs_by_menu(jobs, subscreen)
 
 		for k,v in pairs(categories) do
@@ -524,11 +514,13 @@ function render_setbuilding()
 		end
 
 		if display_jobs(building, real_jobs) then
+			local root = render.get_all_submenus()[1]
 			render.pop_all_submenus()
+			render.push_submenu(root)
 		end
 
 		if #subscreen == 0 and imgui.Button("back##subback2") then
-			render.pop_all_submenus()
+			render.pop_submenu()
 		end
 	end
 
