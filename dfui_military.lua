@@ -831,11 +831,11 @@ function render_military()
 			imgui.EndTabItem()
 		end
 
-		if imgui.BeginTabItem("Alerts") then
+		--[[if imgui.BeginTabItem("Alerts") then
 			render_alerts()
 
 			imgui.EndTabItem()
-		end
+		end]]--
 
 		if imgui.BeginTabItem("Uniforms") then
 			render_assign_uniforms()
