@@ -138,6 +138,10 @@ function menu_eq(a, b)
 		return true
 	end
 
+	if #a > 0 and b == nil then
+		return false
+	end
+
 	if #a ~= #b then
 		return false
 	end
@@ -357,6 +361,7 @@ function get_plant_in_season(season, building)
 end
 
 function render_farm(building)
+	render.set_can_window_pop(true)
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 
 	local season_plants = {}
@@ -422,27 +427,21 @@ function render_farm(building)
 		imgui.EndTable()
 	end
 
-	if imgui.IsMouseClicked(1) and render.get_menu_item().screen == "base" then
-		render.pop_menu()
-	end
-
 	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
-		render.set_menu_item({screen="base", pos=mouse_world_pos})
-	end
-
-	if imgui.IsMouseClicked(1) and imgui.WantCaptureMouse() then
-		render.set_menu_item(nil)
+		render.pop_all_submenus()
+		render.push_submenu({screen="base", pos=mouse_world_pos})
 	end
 end
 
 function render_setbuilding()
+	render.set_can_window_pop(true)
 	local mouse_world_pos = render.get_mouse_world_coordinates()
 
 	local state = {screen="base"}
 	local selected_building = nil
 
-	if render.get_menu_item() ~= nil then
-		state = render.get_menu_item()
+	if #render.get_all_submenus() > 0 then
+		state = render.get_all_submenus()[1]
 		selected_building = state.pos
 	end
 
@@ -451,15 +450,14 @@ function render_setbuilding()
 	end
 
 	if selected_building == nil then
-		render.set_menu_item(nil)
+		render.pop_submenu()
 		return
 	end
 
-	local next_state = utils.clone(state, true)
 	local building = dfhack.buildings.findAtTile(selected_building)
 
 	if building == nil then
-		render.set_menu_item(nil)
+		render.pop_submenu()
 		return
 	end
 
@@ -489,42 +487,54 @@ function render_setbuilding()
 		jobs = get_jobs(df.building_type.Furnace, building.type, -1, true)
 	end
 
-	if state.screen == "Add new task" and jobs ~= nil then
-		if state.subscreen == nil then
-			state.subscreen = {}
-			next_state.subscreen = {}
-		end
+	local submenu_stack = render.get_all_submenus()
 
-		local real_jobs, categories = jobs_by_menu(jobs, state.subscreen)
+	local subscreen = {}
+
+	--take slice of [3..end]
+	if #submenu_stack > 2 then
+		for i=3,#submenu_stack do
+			subscreen[#subscreen + 1] = submenu_stack[i]
+		end
+	end
+
+	if #submenu_stack >= 2 and submenu_stack[2] == "Add new task" and jobs ~= nil then
+		--[[for _,v in pairs(jobs) do
+			dfhack.println(v.menu)
+
+			if v.menu ~= nil then
+				for _,k in pairs(v.menu) do
+					dfhack.println(k)
+				end
+			end
+		end]]--
+
+		local real_jobs, categories = jobs_by_menu(jobs, subscreen)
 
 		for k,v in pairs(categories) do
 			if k ~= "" and imgui.Button(k .. "##setbuilding_" .. building.id) then
-				table.insert(next_state.subscreen, k)
+				render.push_submenu(k)
 			end
 		end
 
-		if #state.subscreen > 0 then
-			if imgui.Button("back##subback") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse()) then
-				table.remove(next_state.subscreen, #next_state.subscreen)
-				go_back = true
+		if #subscreen > 0 then
+			if imgui.Button("back##subback") then
+				render.pop_submenu()
 			end
 		end
 
 		if display_jobs(building, real_jobs) then
-			next_state.screen = "base"
-			next_state.subscreen = {}
-			go_back = true
+			render.pop_all_submenus()
 		end
 
-		if #state.subscreen == 0 and (imgui.Button("back##subback2") or (imgui.IsMouseClicked(1) and imgui.WantCaptureMouse())) and not go_back then
-			next_state.screen = "base"
-			next_state.subscreen = {}
-
-			go_back = true
+		if #subscreen == 0 and imgui.Button("back##subback2") then
+			render.pop_all_submenus()
 		end
 	end
 
-	if state.screen == "base" and jobs ~= nil then
+	local screen = state.screen
+
+	if screen == "base" and jobs ~= nil then
 		display_existing_jobs(building)
 
 		imgui.NewLine()
@@ -534,21 +544,13 @@ function render_setbuilding()
 		local next = render.render_table_impl(strings, "none")
 
 		if next == "Add new task" then
-			next_state = {screen=next, pos=selected_building}
+			--render.pop_all_submenus()
+			render.push_submenu(next)
 		end
 	end
 
-	render.set_menu_item(next_state)
-
-	if imgui.IsMouseClicked(1) and state.screen == "base" then
-		render.pop_menu()
-	end
-
 	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
-		render.set_menu_item({screen="base", pos=mouse_world_pos})
-	end
-
-	if imgui.IsMouseClicked(1) and imgui.WantCaptureMouse() and not go_back then
-		render.set_menu_item(nil)
+		render.pop_all_submenus()
+		render.push_submenu({screen="base", pos=mouse_world_pos})
 	end
 end
