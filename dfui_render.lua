@@ -89,8 +89,10 @@ function pop_incremental()
 
 	if #current ~= 0 then
 		pop_submenu()
+		return false
 	else
 		pop_menu()
+		return true
 	end
 end
 
@@ -108,7 +110,14 @@ end
 
 function push_submenu(st)
 	local current = menu_substate[#menu_state]
-	current[#current + 1] = st
+	current[#current + 1] = {data=st, transparent=false}
+	menu_changed = true
+	reset_pop()
+end
+
+function push_transparent_submenu(st)
+	local current = menu_substate[#menu_state]
+	current[#current + 1] = {data=st, transparent=true}
 	menu_changed = true
 	reset_pop()
 end
@@ -131,11 +140,17 @@ function get_submenu()
 		return nil
 	end
 
-	return current[#current]
+	return current[#current].data
 end
 
 function get_all_submenus()
-	return menu_substate[#menu_state]
+	local result = {}
+
+	for _,v in ipairs(menu_substate[#menu_state]) do
+		result[#result + 1] = v.data
+	end
+
+	return result
 end
 
 function pop_all_submenus()

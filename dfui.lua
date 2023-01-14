@@ -159,7 +159,22 @@ function MyScreen:render()
 		if render.menu_popping_pops_everything then
 			render.pop_menu()
 		else
-			render.pop_incremental()
+			local popping = true
+
+			while(popping) do
+				local current = render.menu_substate[#render.menu_state]
+
+				local num_submenus = #current
+
+				if num_submenus > 0 then
+					popping = current[#current].transparent
+
+					render.pop_incremental()
+				else
+					popping = false
+					render.pop_incremental()
+				end
+			end
 		end
 	end
 
