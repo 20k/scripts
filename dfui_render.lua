@@ -3,6 +3,7 @@
 imgui = dfhack.imgui
 menu_state = {"main"}
 menu_substate = {}
+menu_can_pop = false
 menu_item = nil
 menu_changed = true
 
@@ -102,6 +103,14 @@ function get_submenu()
 	end
 
 	return current[#current]
+end
+
+function can_pop()
+	return menu_can_pop
+end
+
+function set_can_pop(p)
+	menu_can_pop = true
 end
 
 function set_menu_item(i)
