@@ -8,10 +8,6 @@ selected_designation = "None"
 selected_designation_filter = "walls"
 selected_designation_marker = false
 
-function onLoad()
-
-end
-
 function remove_jobs_for_tile(x, y, z, filter)
 	local link = df.global.world.jobs.list.next
 
@@ -70,8 +66,10 @@ function render_designations()
 
 	selected_designation = render.render_table_impl(menus, selected_designation)
 
-	if imgui.Button("Back") or (imgui.IsWindowHovered(0) and imgui.IsMouseClicked(1)) then
-		render.pop_menu()
+	render.set_can_window_pop(true)
+
+	if imgui.Button("Back") then
+		render.pop_incremental()
 	end
 
 	if selected_designation ~= "None" then
