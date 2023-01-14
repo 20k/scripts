@@ -15,6 +15,8 @@ last_hovered_announce_id = -1
 one_step = false
 
 function render_menu()
+	render.set_can_pop(true)
+
 	local menus = {{key="097", text="View Announcements"},
 				   {key="098", text="Building"},
 				   {key="114", text="Reports"},
@@ -141,8 +143,12 @@ function MyScreen:render()
 		--self:dismiss()
 	end]]--
 
-	if imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() then
+	--[[if imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() then
 		render.pop_menu()
+	end]]--
+
+	if imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() and render.can_pop() then
+		render.pop_incremental()
 	end
 
 	local text_style = imgui.StyleIndex("Text")

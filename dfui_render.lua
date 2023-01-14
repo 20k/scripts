@@ -2,7 +2,7 @@
 
 imgui = dfhack.imgui
 menu_state = {"main"}
-menu_substate = {}
+menu_substate = {{}}
 menu_can_pop = false
 menu_item = nil
 menu_changed = true
@@ -52,7 +52,7 @@ end
 
 function reset_menu_to(st)
 	menu_state = {st}
-	menu_substate = {}
+	menu_substate = {{}}
 	menu_changed = true
 end
 
@@ -64,12 +64,22 @@ function push_menu(st)
 	menu_changed = true
 end
 
-function pop_menu(st)
+function pop_menu()
 	mouse_has_drag = false
 	table.remove(menu_state, #menu_state)
 	table.remove(menu_substate, #menu_substate)
 	menu_item = nil
 	menu_changed = true
+end
+
+function pop_incremental()
+	local current = menu_substate[#menu_state]
+
+	if #current ~= 0 then
+		pop_submenu()
+	else
+		pop_menu()
+	end
 end
 
 function get_menu(which)
@@ -85,18 +95,18 @@ function get_menu(which)
 end
 
 function push_submenu(st)
-	local current = submenu_state[#menu_state]
+	local current = menu_substate[#menu_state]
 	current[#current + 1] = st
 	menu_was_changed = true
 end
 
 function pop_submenu()
-	local current = submenu_state[#menu_state]
+	local current = menu_substate[#menu_state]
 	table.remove(current, #current)
 end
 
 function get_submenu()
-	local current = submenu_state[#menu_state]
+	local current = menu_substate[#menu_state]
 
 	if #current == 0 then
 		return nil
