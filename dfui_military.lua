@@ -1006,6 +1006,27 @@ function render_squads()
 		imgui.EndTooltip()
 	end
 
+	--[[for o,squad_id in ipairs(sorted_squads) do
+		local squad = df.squad.find(squad_id)
+		imgui.Text("Orders " .. tostring(#squad.orders))
+
+		for i,v in ipairs(squad.orders) do
+			--if df.squad_order_movest:is_instance(v) then
+			--	imgui.Text("Move order to .. " .. tostring(v.pos.x) .. " " .. tostring(v.pos.y) .. " " .. tostring(v.pos.z) .. " id " .. tostring(v.point_id))
+			--end
+
+			if df.squad_order_kill_listst:is_instance(v) then
+				for _,d in ipairs(v.units) do
+					imgui.Text(tostring(d))
+				end
+
+				for _,d in ipairs(v.histfigs) do
+					imgui.Text(tostring(d))
+				end
+			end
+		end
+	end]]--
+
 	if current_menu_item_type == "Attack" then
 		local valid_units = get_hostile_units()
 
