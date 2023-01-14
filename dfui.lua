@@ -107,6 +107,7 @@ function render_stock()
 
 		local br = {x=tl.x + size.x - 1, y=tl.y + size.y - 1}
 
+		--todo culling
 		for x=tl.x,br.x do
 			for y=tl.y,br.y do
 				local lx = x - tl.x
