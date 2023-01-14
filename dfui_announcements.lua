@@ -101,6 +101,8 @@ function render_report(report)
 end
 
 function render_announcements()
+	render.set_can_window_pop(true)
+
 	local reports = df.global.world.status.announcements
 	local count = #reports
 
