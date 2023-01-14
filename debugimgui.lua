@@ -13,7 +13,15 @@ test_button = false
 function MyScreen:render()
 	self:renderParent()
 
-	if(imgui.IsKeyPressed(6)) then
+	if self._native and self._native.parent then
+        self._native.parent:render()
+    else
+        dfhack.screen.clear()
+    end
+
+	df.global.gps.force_full_display_count = 1
+
+	if (imgui.IsKeyPressed("LEAVESCREEN")) then
 		self:dismiss()
 	end
 
@@ -27,8 +35,10 @@ function MyScreen:render()
 	imgui.Text("Button State: " .. tostring(state))
 	imgui.End()]]--
 
+	imgui.SetNextWindowPos({x=30,y=30})
+
 	--I really need to sort out the constants
-	imgui.Begin("Script 2", 0, (1<<10))
+	imgui.Begin("Script 23", 0, (1<<10))
 
 	imgui.Text("B:")
 
