@@ -12,6 +12,7 @@ mouse_rclick_poppable = false
 mouse_click_start = {x=-1, y=-1, z=-1}
 mouse_click_end = {x=-1, y=-1, z=-1}
 mouse_has_drag = false
+mouse_cancel_drag = false
 mouse_which_clicked = 0
 
 function dump_flags(f)
@@ -431,6 +432,11 @@ function cancel_mouse_drag()
 end
 
 function check_start_mouse_drag()
+	if mouse_has_drag and imgui.IsMouseClicked((mouse_which_clicked + 1) % 2) then
+		mouse_has_drag = false
+		return
+	end
+
 	local window_blocked = imgui.IsWindowHovered(0) or imgui.WantCaptureMouse()
 
 	if window_blocked then
@@ -449,15 +455,12 @@ function check_start_mouse_drag()
 			mouse_which_clicked = 1
 		end
 	end
+
 end
 
 function check_end_mouse_drag()
 	if mouse_has_drag then
 		imgui.EatMouseInputs()
-	end
-
-	if mouse_has_drag and imgui.IsMouseClicked((mouse_which_clicked + 1) % 2) then
-		mouse_has_drag = false
 	end
 end
 
