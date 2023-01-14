@@ -16,6 +16,7 @@ one_step = false
 
 function render_menu()
 	render.set_can_window_pop(true)
+	render.set_can_mouse_pop(false)
 
 	local menus = {{key="097", text="View Announcements"},
 				   {key="098", text="Building"},
@@ -150,6 +151,12 @@ function MyScreen:render()
 	if imgui.IsKeyPressed("LEAVESCREEN") and imgui.WantCaptureInput() and render.can_pop() then
 		render.pop_incremental()
 	end
+
+	if imgui.IsMouseClicked(1) and render.can_pop() and render.mouse_rclick_poppable then
+		render.pop_incremental()
+	end
+
+	render.set_can_mouse_pop(true)
 
 	local text_style = imgui.StyleIndex("Text")
 

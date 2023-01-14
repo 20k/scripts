@@ -7,6 +7,7 @@ menu_can_window_pop = false
 menu_can_global_pop = false
 menu_item = nil
 menu_changed = true
+mouse_rclick_poppable = false
 
 mouse_click_start = {x=-1, y=-1, z=-1}
 mouse_click_end = {x=-1, y=-1, z=-1}
@@ -57,14 +58,19 @@ function reset_menu_to(st)
 	menu_changed = true
 end
 
+local function reset_pop()
+	menu_can_window_pop = false
+	menu_can_global_pop = false
+	mouse_rclick_poppable = false
+end
+
 function push_menu(st)
 	mouse_has_drag = false
 	menu_state[#menu_state+1] = st
 	menu_substate[#menu_substate+1] = {}
 	menu_item = nil
 	menu_changed = true
-	menu_can_window_pop = false
-	menu_can_global_pop = false
+	reset_pop()
 end
 
 function pop_menu()
@@ -73,8 +79,7 @@ function pop_menu()
 	table.remove(menu_substate, #menu_substate)
 	menu_item = nil
 	menu_changed = true
-	menu_can_window_pop = false
-	menu_can_global_pop = false
+	reset_pop()
 end
 
 function pop_incremental()
@@ -103,15 +108,13 @@ function push_submenu(st)
 	local current = menu_substate[#menu_state]
 	current[#current + 1] = st
 	menu_was_changed = true
-	menu_can_window_pop = false
-	menu_can_global_pop = false
+	reset_pop()
 end
 
 function pop_submenu()
 	local current = menu_substate[#menu_state]
 	table.remove(current, #current)
-	menu_can_window_pop = false
-	menu_can_global_pop = false
+	reset_pop()
 end
 
 function get_submenu()
@@ -129,11 +132,15 @@ function can_pop()
 end
 
 function set_can_window_pop(p)
-	menu_can_window_pop = true
+	menu_can_window_pop = p
 end
 
 function set_can_global_pop(p)
-	menu_can_global_pop = true
+	menu_can_global_pop = p
+end
+
+function set_can_mouse_pop(p)
+	mouse_rclick_poppable = p
 end
 
 function set_menu_item(i)
