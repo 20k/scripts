@@ -822,6 +822,8 @@ function render_assign_uniforms()
 end
 
 function render_military()
+	render.set_can_window_pop(true)
+
 	if imgui.BeginTabBar("Tabs", 0) then
 		if imgui.BeginTabItem("Squads") then
 			render_squad_unit_selection()
@@ -885,14 +887,16 @@ function cancel_orders(squad)
 end
 
 function render_squads()
+	render.set_can_window_pop(true)
+	render.set_can_global_pop(render.get_submenu() ~= nil)
+
 	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
 
-	--I actually have no idea how df handles this by default, but it must stop before p
+	--I actually have no idea how df handles this by default, but it must stop before 'p'
 	--considering numbering them 1-9
 	local keys = {"a","b","c","d","e","f","g","h","i","j"}
-
 
 	if imgui.BeginTable("SquadTable", 3, (1<<13) | (1<<16)) then
 		imgui.TableNextRow();
@@ -950,14 +954,7 @@ function render_squads()
 
 	imgui.NewLine()
 
-
-
-	--want to cancel on right clicking anywhere
-	if imgui.IsMouseClicked(1) then
-		render.set_menu_item(nil)
-	end
-
-	local current_menu_item = render.get_menu_item()
+	local current_menu_item = render.get_submenu()
 
 	local current_menu_item_type = ""
 
@@ -967,7 +964,7 @@ function render_squads()
 
 	local to_render = {{key="k", text="Attack"}, {key="m", text="Move"}, {key="o", text="Cancel orders"}}
 
-	local state = render.render_table_impl(to_render, current_menu_item_type)
+	local state, clicked = render.render_table_impl(to_render, current_menu_item_type)
 
 	local csquad_id = sorted_squads[selected_squad_order]
 
@@ -1000,7 +997,7 @@ function render_squads()
 
 		csquad.orders:insert('#', move_order)
 
-		render.set_menu_item(nil)
+		render.pop_incremental()
 	end
 
 	if current_menu_item_type == "Move" and not imgui.WantCaptureMouse() then
@@ -1039,7 +1036,10 @@ function render_squads()
 
 			local histfig = nobles.unit_to_histfig(unit)
 
-			order.histfigs:insert('#', histfig.id)
+			if histfig ~= nil then
+				order.histfigs:insert('#', histfig.id)
+			end
+
 			order.title = "Killing " .. render.get_user_facing_name(unit)
 
 			csquad.orders:insert('#', order)
@@ -1047,7 +1047,7 @@ function render_squads()
 
 		if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and found_unit then
 			kill_unit(csquad, found_unit)
-			render.set_menu_item(nil)
+			render.pop_incremental()
 		end
 
 		imgui.Text("Click to kill, or select below")
@@ -1058,21 +1058,21 @@ function render_squads()
 
 			if imgui.ButtonColored({fg=col}, render.get_user_facing_name(unit) .. "##killy" ..tostring(unit.id)) then
 				kill_unit(csquad, unit)
-				render.set_menu_item(nil)
+				render.pop_incremental()
 			end
 		end
 	end
 
-	if state == "Move" then
-		render.set_menu_item({type="Move"})
+	if state == "Move" and clicked then
+		render.push_submenu({type="Move"})
 	end
 
-	if state == "Cancel orders" then
+	if state == "Cancel orders" and clicked then
 		cancel_orders(csquad)
 	end
 
-	if state == "Attack" then
-		render.set_menu_item({type="Attack"})
+	if state == "Attack" and clicked then
+		render.push_submenu({type="Attack"})
 	end
 
 	::novalidselected::
