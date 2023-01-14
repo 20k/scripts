@@ -1038,6 +1038,8 @@ function render_squads()
 
 			if histfig ~= nil then
 				order.histfigs:insert('#', histfig.id)
+			else
+				order.histfigs:insert('#', -1)
 			end
 
 			order.title = "Killing " .. render.get_user_facing_name(unit)
