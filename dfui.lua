@@ -15,7 +15,7 @@ last_hovered_announce_id = -1
 one_step = false
 
 function render_menu()
-	render.set_can_pop(true)
+	render.set_can_window_pop(true)
 
 	local menus = {{key="097", text="View Announcements"},
 				   {key="098", text="Building"},

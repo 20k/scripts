@@ -3,7 +3,8 @@
 imgui = dfhack.imgui
 menu_state = {"main"}
 menu_substate = {{}}
-menu_can_pop = false
+menu_can_window_pop = false
+menu_can_global_pop = false
 menu_item = nil
 menu_changed = true
 
@@ -62,6 +63,8 @@ function push_menu(st)
 	menu_substate[#menu_substate+1] = {}
 	menu_item = nil
 	menu_changed = true
+	menu_can_window_pop = false
+	menu_can_global_pop = false
 end
 
 function pop_menu()
@@ -70,6 +73,8 @@ function pop_menu()
 	table.remove(menu_substate, #menu_substate)
 	menu_item = nil
 	menu_changed = true
+	menu_can_window_pop = false
+	menu_can_global_pop = false
 end
 
 function pop_incremental()
@@ -98,11 +103,15 @@ function push_submenu(st)
 	local current = menu_substate[#menu_state]
 	current[#current + 1] = st
 	menu_was_changed = true
+	menu_can_window_pop = false
+	menu_can_global_pop = false
 end
 
 function pop_submenu()
 	local current = menu_substate[#menu_state]
 	table.remove(current, #current)
+	menu_can_window_pop = false
+	menu_can_global_pop = false
 end
 
 function get_submenu()
@@ -116,11 +125,15 @@ function get_submenu()
 end
 
 function can_pop()
-	return menu_can_pop
+	return (menu_can_window_pop and imgui.WantCaptureInput()) or menu_can_global_pop
 end
 
-function set_can_pop(p)
-	menu_can_pop = true
+function set_can_window_pop(p)
+	menu_can_window_pop = true
+end
+
+function set_can_global_pop(p)
+	menu_can_global_pop = true
 end
 
 function set_menu_item(i)
