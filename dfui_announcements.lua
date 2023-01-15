@@ -32,6 +32,10 @@ function ticks_in_month()
 	return ticks_in_day() * days_in_month()
 end
 
+function ticks_in_year()
+	return ticks_in_month() * 12
+end
+
 function ordinal_suffix(which)
 	local as_str = tostring(which)
 
@@ -191,14 +195,6 @@ function get_reports_for(unit, type)
 	return reports
 end
 
-function get_reports_count_for(unit, type)
-	if type == nil then
-		return get_reports_count_for(unit, 0) + get_reports_count_for(unit, 1) + get_reports_count_for(unit, 2)
-	end
-
-	return #unit.reports.log[type]
-end
-
 --unit_report_type.h
 --different order for types from other places
 function get_unit_report_type_name(type)
@@ -250,26 +246,47 @@ function render_reports()
 
 		local reports = get_reports_for(unit, menu.type)
 
-		for _,v in ipairs(reports) do
-			render_report(v.report)
+		if #reports == 0 then
+			imgui.Text("No recent reports")
+		else
+			for _,v in pairs(reports) do
+				render_report(v.report)
+			end
 		end
 	else
+		local units_by_recent_reports = {}
+
 		for o,unit in ipairs(reportable) do
+			for i=0,2 do
+				local reports = unit.reports.log[i]
+
+				if #reports > 0 then
+					local len = #unit.reports.log[i]
+
+					table.insert(units_by_recent_reports, {unit=unit, tick=unit.reports.log[i][len - 1], type=i})
+				end
+			end
+		end
+
+		function cmp(a,b)
+			return a.tick > b.tick
+		end
+
+		table.sort(units_by_recent_reports, cmp)
+
+		for _,v in ipairs(units_by_recent_reports) do
+			local unit = v.unit
+			local type = v.type
+
 			local display_name = render.get_user_facing_name(unit)
 
-			for i=0,2 do
-				local report_count = get_reports_count_for(unit, i)
+			local report_str = get_unit_report_type_name(type)
+			local report_col = get_unit_report_type_color(type)
 
-				if report_count > 0 then
-					local report_str = get_unit_report_type_name(i)
-					local report_col = get_unit_report_type_color(i)
+			local to_display = display_name .. " " .. dfhack.df2utf(report_str)
 
-					local to_display = display_name .. " " .. dfhack.df2utf(report_str)
-
-					if imgui.ButtonColored({fg=report_col}, to_display .. "##" .. tostring(unit.id)) then
-						render.push_submenu({id=unit.id, type=i})
-					end
-				end
+			if imgui.ButtonColored({fg=report_col}, to_display .. "##" .. tostring(unit.id)) then
+				render.push_submenu({id=unit.id, type=type})
 			end
 		end
 	end
