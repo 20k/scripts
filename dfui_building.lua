@@ -1252,6 +1252,8 @@ function render_stockpiles()
 			remove_extent(building, v, false)
 		end
 	end
+
+	render.set_menu_item(stockpile_type)
 end
 
 --building subtypes are the low level subtypes, tomb, meeting hall etc
