@@ -191,6 +191,14 @@ function get_reports_for(unit, type)
 	return reports
 end
 
+function get_reports_count_for(unit, type)
+	if type == nil then
+		return get_reports_count_for(unit, 0) + get_reports_count_for(unit, 1) + get_reports_count_for(unit, 2)
+	end
+
+	return #unit.reports.log[type]
+end
+
 --unit_report_type.h
 --different order for types from other places
 function get_unit_report_type_name(type)
@@ -250,9 +258,9 @@ function render_reports()
 			local display_name = render.get_user_facing_name(unit)
 
 			for i=0,2 do
-				local reports = get_reports_for(unit, i)
+				local report_count = get_reports_count_for(unit, i)
 
-				if #reports > 0 then
+				if report_count > 0 then
 					local report_str = get_unit_report_type_name(i)
 					local report_col = get_unit_report_type_color(i)
 
