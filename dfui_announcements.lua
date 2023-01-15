@@ -84,11 +84,9 @@ function render_report(report)
 
 	imgui.ButtonColored({fg=col}, text)
 
-	if imgui.IsItemHovered() or (not any_hovered_yet and report.id == last_hovered_announce_id) then
+	if imgui.IsItemHovered() then
 		df_year = report.year
 		df_time = report.time
-
-		last_hovered_announce_id = report.id
 
 		local pos = {x=lx+1, y=ly+1, z=lz}
 
@@ -104,14 +102,26 @@ function render_report(report)
 	end
 end
 
+function on_hover_report(report)
+	local df_time = report.time
+	local df_year = report.year
+
+	if df_time ~= -1 then
+		local ymd = time_to_ymd(df_time)
+
+		imgui.SetTooltip("Date: " .. tostring(ymd.day+1) .. ordinal_suffix(ymd.day+1) .. " "
+							.. months()[ymd.month + 1]
+							.. ", " .. tostring(df_year))
+
+		--imgui.Text("Date: " .. tostring(df_time) .. ", " .. tostring(df_year))
+	end
+end
+
 function render_announcements()
 	render.set_can_window_pop(true)
 
 	local reports = df.global.world.status.announcements
 	local count = #reports
-
-	local df_year = -1
-	local df_time = -1
 
 	local any_hovered_yet = false
 
@@ -119,20 +129,14 @@ function render_announcements()
 		local report = reports[i]
 
 		render_report(report)
+
+		if imgui.IsItemHovered() then
+			on_hover_report(report)
+		end
 	end
 
 	if imgui.Button("Back") then
 		render.pop_incremental()
-	end
-
-	if df_time ~= -1 then
-		local ymd = time_to_ymd(df_time)
-
-		imgui.Text("Date: " .. tostring(ymd.day+1) .. ordinal_suffix(ymd.day+1) .. " "
-							.. months()[ymd.month + 1]
-							.. ", " .. tostring(df_year))
-
-		--imgui.Text("Date: " .. tostring(df_time) .. ", " .. tostring(df_year))
 	end
 end
 
@@ -251,6 +255,10 @@ function render_reports()
 		else
 			for _,v in pairs(reports) do
 				render_report(v.report)
+
+				if imgui.IsItemHovered() then
+					on_hover_report(v.report)
+				end
 			end
 		end
 	else
@@ -263,13 +271,13 @@ function render_reports()
 				if #reports > 0 then
 					local len = #unit.reports.log[i]
 
-					table.insert(units_by_recent_reports, {unit=unit, tick=unit.reports.log[i][len - 1], type=i})
+					table.insert(units_by_recent_reports, {unit=unit, sort=unit.reports.log[i][len - 1], last_report_id=unit.reports.log[i][len - 1], type=i})
 				end
 			end
 		end
 
 		function cmp(a,b)
-			return a.tick > b.tick
+			return a.sort > b.sort
 		end
 
 		table.sort(units_by_recent_reports, cmp)
@@ -287,6 +295,14 @@ function render_reports()
 
 			if imgui.ButtonColored({fg=report_col}, to_display .. "##" .. tostring(unit.id)) then
 				render.push_submenu({id=unit.id, type=type})
+			end
+
+			if imgui.IsItemHovered() then
+				local report = df.report.find(v.last_report_id)
+
+				if report then
+					on_hover_report(report)
+				end
 			end
 		end
 	end
