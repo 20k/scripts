@@ -181,7 +181,7 @@ function get_menu_item()
 	return menu_item
 end
 
-function clear_menu_item(i)
+function clear_menu_item()
 	menu_item = nil
 end
 
