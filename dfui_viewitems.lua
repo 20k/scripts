@@ -130,6 +130,9 @@ function debug_zones()
 		if df.building_civzonest:is_instance(v) then
 			imgui.Text("Civzonebuilding")
 
+			imgui.Text("Assigned Units: ", tostring(#v.assigned_units))
+			imgui.Text("Assigned Items: ", tostring(#v.assigned_items))
+
 			imgui.Text(v.name)
 			imgui.Text(tostring(v.x1))
 			imgui.Text(tostring(v.y1))
@@ -252,6 +255,8 @@ function render_viewitems()
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 
+	--debug_zones()
+
 	--imgui.Text("Hovered: " .. tostring(building))
 
 	function item_sort(a, b)
@@ -259,6 +264,9 @@ function render_viewitems()
 	end
 
 	if building ~= nil then
+		--imgui.Text("Normal? " .. tostring(building:canMakeRoom()))
+		--imgui.Text("CXY", tostring(building.centerx), tostring(building.centery))
+
 		--jobinspector.inspect_workshop(building)
 
 		--debug_stock(building)
