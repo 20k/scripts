@@ -204,7 +204,6 @@ function MyScreen:render()
 		if imgui.Get(replacement) then
 			render.push_menu("main")
 			state = "main"
-			dfhack.println("hi")
 		else
 			self:dismiss()
 		end
