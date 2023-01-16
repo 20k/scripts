@@ -7,6 +7,7 @@ local render = reqscript('dfui_render')
 local nobles = reqscript('dfui_nobles')
 local setbuilding = reqscript('dfui_setbuilding')
 local military = reqscript('dfui_military')
+local units = reqscript('dfui_units')
 
 MyScreen = defclass(MyScreen, gui.Screen)
 
@@ -223,6 +224,8 @@ function MyScreen:render()
 		building.render_make_building()
 	elseif state == "Designations" then
 		designations.render_designations()
+	elseif state == "Unit List" then
+		units.render_units()
 	elseif state == "Stockpiles" then
 		building.render_stockpiles()
 	elseif state == "Zones" then
