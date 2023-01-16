@@ -140,8 +140,8 @@ function MyScreen:render()
 
 	df.global.gps.force_full_display_count = 1
 
-	if imgui.Get(replacement) then
-		df.global.window_z = df.global.window_z + math.floor(imgui.GetMouseWheel())
+	if imgui.Get(replacement) and not imgui.WantCaptureMouse() then
+		df.global.window_z = df.global.window_z - math.floor(imgui.GetMouseWheel())
 	end
 
 	--[[if(imgui.IsKeyPressed(6) and state == "main") then
