@@ -13,6 +13,7 @@ MyScreen = defclass(MyScreen, gui.Screen)
 imgui = dfhack.imgui
 last_hovered_announce_id = -1
 one_step = false
+replacement = imgui.Ref(false)
 
 function render_menu()
 	render.set_can_window_pop(true)
@@ -81,6 +82,8 @@ function render_menu()
 	if next_state ~= "main" then
 		render.push_menu(next_state)
 	end
+
+	imgui.Checkbox("Replacement Mode", replacement)
 end
 
 function MyScreen:init()
@@ -198,7 +201,13 @@ function MyScreen:render()
 	local state = render.get_menu()
 
 	if state == nil then
-		self:dismiss()
+		if imgui.Get(replacement) then
+			render.push_menu("main")
+			state = "main"
+			dfhack.println("hi")
+		else
+			self:dismiss()
+		end
 	end
 
 	if state == "main" then
@@ -281,7 +290,7 @@ function MyScreen:onDismiss()
 end
 
 function MyScreen:onInput(keys)
-	if not imgui.WantCaptureInput() then
+	if not imgui.WantCaptureInput() and not imgui.Get(replacement) then
 		imgui.FeedUpwards()
 	end
 end
