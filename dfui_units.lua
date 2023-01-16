@@ -10,11 +10,15 @@ function display_unit_list(units)
         if imgui.ButtonColored(col, name) then
             render.centre_camera(v.pos.x, v.pos.y, v.pos.z)
         end
+
+        if imgui.IsItemHovered() then
+            render.render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, v.pos)
+        end
     end
 end
 
 function render_units()
-    render.set_can_window_pop()
+    render.set_can_window_pop(true)
 
     local citizens = {}
     local pets = {}
@@ -26,14 +30,14 @@ function render_units()
             goto hidden
         end
 
-        if dfhack.units.isFortControlled(v) then
+        if dfhack.units.isKilled(v) then
+            dead[#dead+1] = v
+        elseif dfhack.units.isFortControlled(v) then
             if dfhack.units.isAnimal(v) then
                 pets[#pets+1] = v
             else
                 citizens[#citizens + 1] = v
             end
-        elseif dfhack.units.isKilled(v) then
-            dead[#dead+1] = v
         else
             others[#others+1] = v
         end
