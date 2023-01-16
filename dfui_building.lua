@@ -1315,7 +1315,7 @@ function finalise_zone(building, subtype)
 	building.is_active = 8
 	building.anon_1 = -1
 	building.anon_2 = -1
-	building.zone_num = max_zone_num() + 1
+	--building.zone_num = max_zone_num() + 1
 
 	building.zone_settings.whole.i1 = 0
 	building.zone_settings.whole.i2 = 0
