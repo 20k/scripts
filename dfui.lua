@@ -130,8 +130,6 @@ function render_stock()
 end
 
 function MyScreen:render()
-	self:renderParent()
-
 	if self._native and self._native.parent then
         self._native.parent:render()
     else
