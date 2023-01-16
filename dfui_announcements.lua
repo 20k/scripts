@@ -133,11 +133,19 @@ function render_announcements()
 		if imgui.IsItemHovered() then
 			on_hover_report(report)
 		end
+
+		if i == count-1 then
+			if render.menu_was_changed() then
+				imgui.SetScrollHereY()
+			end
+		end
 	end
 
 	if imgui.Button("Back") then
 		render.pop_incremental()
 	end
+
+	render.menu_change_clear()
 end
 
 function valid_unit(unit)
