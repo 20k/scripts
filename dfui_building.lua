@@ -1487,15 +1487,7 @@ function handle_specific_zone_render(building)
 	end
 end
 
-function render_zones()
-	local to_render = {{key="s", text="Select Zone"}, {key="z", text="Place Zone"}, {key="x", text="Remove Zones"}}
-	local zone_render = {{key="m", text="Meeting Area"}, {key="o", text="Office"}, {key="b", text="Bedroom"}, {key="r", text="Dormitory"},
-						 {key="i", text="Dining Hall"}, {key="k", text="Barracks"}, {key="n", text="Pen/Pasture"},
-						 {key="y", text="Archery Range"}, {key="p", text="Pit/Pond"}, {key="d", text="Garbage Dump"},
-					  	 {key="w", text="Water Source"}, {key="t", text="Animal Training"}, {key="u", text="Dungeon"},
-					 	 {key="T", text="Tomb"}, {key="f", text="Fishing"}, {key="g", text="Gather Fruit"},
-					  	 {key="s", text="Sand"}, {key="c", text="Clay"}}
-
+function get_subtype_map()
 	local subtype_map = {
 		["Meeting Area"]=df.civzone_type.MeetingHall,
 		["Office"]=df.civzone_type.Office,
@@ -1514,11 +1506,44 @@ function render_zones()
 		["Clay"]=df.civzone_type.ClayCollection
 	}
 
+	return subtype_map
+end
+
+subtype_map = get_subtype_map()
+
+function get_inverse_subtype_map()
 	local inverse_subtype_map = {}
 
-	for k,v in pairs(subtype_map) do
+	local local_subtype_map = get_subtype_map()
+
+	for k,v in pairs(local_subtype_map) do
 		inverse_subtype_map[v] = k
 	end
+
+	return inverse_subtype_map
+end
+
+inverse_subtype_map = get_inverse_subtype_map()
+
+function get_zone_name(building)
+	local name = building.name
+
+	if #name == 0 then
+		return inverse_subtype_map[building.type]
+	end
+
+	return name
+end
+
+function render_zones()
+	local to_render = {{key="s", text="Select Zone"}, {key="z", text="Place Zone"}, {key="x", text="Remove Zones"}}
+	local zone_render = {{key="m", text="Meeting Area"}, {key="o", text="Office"}, {key="b", text="Bedroom"}, {key="r", text="Dormitory"},
+						 {key="i", text="Dining Hall"}, {key="k", text="Barracks"}, {key="n", text="Pen/Pasture"},
+						 {key="y", text="Archery Range"}, {key="p", text="Pit/Pond"}, {key="d", text="Garbage Dump"},
+					  	 {key="w", text="Water Source"}, {key="t", text="Animal Training"}, {key="u", text="Dungeon"},
+					 	 {key="T", text="Tomb"}, {key="f", text="Fishing"}, {key="g", text="Gather Fruit"},
+					  	 {key="s", text="Sand"}, {key="c", text="Clay"}}
+
 
 	local current_state = render.get_submenu()
 
@@ -1537,11 +1562,14 @@ function render_zones()
 		local building = df.building.find(zone_id)
 
 		if building ~= nil then
-			local name = utils.getBuildingName(building)
-
 			imgui.Text("Selected Zone")
 
-			imgui.Text(inverse_subtype_map[building.type]);
+			local type_name = inverse_subtype_map[building.type]
+			local name = get_zone_name(building)
+
+			if type_name ~= name then
+				imgui.Text(type_name);
+			end
 
 			imgui.Text(name)
 
