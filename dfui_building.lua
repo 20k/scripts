@@ -1529,7 +1529,7 @@ function get_zone_name(building)
 	local name = building.name
 
 	if #name == 0 then
-		return inverse_subtype_map[building.type]
+		return inverse_subtype_map[building.type] .. " #" .. tostring(building.zone_num)
 	end
 
 	return name
