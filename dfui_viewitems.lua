@@ -343,6 +343,7 @@ function render_viewitems()
 	end
 end
 
+
 function handle_building_mouseover()
 	if imgui.WantCaptureMouse() then
 		return
@@ -399,10 +400,11 @@ function handle_building_mouseover()
 				end
 			end
 
-			local str = building_name(civzone)
+			local str = buildingd.get_zone_name(civzone)
 
 			imgui.BeginTooltip()
-			imgui.Text(str .. " " .. tostring(civzone:getSubtype()))
+			--imgui.Text(str .. " " .. tostring(civzone:getSubtype()))
+			imgui.Text(str)
 			imgui.EndTooltip()
 		end
 	end
