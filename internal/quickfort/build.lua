@@ -496,7 +496,7 @@ building_db = {
     a={label='Armor Stand', type=df.building_type.Armorstand},
     b={label='Bed', type=df.building_type.Bed,
        is_valid_tile_fn=is_valid_tile_inside},
-    c={label='Seat', type=df.building_type.Chair},
+    c={label='Chair', type=df.building_type.Chair},
     n={label='Burial Receptacle', type=df.building_type.Coffin},
     d={label='Door', type=df.building_type.Door,
        is_valid_tile_fn=is_tile_generic_and_wall_adjacent},
