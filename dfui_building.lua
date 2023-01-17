@@ -1514,6 +1514,12 @@ function render_zones()
 		["Clay"]=df.civzone_type.ClayCollection
 	}
 
+	local inverse_subtype_map = {}
+
+	for k,v in pairs(subtype_map) do
+		inverse_subtype_map[v] = k
+	end
+
 	local current_state = render.get_submenu()
 
 	if current_state == nil then
@@ -1534,6 +1540,8 @@ function render_zones()
 			local name = utils.getBuildingName(building)
 
 			imgui.Text("Selected Zone")
+
+			imgui.Text(inverse_subtype_map[building.type]);
 
 			imgui.Text(name)
 
