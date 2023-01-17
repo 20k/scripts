@@ -260,6 +260,8 @@ function render_squad_unit_selection()
 
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
 
+	imgui.Text("Squads?", tostring(entity.squads))
+
 	for _,squad_id in ipairs(sorted_squads) do
 		local squad = df.squad.find(squad_id)
 
@@ -822,6 +824,8 @@ function render_assign_uniforms()
 end
 
 function debug_military()
+	--imgui.debug_hook()
+
 	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
@@ -858,7 +862,7 @@ function debug_military()
 			end
 		end]]--
 
-		imgui.Text("Alert?", squad.cur_alert_idx)
+		imgui.Text("Alert?", squad.cur_routine_idx)
 
 		--think order assignments might be full of rubbish
 		--[[imgui.Text("Sched Orders", tostring(#sched.order_assignments))
@@ -870,10 +874,11 @@ function debug_military()
 
 	--imgui.Text("Test", tostring(#df.global.plotinfo.alerts.anon_1))
 
-	imgui.Text("Alert idx", tostring(df.global.plotinfo.alerts.civ_alert_idx))
+	--imgui.Text("Alert idx", tostring(df.global.plotinfo.alerts.civ_alert_idx))
 
 	for _, v in ipairs(df.global.plotinfo.alerts.routines) do
-		--imgui.Text(tostring(v[.name))
+		imgui.Text(tostring(v.id))
+		imgui.Text(v.name)
 
 		--imgui.Text(test.name)
 	end
@@ -898,7 +903,7 @@ function render_new_schedules()
 end
 
 function render_military()
-	debug_military()
+	--debug_military()
 
 	render.set_can_window_pop(true)
 
