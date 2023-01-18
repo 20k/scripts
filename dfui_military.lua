@@ -903,7 +903,7 @@ function render_new_schedules()
 end
 
 function render_military()
-	--debug_military()
+	debug_military()
 
 	render.set_can_window_pop(true)
 
