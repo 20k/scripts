@@ -946,34 +946,39 @@ function debug_military()
 	--for _,v in ipairs(squad.schedule[2])
 end
 
+function get_routine_name(routine)
+	if #routine.name > 0 then
+		return routine.name
+	end
+
+	return "Routine #" .. tostring(routine.id + 1)
+end
+
 function render_routines()
 	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
 
 	local routines = df.global.plotinfo.alerts.routines
 
-	--[[if imgui.BeginTable("Routines", #routines + 1, (1<<13)|(1<<16)) then
-		imgui.NewLine()
+	local max_squad_name = 0
 
-		for _,s_id in ipairs(sorted_squads) do
-			--imgui.TableNextRow();
-			--imgui.TableNextColumn();
-
-			local squad = df.squad.find(s_id)
-
-			imgui.Text(get_squad_name(squad))
-		end
-
-		imgui.EndTable()
-	end]]--
+	for _, s_id in ipairs(sorted_squads) do
+		max_squad_name = math.max(max_squad_name, #get_squad_name(df.squad.find(s_id)))
+	end
 
 	for _,s_id in ipairs(sorted_squads) do
 		local squad = df.squad.find(s_id)
 
 		local routine_idx = squad.cur_routine_idx
-		local name_to_display = routines[routine_idx].name
+		local name_to_display = get_routine_name(routines[routine_idx])
 
-		imgui.Text(get_squad_name(squad))
+		local name = get_squad_name(squad)
+
+		for i=#name,max_squad_name do
+			name = name .. " "
+		end
+
+		imgui.Text(name)
 
 		imgui.SameLine()
 
@@ -981,7 +986,7 @@ function render_routines()
 			for ridx, routine in ipairs(routines) do
 				local is_selected = routine_idx == ridx
 
-				if imgui.Selectable(routine.name .. "##" .. tostring(s_id) .. "_" .. tostring(routine.id), is_selected) then
+				if imgui.Selectable(get_routine_name(routine) .. "##" .. tostring(s_id) .. "_" .. tostring(routine.id), is_selected) then
 					squad.cur_routine_idx = ridx
 				end
 
