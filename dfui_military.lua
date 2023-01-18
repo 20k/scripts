@@ -260,8 +260,6 @@ function render_squad_unit_selection()
 
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
 
-	imgui.Text("Squads?", tostring(entity.squads))
-
 	for _,squad_id in ipairs(sorted_squads) do
 		local squad = df.squad.find(squad_id)
 
@@ -833,7 +831,63 @@ function debug_military()
 	for _,v in ipairs(sorted_squads) do
 		local squad = df.squad.find(v)
 
-		imgui.Text("Asched", tostring(#squad.schedule))
+		--imgui.Text("Asched", tostring(#squad.schedule))
+
+		--imgui.Text("Base orders", tostring(#squad.orders))
+
+		--imgui.Text("Position orders?", tostring(#squad.positions[0].orders))
+
+		--imgui.Text("Orders?", tostring(squad.schedule[1][0].orders))
+		--imgui.Text("Assignments?", tostring(squad.schedule[1][0].order_assignments))
+
+		--all schedules have order assignments
+
+		--[[for a, b in ipairs(squad.schedule) do
+			for c,d in ipairs(b) do
+				if #d.order_assignments ~= 10 then
+					imgui.Text("Orders", tostring(d.order_assignments))
+				end
+			end
+		end]]--
+
+		--so, military
+		--every routine is now 1 entry in the schedule
+		--every month in that routine has 10 order assignments, unconditionally, it seems, that are all -1
+		--each schedule entry has a list of orders
+		--those orders are used by the default routines, but are manufactured *somewhere* that's unknown
+		--the default orders are: Off Duty, Staggered training (3 4 5, 11 10 9 set to train)
+
+		--Off duty: No orders, Sleep/room at will. Equip/orders only
+		--Staggered Training: Training orders at 3 4 5, 9 10 11, sleep/room at will. Equip/orders only, except train months which are equip/always
+		--Constant Training: Training orders 0-11, sleep/room at will, equip/always
+		--Ready: No orders, sleep/barracks at need, equip/always
+
+		imgui.Text(tostring(squad.id))
+
+		for a, b in ipairs(squad.schedule) do
+			for c,d in ipairs(b) do
+				if #d.orders ~= 0 then
+					imgui.Text("Orders", tostring(d.orders), "at", tostring(a), tostring(c))
+
+					--always 1 when orders > 0, always 0 when orders == 0
+					imgui.Text("Uniform?", tostring(d.uniform_mode))
+
+					for _,order in ipairs(d.orders) do
+						imgui.Text("Type", tostring(order.order))
+
+						--imgui.Text("Min_num", tostring(order.min_count))
+						--[[for _,p in ipairs(order.positions) do
+							imgui.Text(tostring(p))
+						end]]--
+					end
+				end
+			end
+		end
+
+		--[[for _,a in ipairs(squad.schedule[1][0].order_assignments) do
+			imgui.Text(a[0])
+		end]]--
+
 		--[[imgui.Text("Orders", tostring(#squad.orders))
 
 		for _,p in ipairs(squad.positions) do
@@ -843,11 +897,11 @@ function debug_military()
 		--local sched = squad.schedule[6][2].name
 		--imgui.Text("Sched", tostring(#sched))
 
-		imgui.Text("TSched", tostring(squad.schedule[2]))
+		--imgui.Text("TSched", tostring(squad.schedule[2]))
 
-		local sched = squad.schedule[2][0]
+		--local sched = squad.schedule[2][0]
 
-		imgui.Text("Sched", tostring(sched))
+		--imgui.Text("Sched", tostring(sched))
 
 		--imgui.Text("Position Orders", tostring(#squad.positions[0].orders))
 
@@ -862,48 +916,87 @@ function debug_military()
 			end
 		end]]--
 
-		imgui.Text("Alert?", squad.cur_routine_idx)
-
-		--think order assignments might be full of rubbish
-		--[[imgui.Text("Sched Orders", tostring(#sched.order_assignments))
-
-		for _,o in ipairs(sched.order_assignments) do
-			imgui.Text("OA", tostring(o[0]))
-		end]]--
+		imgui.Text("Routine Index?", squad.cur_routine_idx)
 	end
+
+	--imgui.Text("Unky", tostring(#df.global.plotinfo.squads.unk6e08))
+
+	--imgui.Text("Alerts", tostring(#df.global.plotinfo.alerts.list))
+	--imgui.Text("unk6", tostring(#df.global.plotinfo.anon_1))
+	--imgui.Text("unk7", tostring(#df.global.plotinfo.anon_2))
 
 	--imgui.Text("Test", tostring(#df.global.plotinfo.alerts.anon_1))
 
 	--imgui.Text("Alert idx", tostring(df.global.plotinfo.alerts.civ_alert_idx))
 
-	for _, v in ipairs(df.global.plotinfo.alerts.routines) do
-		imgui.Text(tostring(v.id))
-		imgui.Text(v.name)
+	--imgui.Text("Routines")
+
+	--for o, v in ipairs(df.global.plotinfo.alerts.routines) do
+	--	imgui.Text(v.name, tostring(#v.name))
+	--	imgui.Text("id", tostring(v.id))
+		--[[if imgui.Button("IDFUDGEME" .. tostring(o)) then
+			v.id = 2
+		end]]--
+
+	--	imgui.Text("unk_1", tostring(v.unk_1))
 
 		--imgui.Text(test.name)
-	end
+	--end
+
+	--for _,v in ipairs(squad.schedule[2])
 end
 
-function render_new_schedules()
+function render_routines()
 	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
+
+	local routines = df.global.plotinfo.alerts.routines
+
+	--[[if imgui.BeginTable("Routines", #routines + 1, (1<<13)|(1<<16)) then
+		imgui.NewLine()
+
+		for _,s_id in ipairs(sorted_squads) do
+			--imgui.TableNextRow();
+			--imgui.TableNextColumn();
+
+			local squad = df.squad.find(s_id)
+
+			imgui.Text(get_squad_name(squad))
+		end
+
+		imgui.EndTable()
+	end]]--
 
 	for _,s_id in ipairs(sorted_squads) do
 		local squad = df.squad.find(s_id)
 
+		local routine_idx = squad.cur_routine_idx
+		local name_to_display = routines[routine_idx].name
+
 		imgui.Text(get_squad_name(squad))
 
-		if squad then
-			for _, o in ipairs(squad.schedule) do
-				local name = o[1].name
-				imgui.Text(tostring(name))
+		imgui.SameLine()
+
+		if imgui.BeginCombo("##combo" .. tostring(s_id), name_to_display, 0) then
+			for ridx, routine in ipairs(routines) do
+				local is_selected = routine_idx == ridx
+
+				if imgui.Selectable(routine.name .. "##" .. tostring(s_id) .. "_" .. tostring(routine.id), is_selected) then
+					squad.cur_routine_idx = ridx
+				end
+
+				if is_selected then
+                    imgui.SetItemDefaultFocus();
+				end
 			end
+
+			imgui.EndCombo()
 		end
 	end
 end
 
 function render_military()
-	debug_military()
+	--debug_military()
 
 	render.set_can_window_pop(true)
 
@@ -915,7 +1008,7 @@ function render_military()
 		end
 
 		if imgui.BeginTabItem("Schedules") then
-			render_new_schedules()
+			render_routines()
 
 			imgui.EndTabItem()
 		end
