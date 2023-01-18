@@ -5,7 +5,7 @@ imgui = dfhack.imgui
 utils = require('utils')
 buildingd = reqscript('dfui_building')
 nobles = reqscript('dfui_nobles')
---jobinspector = reqscript('jobinspector')
+jobinspector = reqscript('jobinspector')
 
 selected_building_pos = {x=-1, y=-1, z=-1}
 
@@ -267,7 +267,7 @@ function render_viewitems()
 		--imgui.Text("Normal? " .. tostring(building:canMakeRoom()))
 		--imgui.Text("CXY", tostring(building.centerx), tostring(building.centery))
 
-		--jobinspector.inspect_workshop(building)
+		jobinspector.inspect_workshop(building)
 
 		--debug_stock(building)
 
