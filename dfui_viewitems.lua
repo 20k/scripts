@@ -128,7 +128,18 @@ end
 function debug_zones()
 	for _,v in ipairs(df.building.get_vector()) do
 		if df.building_civzonest:is_instance(v) then
+
 			imgui.Text("Civzonebuilding")
+
+			imgui.Text("Jobs", tostring(#v.jobs))
+			imgui.Text("Specific", tostring(#v.specific_refs))
+			imgui.Text("General", tostring(#v.general_refs))
+
+			imgui.Text("Relations", tostring(#v.relations))
+
+			for _,r in ipairs(v.relations) do
+				imgui.Text("Relation", tostring(r))
+			end
 
 			imgui.Text("Assigned Units: ", tostring(#v.assigned_units))
 			imgui.Text("Assigned Items: ", tostring(#v.assigned_items))
@@ -236,6 +247,17 @@ function debug_zones()
 	end
 end
 
+function inspect_building(b)
+	imgui.Text("Jobs: ", tostring(#b.jobs))
+	imgui.Text("Specific: ", tostring(#b.specific_refs))
+	imgui.Text("General: ", tostring(#b.general_refs))
+	imgui.Text("Relations: ", tostring(#b.relations))
+
+	for _, r in ipairs(b.relations) do
+		imgui.Text("Relation ", tostring(r))
+	end
+end
+
 function render_viewitems()
 	render.set_can_window_pop(true)
 
@@ -255,7 +277,7 @@ function render_viewitems()
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 
-	--debug_zones()
+	debug_zones()
 
 	--imgui.Text("Hovered: " .. tostring(building))
 
@@ -267,7 +289,9 @@ function render_viewitems()
 		--imgui.Text("Normal? " .. tostring(building:canMakeRoom()))
 		--imgui.Text("CXY", tostring(building.centerx), tostring(building.centery))
 
-		jobinspector.inspect_workshop(building)
+		--jobinspector.inspect_workshop(building)
+
+		inspect_building(building)
 
 		--debug_stock(building)
 
