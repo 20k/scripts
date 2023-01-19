@@ -689,7 +689,7 @@ function display_unit_list(units_in, opts)
  	end
 
 	if opts.paginate then
-		local pad_height = math.max(num_per_page - 1, max_page_height)
+		local pad_height = math.max(num_per_page - 1, max_page_height - 1)
 
 		for i=rendered_count,pad_height do
 			imgui.Text(" ")
