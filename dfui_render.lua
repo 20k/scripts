@@ -1,5 +1,7 @@
 --@ module = true
 
+time = reqscript('dfui_libtime')
+
 imgui = dfhack.imgui
 menu_state = {"main"}
 menu_substate = {{}}
@@ -546,4 +548,78 @@ function check_trigger_mouse()
 	end
 
 	return should_trigger
+end
+
+
+function migration_date_name(unit)
+    local current_tick = df.global.cur_year_tick
+    local current_year = df.global.cur_year
+    local arrival_time = current_tick - unit.curse.time_on_site;
+
+    local full_time = time.year_to_tick(current_year) + arrival_time
+
+    local ymd = time.time_to_ymd(full_time)
+
+    return time.months()[ymd.month+1] .. ", " .. tostring(ymd.year)
+end
+
+
+function sort_by_migration_wave(units)
+    function cmp(a, b)
+        return a.curse.time_on_site > b.curse.time_on_site
+    end
+
+    table.sort(units, cmp)
+end
+
+function display_unit_list(units_in, opts)
+	local units = {}
+
+	for _,v in ipairs(units_in) do
+		units[#units+1] = v
+	end
+
+	sort_by_migration_wave(units)
+
+    local last_migration_date_name = ""
+    local active = false
+
+    for _,v in ipairs(units) do
+        local migration_name = migration_date_name(v)
+
+        if migration_name ~= last_migration_date_name then
+            --imgui.Text("Arrived:", migration_name)
+            if active then
+                imgui.TreePop()
+            end
+
+            imgui.Unindent()
+            active = imgui.TreeNodeEx("Arrived: " .. migration_name, (1<<5))
+            imgui.Indent()
+
+            last_migration_date_name = migration_name
+        end
+
+        if active then
+            local name = get_user_facing_name(v)
+            local col = get_unit_colour(v)
+
+            if imgui.ButtonColored(col, name) then
+				if opts.center_on_click then
+
+					centre_camera(v.pos.x, v.pos.y, v.pos.z)
+				end
+            end
+
+            if imgui.IsItemHovered() then
+                render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, v.pos)
+            end
+        end
+    end
+
+    if active then
+        imgui.TreePop()
+    end
+
+    imgui.Unindent()
 end
