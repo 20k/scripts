@@ -1174,6 +1174,8 @@ function remove_extent(building, v, is_zone)
 
 	building.room.extents[idx] = df.building_extents_type.None
 
+	dfhack.buildings.notifyCivzoneModified(building)
+
 	local chunk = dfhack.maps.getTileBlock({x=v.x, y=v.y, z=v.z})
 
 	local des = chunk.designation[(v.x)&15][(v.y)&15]
