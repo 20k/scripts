@@ -584,7 +584,7 @@ function display_unit_list(units_in, opts)
 	sort_by_migration_wave(units)
 
     local last_migration_date_name = ""
-    local active = false
+    local active = true
 
 	local start_dwarf = 1
 	local end_dwarf = #units
@@ -611,45 +611,58 @@ function display_unit_list(units_in, opts)
 	local max_render_height = 0
 	local indented = false
 
-	for i=start_dwarf,end_dwarf do
-		local unit = units[i]
+	local count_per_page = {}
 
-		if unit == nil then
-			goto baddwarf
+	function bump_page(cpage)
+		if count_per_page[cpage] == nil then
+			count_per_page[cpage] = 0
 		end
 
-		rendered_count = rendered_count + 1
+		count_per_page[cpage] = count_per_page[cpage] + 1
+	end
+
+	for i=1,#units do
+		local unit = units[i]
+
+		local cpage = math.max((i - 1) // num_per_page, 0) + 1
+
+		local visible = i >= start_dwarf and i <= end_dwarf
+
+		bump_page(cpage)
 
 		local migration_name = migration_date_name(unit)
 
         if migration_name ~= last_migration_date_name then
-            if active and not opts.paginate then
-                imgui.TreePop()
-            end
+			if visible then
+				if active and not opts.paginate then
+					imgui.TreePop()
+				end
 
-			if indented then
-            	imgui.Unindent()
+				if indented then
+					imgui.Unindent()
+				end
+
+				if opts.paginate then
+					imgui.Text("Arrived: " .. migration_name)
+					active = true
+				else
+					active = imgui.TreeNodeEx("Arrived: " .. migration_name, (1<<5))
+				end
+
+				imgui.Indent()
+				indented = true
+				rendered_count = rendered_count + 1
 			end
-
-			if opts.paginate then
-				imgui.Text("Arrived: " .. migration_name)
-				active = true
-			else
-            	active = imgui.TreeNodeEx("Arrived: " .. migration_name, (1<<5))
-			end
-
-            imgui.Indent()
-			indented = true
 
             last_migration_date_name = migration_name
-			max_render_height = max_render_height + 1
+			bump_page(cpage)
         end
 
-        if active then
+        if active and visible then
+			rendered_count = rendered_count + 1
+
             local name = get_user_facing_name(unit)
             local col = get_unit_colour(unit)
-
-			max_render_height = max_render_height + 1
 
             if imgui.ButtonColored(col, name) then
 				if opts.center_on_click then
@@ -663,12 +676,20 @@ function display_unit_list(units_in, opts)
                 render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, unit.pos)
             end
         end
-
-		::baddwarf::
     end
 
+	local max_page_height = 0
+
+	for k,v in ipairs(count_per_page) do
+		max_page_height = math.max(max_page_height, v)
+	end
+
+	if indented then
+		imgui.Unindent()
+ 	end
+
 	if opts.paginate then
-		local pad_height = math.max(num_per_page - 1, max_render_height)
+		local pad_height = math.max(num_per_page - 1, max_page_height)
 
 		for i=rendered_count,pad_height do
 			imgui.Text(" ")
@@ -695,10 +716,6 @@ function display_unit_list(units_in, opts)
     if active and not opts.paginate then
         imgui.TreePop()
     end
-
-	if indented then
-   		imgui.Unindent()
-	end
 
 	return which_id
 end
