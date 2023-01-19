@@ -278,7 +278,7 @@ function render_viewitems()
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 
-	debug_zones()
+	--debug_zones()
 
 	--imgui.Text("Hovered: " .. tostring(building))
 
@@ -292,7 +292,7 @@ function render_viewitems()
 
 		--jobinspector.inspect_workshop(building)
 
-		inspect_building(building)
+		--inspect_building(building)
 
 		--debug_stock(building)
 
