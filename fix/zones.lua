@@ -32,6 +32,10 @@ local function add_to_zones(bld)
 	local pos = xyz2pos(bld.centerx, bld.centery, bld.z)
 
 	local zones = dfhack.buildings.findCivzonesAt(pos)
+	
+	if zones == nil then
+		return
+	end
 
 	for _, zone in ipairs(zones) do
 		zone_into_building_unidir(bld, zone)
