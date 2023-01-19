@@ -572,6 +572,8 @@ function sort_by_migration_wave(units)
     table.sort(units, cmp)
 end
 
+local dwarf_page = 0
+
 function display_unit_list(units_in, opts)
 	local units = {}
 
@@ -584,41 +586,119 @@ function display_unit_list(units_in, opts)
     local last_migration_date_name = ""
     local active = false
 
-    for _,v in ipairs(units) do
-        local migration_name = migration_date_name(v)
+	local start_dwarf = 1
+	local end_dwarf = #units
+	local num_per_page = 17
+	local max_page = math.floor(#units / num_per_page)
+
+	local which_id = {type="none"}
+
+	if opts.paginate then
+		start_dwarf = math.max(dwarf_page * num_per_page + 1, 1)
+
+		imgui.Text("Page: " .. tostring(dwarf_page + 1) .. "/" .. tostring(max_page+1))
+
+		end_dwarf = start_dwarf + num_per_page - 1
+	end
+
+	if opts.leave_vacant then
+		if imgui.Button("Leave Vacant") then
+			which_id = {type="vacant"}
+		end
+	end
+
+	local rendered_count = 0
+	local max_render_height = 0
+	local indented = false
+
+	for i=start_dwarf,end_dwarf do
+		local unit = units[i]
+
+		if unit == nil then
+			goto baddwarf
+		end
+
+		rendered_count = rendered_count + 1
+
+		local migration_name = migration_date_name(unit)
 
         if migration_name ~= last_migration_date_name then
-            --imgui.Text("Arrived:", migration_name)
-            if active then
+            if active and not opts.paginate then
                 imgui.TreePop()
             end
 
-            imgui.Unindent()
-            active = imgui.TreeNodeEx("Arrived: " .. migration_name, (1<<5))
+			if indented then
+            	imgui.Unindent()
+			end
+
+			if opts.paginate then
+				imgui.Text("Arrived: " .. migration_name)
+				active = true
+			else
+            	active = imgui.TreeNodeEx("Arrived: " .. migration_name, (1<<5))
+			end
+
             imgui.Indent()
+			indented = true
 
             last_migration_date_name = migration_name
+			max_render_height = max_render_height + 1
         end
 
         if active then
-            local name = get_user_facing_name(v)
-            local col = get_unit_colour(v)
+            local name = get_user_facing_name(unit)
+            local col = get_unit_colour(unit)
+
+			max_render_height = max_render_height + 1
 
             if imgui.ButtonColored(col, name) then
 				if opts.center_on_click then
-					centre_camera(v.pos.x, v.pos.y, v.pos.z)
+					centre_camera(unit.pos.x, unit.pos.y, unit.pos.z)
 				end
+
+				which_id = {type="unit", data=unit}
             end
 
             if imgui.IsItemHovered() then
-                render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, v.pos)
+                render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, unit.pos)
             end
         end
+
+		::baddwarf::
     end
 
-    if active then
+	if opts.paginate then
+		local pad_height = math.max(num_per_page - 1, max_render_height)
+
+		for i=rendered_count,pad_height do
+			imgui.Text(" ")
+		end
+
+		imgui.NewLine()
+
+		if render_hotkey_text({key="q", text="Prev"}) then
+			dwarf_page = dwarf_page - 1
+
+			dwarf_page = math.max(dwarf_page, 0)
+		end
+
+		imgui.SameLine()
+
+		if render_hotkey_text({key="e", text="Next"}) then
+			dwarf_page = dwarf_page + 1
+
+			dwarf_page = math.max(dwarf_page, 0)
+			dwarf_page = math.min(dwarf_page, max_page)
+		end
+	end
+
+    if active and not opts.paginate then
         imgui.TreePop()
     end
 
-    imgui.Unindent()
+	if indented then
+   		imgui.Unindent()
+	end
+
+	return which_id
 end

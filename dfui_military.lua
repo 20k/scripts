@@ -387,63 +387,16 @@ function render_squad_unit_selection()
 				imgui.TableNextRow();
 				imgui.TableNextColumn();
 
-				local num_per_page = 17
+				local opts = {paginate=true, leave_vacant=true}
 
-				local start_idx = dwarf_page * num_per_page + 1
+				local clicked = render.display_unit_list(all_elegible_dwarf_units, opts)
 
-				local max_page = math.floor(#dwarf_slice / num_per_page)
-
-				imgui.Text("Page: " .. tostring(dwarf_page + 1) .. "/" .. tostring(max_page+1))
-
-				if imgui.Button("Leave Vacant") then
+				if clicked ~= nil and clicked.type == "vacant" then
 					remove_from(squad_ids[selected_squad], selected_dwarf)
 				end
 
-				start_idx = math.max(start_idx, 1)
-
-				local end_idx = start_idx + num_per_page - 1
-
-				local rendered_count = 0
-
-				for i=start_idx,end_idx do
-					local unit = dwarf_slice[i]
-
-					if unit == nil then
-						goto skip
-					end
-
-					local unit_name = render.get_user_facing_name(unit)
-
-					rendered_count = rendered_count+1
-
-					--the reason for the ### indexing here is so that the keyboard nav
-					--active highlight target remains the same across different pages
-					if imgui.Button(unit_name .. "###namesel_" .. tostring(i-start_idx)) then
-						appoint_to(squad_ids[selected_squad], selected_dwarf, unit)
-					end
-
-					::skip::
-				end
-
-				for i=rendered_count,num_per_page-1 do
-					imgui.Text(" ")
-				end
-
-				imgui.NewLine()
-
-				if render.render_hotkey_text({key="q", text="Prev"}) then
-					dwarf_page = dwarf_page - 1
-
-					dwarf_page = math.max(dwarf_page, 0)
-				end
-
-				imgui.SameLine()
-
-				if render.render_hotkey_text({key="e", text="Next"}) then
-					dwarf_page = dwarf_page + 1
-
-					dwarf_page = math.max(dwarf_page, 0)
-					dwarf_page = math.min(dwarf_page, max_page)
+				if clicked ~= nil and clicked.type == "unit" then
+					appoint_to(squad_ids[selected_squad], selected_dwarf, clicked.data)
 				end
 
 				imgui.EndTable()
