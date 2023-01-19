@@ -129,6 +129,7 @@ function debug_zones()
 	for _,v in ipairs(df.building.get_vector()) do
 		if df.building_civzonest:is_instance(v) then
 
+			imgui.Text("Id", tostring(v.id))
 			imgui.Text("Civzonebuilding")
 
 			imgui.Text("Jobs", tostring(#v.jobs))
@@ -190,7 +191,7 @@ function debug_zones()
 			imgui.Text("4 " .. tostring(#v.anon_4))
 
 			for k,d in pairs(v.contained_buildings) do
-				imgui.Text("b " .. tostring(d))
+				imgui.Text("b " .. tostring(d), "id", tostring(d.id))
 			end
 
 			imgui.Text("assigned " .. tostring(v.assigned_unit_id))
