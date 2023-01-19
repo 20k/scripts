@@ -606,7 +606,6 @@ function display_unit_list(units_in, opts)
 
             if imgui.ButtonColored(col, name) then
 				if opts.center_on_click then
-
 					centre_camera(v.pos.x, v.pos.y, v.pos.z)
 				end
             end
