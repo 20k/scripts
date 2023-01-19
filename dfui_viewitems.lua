@@ -129,6 +129,8 @@ function debug_zones()
 	for _,v in ipairs(df.building.get_vector()) do
 		if df.building_civzonest:is_instance(v) then
 
+			render.dump_flags(v.flags)
+
 			imgui.Text("Id", tostring(v.id))
 			imgui.Text("Civzonebuilding")
 
@@ -249,10 +251,13 @@ function debug_zones()
 end
 
 function inspect_building(b)
+	imgui.Text("canMakeRoom", tostring(b:canMakeRoom()))
 	imgui.Text("Jobs: ", tostring(#b.jobs))
 	imgui.Text("Specific: ", tostring(#b.specific_refs))
 	imgui.Text("General: ", tostring(#b.general_refs))
 	imgui.Text("Relations: ", tostring(#b.relations))
+
+	render.dump_flags(b.flags)
 
 	for _, r in ipairs(b.relations) do
 		imgui.Text("Relation ", tostring(r))
@@ -278,7 +283,7 @@ function render_viewitems()
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 
-	--debug_zones()
+	debug_zones()
 
 	--imgui.Text("Hovered: " .. tostring(building))
 
@@ -292,7 +297,7 @@ function render_viewitems()
 
 		--jobinspector.inspect_workshop(building)
 
-		--inspect_building(building)
+		inspect_building(building)
 
 		--debug_stock(building)
 
