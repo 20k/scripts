@@ -30,6 +30,10 @@ function valid_unit(unit)
 		return false
 	end
 
+	if unit_in_any_squad(unit) then
+		return false
+	end
+
 	return true
 end
 
@@ -67,6 +71,20 @@ last_dwarf_list = nil
 selected_squad = -1
 selected_dwarf = -1
 
+function unit_in_any_squad(unit)
+	local pending_unit_histfig = nobles.unit_to_histfig(unit)
+
+	for _, check in ipairs(df.squad.get_vector()) do
+		for _, p in ipairs(check.positions) do
+			if p.occupant == pending_unit_histfig.id then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
 function appoint_to(squad_id, slot, pending_unit)
 	local squad = df.squad.find(squad_id)
 
@@ -84,6 +102,10 @@ function appoint_to(squad_id, slot, pending_unit)
 
 	if leader_assignment == nil then
 		dfhack.println("No leader assignment")
+		return
+	end
+
+	if unit_in_any_squad(pending_unit) then
 		return
 	end
 
