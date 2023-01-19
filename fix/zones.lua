@@ -25,7 +25,7 @@ function building_into_zone_unidir(bld, zone)
 end
 
 function zone_into_building_unidir(bld, zone)
-	for k,v in ipairs(zone.relations) do
+	for k,v in ipairs(bld.relations) do
 		if v == zone then
 			return
 		end
