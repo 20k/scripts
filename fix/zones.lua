@@ -1,5 +1,15 @@
+local utils=require('utils')
+
 local function id_sorter(a, b)
-	return a.id < b.id
+	if a.id == b.id then
+		return 0
+	end
+	
+	if a.id > b.id then
+		return 1
+	end
+	
+	return -1
 end
 
 function building_into_zone_unidir(bld, zone)
@@ -11,7 +21,7 @@ function building_into_zone_unidir(bld, zone)
 	
 	zone.contained_buildings:insert('#', bld)
 	
-	table.sort(zone.contained_buildings, id_sorter)
+	utils.sort_vector(zone.contained_buildings, nil, id_sorter)
 end
 
 function zone_into_building_unidir(bld, zone)
@@ -23,13 +33,11 @@ function zone_into_building_unidir(bld, zone)
 
 	bld.relations:insert('#', zone)
 
-	table.sort(bld.relations, id_sorter)
-
-    bld->relations.push_back(zone);
+	utils.sort_vector(bld.relations, nil, id_sorter)
 end
 
 local function add_to_zones(bld)
-	if not bld.canBeZone() then
+	if not bld:canBeRoom() then
 		return
 	end
 	
@@ -44,11 +52,11 @@ local function add_to_zones(bld)
 end
 
 for k,zone in ipairs(df.global.world.buildings.other.ACTIVITY_ZONE) do
-	zone.contained_buildings:clear()
+	zone.contained_buildings:resize(0)
 end
 
 for k, bld in ipairs(df.global.world.buildings.other.IN_PLAY) do
-	bld.relations:clear()
+	bld.relations:resize(0)
 
 	add_to_zones(bld)
 end
