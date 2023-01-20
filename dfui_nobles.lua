@@ -97,8 +97,24 @@ function unit_to_histfig(unit)
 	return nem.figure
 end
 
+function find_offset(df_array, id)
+	for i,v in ipairs(df_array) do
+		if v.id == id then
+			return i
+		end
+	end
+
+	return -1
+end
+
 --doesn't work for eg monarch
 function add_or_transfer_fort_title_to(unit, assignment_id)
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
+
+	if entity == nil then
+		return nil
+	end
+
 	local assignment = assignment_id_to_assignment(assignment_id)
 
 	if assignment == nil then
@@ -111,10 +127,12 @@ function add_or_transfer_fort_title_to(unit, assignment_id)
 		return false
 	end
 
+	local assignment_vector_idx = find_offset(entity.positions.assignments, assignment_id)
+
 	remove_fort_title(assignment_id)
 
 	newfig.entity_links:insert("#",{new=df.histfig_entity_link_positionst,entity_id=df.global.plotinfo.group_id,
-				link_strength=100,assignment_id=assignment_id,start_year=df.global.cur_year})
+				link_strength=100,assignment_id=assignment_id, assignment_vector_idx=assignment_vector_idx,start_year=df.global.cur_year})
 
 	--as far as I can tell, histfig2 is never any different to histfig
 	--tested using a vampire bookkeeper
@@ -294,6 +312,7 @@ function push_new_assignment(position_id)
 	next_assignment.histfig = -1
 	next_assignment.histfig2 = -1
 	next_assignment.position_id = position_id
+	next_assignment.position_vector_idx = find_offset(entity.positions.own, position_id)
 
 	for i,j in pairs(next_assignment.flags) do
 		j = 0
