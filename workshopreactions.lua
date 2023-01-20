@@ -911,7 +911,9 @@ function get_siege()
     return result
 end
 
-jobs_furnace={
+function get_jobs_furnace()
+
+local jobs_furnace={
     [df.furnace_type.Smelter]={
         {
             name="Melt metal object",
@@ -955,7 +957,12 @@ jobs_furnace={
         }
     },
 }
-jobs_workshop={
+
+return jobs_furnace
+end
+
+function get_jobs_workshop()
+local jobs_workshop={
     [df.workshop_type.Jewelers]={
         {
             name="cut gems",
@@ -1137,6 +1144,8 @@ jobs_workshop={
         },]]--
     ,
 }
+return jobs_workshop
+end
 local function matchIds(bid1,wid1,cid1,bid2,wid2,cid2)
     if bid1~=-1 and bid2~=-1 and bid1~=bid2 then
         return false
@@ -1222,9 +1231,9 @@ function getJobs(buildingId,workshopId,customId,adventure_check)
     local ret={}
     local c_jobs
     if buildingId==df.building_type.Workshop then
-        c_jobs=jobs_workshop[workshopId]
+        c_jobs=get_jobs_workshop()[workshopId]
     elseif buildingId==df.building_type.Furnace then
-        c_jobs=jobs_furnace[workshopId]
+        c_jobs=get_jobs_furnace()[workshopId]
 
         if workshopId == df.furnace_type.Smelter or workshopId == df.furnace_type.MagmaSmelter then
             c_jobs=utils.clone(c_jobs,true)
