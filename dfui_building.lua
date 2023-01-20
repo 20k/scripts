@@ -1488,11 +1488,11 @@ function handle_specific_zone_render(building)
 			max_squad_name = math.max(max_squad_name, #military.get_squad_name(df.squad.find(s_id)))
 		end
 
-		imgui.Text("Zone ID", tostring(building.id))
+		--[[imgui.Text("Zone ID", tostring(building.id))
 
 		for _,v in ipairs(building.squad_room_info) do
 			imgui.Text("Contains", tostring(v.squad_id))
-		end
+		end]]--
 
 		for _, s_id in ipairs(sorted_squads) do
 			local squad = df.squad.find(s_id)
@@ -1519,31 +1519,13 @@ function handle_specific_zone_render(building)
 				end
 			end
 
-			--[[local found_count = 0
-			local found_count2 = 0
-
-
-			for _, room in ipairs(building.squad_room_info) do
-				if room.squad_id == squad.id then
-					found_count2 = found_count2+1
-					--break
-				end
-			end
-
-			imgui.Text(tostring(found_count))
-
-			imgui.SameLine()
-			imgui.Text(tostring(found_count2))
-
-			imgui.SameLine()]]--
-
-			imgui.Text("Squad id", tostring(squad.id))
+			--[[imgui.Text("Squad id", tostring(squad.id))
 
 			for _, room in ipairs(squad.rooms) do
 				imgui.Text(tostring(room.building_id))
 
 				imgui.SameLine()
-			end
+			end]]--
 
 			imgui.Text(name)
 
