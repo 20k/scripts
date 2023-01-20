@@ -1,4 +1,5 @@
 local gui = require('gui')
+local nobles = reqscript('dfui_nobles')
 
 imgui = dfhack.imgui
 
@@ -345,6 +346,32 @@ function dump_titles(eid)
 
 		imgui.Text("Squad Size " .. tostring(position.squad_size))
 
+		imgui.Text("Position id", tostring(position.id))
+		imgui.Text("Assignment id", tostring(v.id))
+		imgui.Text("Assignment position id", tostring(v.position_id))
+		imgui.Text("Assignment position vector idx", tostring(v.position_vector_idx))
+		imgui.Text("Calc Assignments assignment vector idx", tostring(nobles.find_offset(my_entity.positions.assignments, v.id)))
+
+		if v.histfig ~= -1 then
+			local fig=df.historical_figure.find(v.histfig)
+
+			if fig then
+				--imgui.Text("Has histfig")
+				local ass = v
+
+				for k,v in pairs(fig.entity_links) do
+					if df.histfig_entity_link_positionst:is_instance(v) and v.assignment_id==ass.id and v.entity_id==df.global.plotinfo.group_id then
+						imgui.Text("LinkKKKKKKKKKKKKKKKKK", tostring(v.assignment_id), tostring(v.assignment_vector_idx))
+					end
+				end
+			end
+		end
+
+		--[[if v.position_vector_idx ~= -1 then
+			local test = my_entity.positions.own[v.position_vector_idx]
+			imgui.Text(test.code)
+		end]]--
+
 		--imgui.Text("Number: " .. tostring(position.number))
 
 		--imgui.Text("Sid " .. tostring(v.squad_id))
@@ -399,7 +426,7 @@ end
 function Inspector:render()
 	self:renderParent()
 
-	if(imgui.IsKeyPressed(6)) then
+	if(imgui.IsKeyPressed("LEAVESCREEN")) then
 		self:dismiss()
 	end
 
