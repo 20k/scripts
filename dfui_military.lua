@@ -980,8 +980,46 @@ function render_routines()
 	end
 end
 
+function debug_squads()
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
+	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
+
+	for _, s_id in ipairs(sorted_squads) do
+		local s = df.squad.find(s_id)
+
+		imgui.Text(get_squad_name(s))
+
+		imgui.Text("ammo_unk", tostring(s.ammo.unk_v50_1))
+		imgui.Text("Eid", tostring(s.entity_id))
+		imgui.Text("leader_position", tostring(s.leader_position))
+		imgui.Text("leader_assignment", tostring(s.leader_assignment))
+		imgui.Text("unk_1", tostring(s.unk_1))
+		imgui.Text("unk_v50_1", tostring(s.unk_v50_1))
+		imgui.Text("unk_v50_2", tostring(s.unk_v50_2))
+		imgui.Text("symbol", tostring(s.symbol))
+		imgui.Text("fr", tostring(s.foreground_r))
+		imgui.Text("fg", tostring(s.foreground_g))
+		imgui.Text("fb", tostring(s.foreground_b))
+		imgui.Text("br", tostring(s.background_r))
+		imgui.Text("bg", tostring(s.background_g))
+		imgui.Text("bb", tostring(s.background_b))
+
+		if imgui.Button("Dec"..tostring(#get_squad_name(s))) then
+			--s.unk_v50_1 = s.unk_v50_1 - 1
+			--s.unk_v50_2 = s.unk_v50_2 - 1
+		end
+
+		if imgui.Button("Fix"..tostring(#get_squad_name(s))) then
+			s.unk_v50_1 = 0
+			s.unk_v50_2 = 0
+		end
+	end
+
+end
+
 function render_military()
 	--debug_military()
+	debug_squads()
 
 	render.set_can_window_pop(true)
 
