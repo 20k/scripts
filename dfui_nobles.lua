@@ -377,7 +377,7 @@ function collect_assignment_objects_with_possible_squads()
 		local assignment = entity.positions.assignments[i]
 		local position = position_id_to_position(assignment_to_position(assignment.id))
 
-		if position.squad_size > 0 then
+		if position.squad_size > 0 and can_appoint(position) then
 			result[#result+1] = assignment
 		end
 	end
