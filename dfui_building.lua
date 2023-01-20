@@ -1523,10 +1523,6 @@ function handle_specific_zone_render(building)
 			local i_i_flag = imgui.Ref(i_flag)
 			local i_e_flag = imgui.Ref(e_flag)
 
-			imgui.SameLine()
-
-			imgui.Checkbox("S##" .. tostring(s_id), i_s_flag)
-
 			function local_tooltip(str)
 				if force_once then
 					return
@@ -1540,6 +1536,10 @@ function handle_specific_zone_render(building)
 
 				force_once = true
 			end
+
+			imgui.SameLine()
+
+			imgui.Checkbox("S##" .. tostring(s_id), i_s_flag)
 
 			if imgui.IsItemHovered() then
 				local_tooltip("Toggle whether the squad will sleep here")
@@ -1568,6 +1568,10 @@ function handle_specific_zone_render(building)
 			if imgui.IsItemHovered() then
 				local_tooltip("Toggle whether the squad will store squad-level equipment here, such as ammunition")
 			end
+
+			local flags = {sleep=imgui.Get(i_s_flag), train=imgui.Get(i_t_flag), indiv_eq=imgui.Get(i_i_flag), squad_eq=imgui.Get(i_e_flag)}
+
+			dfhack.units.updateRoomAssignments(squad.id, building.id, flags)
 		end
 	end
 
