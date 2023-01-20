@@ -171,22 +171,16 @@ function debug_zones()
 			if v.type == df.civzone_type.ArcheryRange then
 				imgui.Text("Dir_x " .. tostring(v.zone_settings.archery.dir_x))
 				imgui.Text("Dir_y " .. tostring(v.zone_settings.archery.dir_y))
-			end
-
-			if v.type == df.civzone_type.PlantGathering then
+			elseif v.type == df.civzone_type.PlantGathering then
 				render.dump_flags(v.zone_settings.gather)
-			end
-
-			if v.type == df.civzone_type.Pen then
+			elseif v.type == df.civzone_type.Pen then
 				imgui.Text("Pen " .. tostring(v.zone_settings.pen.unk))
-			end
-
-			if v.type == df.civzone_type.Tomb then
+			elseif v.type == df.civzone_type.Tomb then
 				render.dump_flags(v.zone_settings.tomb)
-			end
-
-			if v.type == df.civzone_type.Pond then
+			elseif v.type == df.civzone_type.Pond then
 				imgui.Text("Pond: " .. tostring(v.zone_settings.pit_pond))
+			else
+				imgui.Text("Unknown ", tostring(v.zone_settings.whole.i1), tostring(v.zone_settings.whole.i2))
 			end
 
 			imgui.Text("3 " .. tostring(v.anon_3))
