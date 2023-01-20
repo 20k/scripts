@@ -7,6 +7,7 @@ render = reqscript('dfui_render')
 --place = reqscript('internal/quickfort/place')
 zone = reqscript('internal/quickfort/zone')
 utils = require('utils')
+military = reqscript('dfui_military')
 require('dfhack.buildings')
 
 --workaround
@@ -1472,6 +1473,101 @@ function handle_specific_zone_render(building)
 
 		if which_clicked == 2 then
 			building.zone_settings.pit_pond = df.building_civzonest.T_zone_settings.T_pit_pond.top_of_pond
+		end
+	end
+
+	local force_once = false
+
+	if building.type == df.civzone_type.Barracks then
+		local entity = df.historical_entity.find(df.global.plotinfo.group_id)
+		local sorted_squads = military.get_sorted_squad_ids_by_precedence(entity.squads)
+
+		local max_squad_name = 0
+
+		for _, s_id in ipairs(sorted_squads) do
+			max_squad_name = math.max(max_squad_name, #military.get_squad_name(df.squad.find(s_id)))
+		end
+
+		for _, s_id in ipairs(sorted_squads) do
+			local squad = df.squad.find(s_id)
+
+			local name = military.get_squad_name(squad)
+
+			for i=#name,max_squad_name do
+				name = name .. " "
+			end
+
+			local s_flag = false
+			local t_flag = false
+			local i_flag = false
+			local e_flag = false
+
+			local found_room = nil
+
+			for _, room in ipairs(squad.rooms) do
+				if room.building_id == building.id then
+					s_flag = room.mode.sleep
+					t_flag = room.mode.train
+					i_flag = room.mode.indiv_eq
+					e_flag = room.mode.squad_eq
+
+					found_room = room
+					break
+				end
+			end
+
+			imgui.Text(name)
+
+			local i_s_flag = imgui.Ref(s_flag)
+			local i_t_flag = imgui.Ref(t_flag)
+			local i_i_flag = imgui.Ref(i_flag)
+			local i_e_flag = imgui.Ref(e_flag)
+
+			imgui.SameLine()
+
+			imgui.Checkbox("S##" .. tostring(s_id), i_s_flag)
+
+			function local_tooltip(str)
+				if force_once then
+					return
+				end
+
+				imgui.SetNextWindowSize({x=40, y=0}, 0)
+
+				imgui.BeginTooltip()
+				imgui.TextWrapped(str)
+				imgui.EndTooltip()
+
+				force_once = true
+			end
+
+			if imgui.IsItemHovered() then
+				local_tooltip("Toggle whether the squad will sleep here")
+			end
+
+			imgui.SameLine()
+
+			imgui.Checkbox("T##" .. tostring(s_id), i_t_flag)
+
+			if imgui.IsItemHovered() then
+				local_tooltip("Toggle whether the squad will train here")
+			end
+
+			imgui.SameLine()
+
+			imgui.Checkbox("I##" .. tostring(s_id), i_i_flag)
+
+			if imgui.IsItemHovered() then
+				local_tooltip("Toggle whether the soldiers will store their individually assigned weapons and armour here")
+			end
+
+			imgui.SameLine()
+
+			imgui.Checkbox("E##" .. tostring(s_id), i_e_flag)
+
+			if imgui.IsItemHovered() then
+				local_tooltip("Toggle whether the squad will store squad-level equipment here, such as ammunition")
+			end
 		end
 	end
 
