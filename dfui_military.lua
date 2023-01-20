@@ -70,6 +70,7 @@ end
 last_dwarf_list = nil
 selected_squad = -1
 selected_dwarf = -1
+dirty_dwarf_list = true
 
 function unit_in_any_squad(unit)
 	local pending_unit_histfig = nobles.unit_to_histfig(unit)
@@ -86,6 +87,7 @@ function unit_in_any_squad(unit)
 end
 
 function appoint_to(squad_id, slot, pending_unit)
+	dirty_dwarf_list = true
 	local squad = df.squad.find(squad_id)
 
 	if squad == nil then
@@ -126,6 +128,8 @@ end
 --don't think either of the manip functions are correct, dwarves have a squad_id and a squad_position
 --When adding a dwarf, the game appears to fix them up, but not when removing
 function remove_from(squad_id, slot)
+	dirty_dwarf_list = true
+
 	local squad = df.squad.find(squad_id)
 
 	if squad == nil then
@@ -268,10 +272,11 @@ function render_squad_unit_selection()
 	local all_elegible_dwarf_units = last_dwarf_list
 	local commandable_assignments_without_squads = get_all_uncreated_squad_assignments(entity.squads)
 
-	if render.menu_was_changed() or all_elegible_dwarf_units == nil then
+	if render.menu_was_changed() or all_elegible_dwarf_units == nil or dirty_dwarf_list then
 		all_elegible_dwarf_units = get_valid_units()
 		last_dwarf_list = all_elegible_dwarf_units
 		render.menu_change_clear()
+		dirty_dwarf_list = false
 	end
 
 	local dwarf_count = 300
