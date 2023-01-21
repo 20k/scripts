@@ -664,6 +664,11 @@ end
 
 selected_squad_uniform = 1
 
+function do_uniform_update(squad)
+	squad.ammo.unk_v50_1 = 2047
+	df.global.plotinfo.equipment.update.whole = 2047
+end
+
 function render_assign_uniforms()
 	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 
@@ -743,6 +748,8 @@ function render_assign_uniforms()
 						copy_flags(pp.flags, flags)
 					end
 				end
+
+				do_uniform_update(csquad)
 			end
 		end
 
@@ -786,6 +793,8 @@ function render_assign_uniforms()
 		for _,p in ipairs(csquad.positions) do
 			p.flags.replace_clothing = invert(is_replace)
 		end
+
+		do_uniform_update(csquad)
 	end
 
 	--imgui.SameLine()
@@ -794,6 +803,12 @@ function render_assign_uniforms()
 		for _,p in ipairs(csquad.positions) do
 			p.flags.exact_matches = invert(is_exact)
 		end
+
+		do_uniform_update(csquad)
+	end
+
+	if csquad.ammo.unk_v50_1 ~= 2047 and imgui.Button("Update Equipment##"..tostring(csquad_id)) then
+		do_uniform_update(csquad)
 	end
 
 	::nope::
@@ -1017,9 +1032,94 @@ function debug_squads()
 
 end
 
+--[[function print_struct(s)
+	if type(s) == "number" then
+		imgui.Text(tonumber(s))
+	elseif type(s) == "string" then
+		imgui.Text(s)
+	elseif type(s) == "boolean" then
+		imgui.Text(tostring(s))
+	elseif type(s) == "function" then
+		imgui.Text("Function")
+	elseif type(s) == "table" then
+		imgui.Text("table")
+	elseif s == nil then
+		imgui.Text("nil")
+	else
+		imgui.Text(type(s))
+	end
+end]]--
+
+
+function debug_uniform()
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
+	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
+
+	for _, s_id in ipairs(sorted_squads) do
+		local s = df.squad.find(s_id)
+
+		imgui.Text(get_squad_name(s))
+
+		--imgui.Text("ammo_unk", tostring(s.ammo.unk_v50_1))
+		--imgui.Text("Activity", tostring(s.activity))
+		--imgui.Text("Prio", tostring(s.uniform_priority))
+		--imgui.Text("unk_1", tostring(s.unk_1))
+
+		--[[for _, pos in ipairs(s.positions) do
+			imgui.Text("PUnk1", tostring(pos.unk_1))
+			imgui.Text("PUnk2", tostring(pos.unk_2))
+		end]]--
+
+		--for _, position in ipairs(s.positions) do
+		local position = s.positions[0]
+
+		for k,p in ipairs(s.positions) do
+			p.unk_c4 = "Metal armor"
+		end
+
+		imgui.Text(tostring(#s.rack_combat))
+		imgui.Text(tostring(#s.rack_training))
+		imgui.Text(tostring(#s.ammo.train_weapon_free))
+		imgui.Text(tostring(#s.ammo.train_weapon_inuse))
+		imgui.Text(tostring(#s.ammo.ammo_items))
+		imgui.Text(tostring(#s.ammo.ammo_units))
+
+		--[[if imgui.Button("Go") then
+		printall_recurse(s)
+		end]]--
+
+
+		--imgui.Text(position.unk_c4, tostring(#position.unk_c4))
+
+			--for _, spec_vec in ipairs(position.uniform) do
+			--[[local spec_vec = position.uniform[0]
+				for _, spec in ipairs(spec_vec) do
+					--imgui.Text(tostring(spec.item))
+					--imgui.Text(tostring(spec.color))
+					--imgui.Text(tostring(#spec.assigned))
+					--render.dump_flags(spec.indiv_choice)
+					imgui.Text(tostring(spec.item_filter.item_type))
+					imgui.Text(tostring(spec.item_filter.item_subtype))
+					imgui.Text(tostring(spec.item_filter.material_class))
+					imgui.Text(tostring(spec.item_filter.mattype))
+					imgui.Text(tostring(spec.item_filter.matindex))
+
+					for k,v in pairs(spec.indiv_choice) do
+						imgui.Text(k,tostring(v))
+					end
+
+					--imgui.Text(tostring(spec.indiv_choice))
+				end
+			--end]]--
+		--end
+	end
+end
+
 function render_military()
 	--debug_military()
-	debug_squads()
+	--debug_squads()
+
+	--debug_uniform()
 
 	render.set_can_window_pop(true)
 
