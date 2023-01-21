@@ -7,6 +7,10 @@ utils = require("utils")
 imgui = dfhack.imgui
 
 function add_job(building, job)
+	if #building.jobs >= 10 then
+		return
+	end
+
 	--so
 	--need a general_ref which is a building holder
 	--general_ref_building_holderst
@@ -77,7 +81,7 @@ function add_job(building, job)
 
 	building.jobs:insert('#', out_job)
 
-	dfhack.job.linkIntoWorld(out_job)
+	dfhack.job.linkIntoWorld(out_job, true)
 
 	return true
 end
