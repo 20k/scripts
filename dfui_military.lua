@@ -738,6 +738,7 @@ function render_assign_uniforms()
 					for pi,pp in ipairs(csquad.positions) do
 						--leak memory
 						pp.uniform[i]:resize(0)
+						pp.unk_c4 = v.name
 
 						for o,_ in ipairs(v.uniform_item_types[i]) do
 							local spec = entity_uniform_to_uniform_spec(v, i, o)
