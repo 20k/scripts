@@ -575,17 +575,9 @@ function render_titles()
 			render.set_menu_item(nil)
 		end
 
-		if imgui.Button("Leave Vacant##-1") then
-			remove_fort_title(menu_item)
-			render.set_menu_item(nil)
-			goto done
-		end
+		local valid_units = {}
 
-		imgui.NewLine()
-
-		for i=0,#units-1 do
-			local unit = units[i]
-
+		for _,unit in ipairs(units) do
 			if not valid_unit(unit) then
 				goto continue
 			end
@@ -594,16 +586,23 @@ function render_titles()
 				goto continue
 			end
 
-			local name = render.get_user_facing_name(unit)
-
-			if imgui.Button(name .. "##" .. tostring(unit.id) .. "_" .. tostring(menu_item)) then
-				add_or_transfer_fort_title_to(unit, menu_item)
-				render.set_menu_item(nil)
-
-				goto done
-			end
+			valid_units[#valid_units + 1] = unit
 
 			::continue::
+		end
+
+		local opts = {paginate=true, leave_vacant=true}
+
+		local clicked = render.display_unit_list(valid_units, opts)
+
+		if clicked ~= nil and clicked.type == "vacant" then
+			remove_fort_title(menu_item)
+			render.set_menu_item(nil)
+		end
+
+		if clicked ~= nil and clicked.type == "unit" then
+			add_or_transfer_fort_title_to(clicked.data, menu_item)
+			render.set_menu_item(nil)
 		end
 
 		::done::
