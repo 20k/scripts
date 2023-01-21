@@ -585,6 +585,7 @@ function display_unit_list(units_in, opts)
 
     local last_migration_date_name = ""
     local active = true
+	local has_tree = false
 
 	local start_dwarf = 1
 	local end_dwarf = #units
@@ -634,7 +635,7 @@ function display_unit_list(units_in, opts)
 
         if migration_name ~= last_migration_date_name then
 			if visible then
-				if active and not opts.paginate then
+				if has_tree then
 					imgui.TreePop()
 				end
 
@@ -646,7 +647,8 @@ function display_unit_list(units_in, opts)
 					imgui.Text("Arrived: " .. migration_name)
 					active = true
 				else
-					active = imgui.TreeNodeEx("Arrived: " .. migration_name, (1<<5))
+					has_tree = imgui.TreeNodeEx("Arrived: " .. migration_name, (1<<5))
+					active = has_tree
 				end
 
 				imgui.Indent()
@@ -713,7 +715,7 @@ function display_unit_list(units_in, opts)
 		end
 	end
 
-    if active and not opts.paginate then
+    if has_tree then
         imgui.TreePop()
     end
 
