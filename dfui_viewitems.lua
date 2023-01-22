@@ -448,6 +448,16 @@ function handle_building_mouseover()
 	end
 end
 
+function debug_unit(v)
+	imgui.Text("Owned?", tostring(#v.owned_buildings))
+
+	for idx,b in ipairs(v.owned_buildings) do
+		imgui.Text("B", tostring(b))
+
+		--imgui.Text("Id", b.id)
+	end
+end
+
 function handle_unit_mouseover()
 	if imgui.WantCaptureMouse() then
 		return
@@ -464,6 +474,7 @@ function handle_unit_mouseover()
 			imgui.BeginTooltip()
 
 			render.TextColoredUnit(v)
+			debug_unit(v)
 
 			imgui.EndTooltip()
 		end

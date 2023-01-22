@@ -1372,6 +1372,18 @@ function get_assignable_units()
 	return valid
 end
 
+function remove_current_assigned(zone)
+	local old_unit = df.unit.find(zone.assigned_unit_id)
+
+	if old_unit then
+		for i=(#old_unit.owned_buildings-1),0,-1 do
+			if old_unit.owned_buildings[i] == zone then
+				old_unit.owned_buildings:erase(i)
+			end
+		end
+	end
+end
+
 function handle_specific_zone_render(building)
 	if building.type == df.civzone_type.ArcheryRange then
 		local base_render = {{key="l", text="L"}, {key="r", text="R"}, {key="t", text="T"}, {key="b", text="B"}}
@@ -1631,13 +1643,19 @@ function handle_specific_zone_render(building)
 			local clicked = render.display_unit_list(assignable, opts)
 
 			if clicked ~= nil and clicked.type == "vacant" then
+				remove_current_assigned(building)
+
 				building.assigned_unit_id = -1
 				building.assigned_unit = nil
 			end
 
 			if clicked ~= nil and clicked.type == "unit" then
+				remove_current_assigned(building)
+
 				building.assigned_unit_id = clicked.data.id
 				building.assigned_unit = clicked.data
+
+				clicked.data.owned_buildings:insert('#', building)
 			end
 
 			imgui.TreePop()
@@ -1677,7 +1695,9 @@ function get_subtype_map()
 		["Gather Fruit"]=df.civzone_type.PlantGathering,
 		["Sand"]=df.civzone_type.SandCollection,
 		["Clay"]=df.civzone_type.ClayCollection,
-		["Water Source"]=df.civzone_type.WaterSource
+		["Water Source"]=df.civzone_type.WaterSource,
+		["Dungeon"]=df.civzone_type.Dungeon,
+		["Animal Training"]=df.civzone_type.AnimalTraining
 	}
 
 	return subtype_map
