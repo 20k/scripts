@@ -592,7 +592,7 @@ building_db = {
        is_valid_tile_fn=is_valid_tile_dirt,
        is_valid_extent_fn=is_extent_nonempty},
     -- workshops
-    k={label='Kennels',
+    k={label='Vermin Catcher\'s Shop',
        type=df.building_type.Workshop, subtype=df.workshop_type.Kennels,
        min_width=5, max_width=5, min_height=5, max_height=5},
     we={label='Leather Works',
