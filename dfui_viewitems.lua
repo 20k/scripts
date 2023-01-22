@@ -392,22 +392,23 @@ function handle_building_mouseover()
 	local building = dfhack.buildings.findAtTile(xyz2pos(mouse_world_pos.x, mouse_world_pos.y, mouse_world_pos.z))
 
 	local current_menu = render.get_menu()
-	local target_menu = "View Items In Buildings"
+	local target_menu = "Set Building Tasks/Prefs"
 
 	if building ~= nil then
 		imgui.EatMouseInputs()
 
 		if (current_menu == "main" or current_menu == target_menu) and imgui.IsMouseClicked(0) then
-			selected_building_pos.x = mouse_world_pos.x
-			selected_building_pos.y = mouse_world_pos.y
-			selected_building_pos.z = mouse_world_pos.z
+			--selected_building_pos.x = mouse_world_pos.x
+			--selected_building_pos.y = mouse_world_pos.y
+			--selected_building_pos.z = mouse_world_pos.z
 
 			if render.get_menu() ~= target_menu then
 				render.push_menu(target_menu)
 			end
 
 			render.pop_all_submenus()
-			render.push_transparent_submenu(true)
+			--render.push_transparent_submenu(true)
+			render.push_transparent_submenu({pos=mouse_world_pos, screen="base"})
 		end
 
 		local str = building_name(building)
