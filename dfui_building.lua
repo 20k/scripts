@@ -1355,6 +1355,23 @@ function finalise_zone(building, subtype)
 	building.anon_7 = -1
 end
 
+function get_assignable_units()
+	local valid = {}
+
+	local units = df.global.world.units.active
+
+	for _,v in ipairs(units) do
+        if dfhack.units.isFortControlled(v) and not
+		   dfhack.units.isAnimal(v) and not
+		   dfhack.units.isHidden(v) and not
+		   dfhack.units.isKilled(v) then
+			valid[#valid + 1] = v
+        end
+	end
+
+	return valid
+end
+
 function handle_specific_zone_render(building)
 	if building.type == df.civzone_type.ArcheryRange then
 		local base_render = {{key="l", text="L"}, {key="r", text="R"}, {key="t", text="T"}, {key="b", text="B"}}
@@ -1585,6 +1602,49 @@ function handle_specific_zone_render(building)
 			dfhack.units.updateRoomAssignments(squad.id, building.id, flags)
 		end
 	end
+
+	--todo: archery range allows training squads. Works exactly the same just with only train flag
+	--todo: pit/pond and pen/pasture allow assigned animals
+	--dining hall, office, bedroom, and tomb allow assigning units
+
+	if building.type == df.civzone_type.DiningHall or
+	   building.type == df.civzone_type.Office or
+	   building.type == df.civzone_type.Bedroom or
+	   building.type == df.civzone_type.Tomb then
+		local name = "None"
+
+		if building.assigned_unit_id ~= -1 then
+			local unit = building.assigned_unit
+
+			if unit ~= nil then
+				name = render.get_user_facing_name(unit)
+			else
+				name = "Error"
+			end
+		end
+
+		if imgui.TreeNode("Assigned: " .. name .. "###assignbox") then
+			local assignable = get_assignable_units()
+
+			local opts = {paginate=true, leave_vacant=true}
+
+			local clicked = render.display_unit_list(assignable, opts)
+
+			if clicked ~= nil and clicked.type == "vacant" then
+				building.assigned_unit_id = -1
+				building.assigned_unit = nil
+			end
+
+			if clicked ~= nil and clicked.type == "unit" then
+				building.assigned_unit_id = clicked.data.id
+				building.assigned_unit = clicked.data
+			end
+
+			imgui.TreePop()
+		end
+	end
+
+	imgui.NewLine()
 
 	local to_render = {}
 	to_render[#to_render+1] = {key="R", text="Delete Zone"}

@@ -192,6 +192,7 @@ function get_unit_title_assignment_ids(unit)
 	return titles
 end
 
+--this doesn't look right. isFortControlled?
 function valid_unit(unit)
 	if not dfhack.units.isOwnGroup(unit) then
 		return false

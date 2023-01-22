@@ -194,17 +194,31 @@ function debug_zones()
 			imgui.Text("5 " .. tostring(v.anon_5))
 
 			if v.assigned_unit_id ~= -1 then
-				imgui.Text("unit " .. v.assigned_unit.id)
+				imgui.Text("unit " .. v.assigned_unit.id, tostring(v.assigned_unit))
 			end
 
 			--imgui.Text("6 " .. tostring(v.anon_6))
 			--imgui.Text("7 " .. tostring(v.anon_7))
 			imgui.Text("rinfo " .. tostring(#v.squad_room_info))
 
+			imgui.Text("Checking Squad")
+
 			for k,d in pairs(v.squad_room_info) do
 				imgui.Text("id " .. tostring(d.squad_id))
 				--imgui.Text("flags " .. tostring(d.flags))
 				render.dump_flags(d.mode)
+
+
+				local squad = df.squad.find(d.squad_id)
+
+				imgui.Text("SquadSize", tostring(#squad.rooms))
+
+				for _, r in ipairs(squad.rooms) do
+					if r.building_id == v.id then
+						imgui.Text("Found")
+						render.dump_flags(r.mode)
+					end
+				end
 			end
 
 			imgui.Text("6 " .. tostring(v.anon_6))
@@ -277,7 +291,7 @@ function render_viewitems()
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 
-	--debug_zones()
+	debug_zones()
 
 	--imgui.Text("Hovered: " .. tostring(building))
 
