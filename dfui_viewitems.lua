@@ -223,6 +223,13 @@ function debug_zone(v)
 		imgui.Text("6 " .. tostring(v.anon_6))
 		imgui.Text("7 " .. tostring(v.anon_7))
 
+		imgui.Text("base_world_data_id", tostring(v.world_data_id))
+		imgui.Text("base_world_data_subid", tostring(v.world_data_subid))
+		imgui.Text("unk_v40_2", tostring(v.unk_v40_2))
+		imgui.Text("site_id", tostring(v.site_id))
+		imgui.Text("location_id", tostring(v.location_id))
+		imgui.Text("unk_v40_3", tostring(v.unk_v40_3))
+
 		--[[for k,v in pairs(df.global.world.schedules.all) do
 			imgui.Text(tostring(d))
 		end]]--
@@ -295,7 +302,7 @@ function render_viewitems()
 
 	local building = dfhack.buildings.findAtTile(xyz2pos(check_x, check_y, check_z))
 
-	debug_zones()
+	--debug_zones()
 
 	--imgui.Text("Hovered: " .. tostring(building))
 
@@ -428,6 +435,8 @@ function handle_building_mouseover()
 		imgui.EatMouseInputs()
 
 		for _,civzone in ipairs(civzones) do
+			debug_zone(civzone)
+
 			if (current_menu == "main" or current_menu == "Zones") and imgui.IsMouseClicked(0) then
 				if render.get_menu() ~= "Zones" then
 					render.push_menu("Zones")
@@ -454,6 +463,7 @@ function handle_building_mouseover()
 end
 
 function debug_unit(v)
+	imgui.Text("Id", tostring(v.id))
 	imgui.Text("Owned?", tostring(#v.owned_buildings))
 
 	for idx,b in ipairs(v.owned_buildings) do
