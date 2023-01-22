@@ -538,7 +538,7 @@ function render_setbuilding()
 
 	local screen = state.screen
 
-	if screen == "base" and jobs ~= nil then
+	if screen == "base" and jobs ~= nil and #submenu_stack == 1 then
 		display_existing_jobs(building)
 
 		imgui.NewLine()
@@ -549,8 +549,13 @@ function render_setbuilding()
 
 		if next == "Add new task" then
 			--render.pop_all_submenus()
+			--if render.get_submenu() ~= "Add new task" then
 			render.push_submenu(next)
 		end
+	else
+		imgui.NewLine()
+		display_existing_jobs(building)
+		imgui.NewLine()
 	end
 
 	if imgui.IsMouseClicked(0) and not imgui.WantCaptureMouse() and dfhack.buildings.findAtTile(mouse_world_pos) ~= nil then
