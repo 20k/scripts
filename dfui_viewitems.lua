@@ -125,136 +125,140 @@ function debug_stock(building)
 	end
 end
 
+function debug_zone(v)
+	if df.building_civzonest:is_instance(v) then
+
+		render.dump_flags(v.flags)
+
+		imgui.Text("Id", tostring(v.id))
+		imgui.Text("Civzonebuilding")
+
+		imgui.Text("Jobs", tostring(#v.jobs))
+		imgui.Text("Specific", tostring(#v.specific_refs))
+		imgui.Text("General", tostring(#v.general_refs))
+
+		imgui.Text("Relations", tostring(#v.relations))
+
+		for _,r in ipairs(v.relations) do
+			imgui.Text("Relation", tostring(r))
+		end
+
+		imgui.Text("Assigned Units: ", tostring(#v.assigned_units))
+		imgui.Text("Assigned Items: ", tostring(#v.assigned_items))
+
+		imgui.Text(v.name)
+		imgui.Text(tostring(v.x1))
+		imgui.Text(tostring(v.y1))
+		imgui.Text(tostring(v.x2))
+		imgui.Text(tostring(v.y2))
+
+		if v.room.extents then
+			imgui.Text("Extents " .. tostring(v.room.extents[0]))
+		end
+
+		--imgui.Text(tostring(v.id))
+		imgui.Text("is_active " .. tostring(v.is_active))
+		imgui.Text("1 " .. tostring(v.anon_1))
+		imgui.Text("2 " .. tostring(v.anon_2))
+		--imgui.Text("5 " .. tostring(v.anon_5))
+		--imgui.Text("6 " .. tostring(v.anon_6))
+
+		imgui.Text("zone_num " .. tostring(v.zone_num))
+		--imgui.Text("'dir_x " .. tostring(v.zone_settings.whole.i1))
+		--imgui.Text("'dir_y " .. tostring(v.zone_settings.whole.i2))
+
+		if v.type == df.civzone_type.ArcheryRange then
+			imgui.Text("Dir_x " .. tostring(v.zone_settings.archery.dir_x))
+			imgui.Text("Dir_y " .. tostring(v.zone_settings.archery.dir_y))
+		elseif v.type == df.civzone_type.PlantGathering then
+			render.dump_flags(v.zone_settings.gather)
+		elseif v.type == df.civzone_type.Pen then
+			imgui.Text("Pen " .. tostring(v.zone_settings.pen.unk))
+		elseif v.type == df.civzone_type.Tomb then
+			render.dump_flags(v.zone_settings.tomb)
+		elseif v.type == df.civzone_type.Pond then
+			imgui.Text("Pond: " .. tostring(v.zone_settings.pit_pond))
+		else
+			imgui.Text("Unknown ", tostring(v.zone_settings.whole.i1), tostring(v.zone_settings.whole.i2))
+		end
+
+		imgui.Text("3 " .. tostring(v.anon_3))
+		imgui.Text("4 " .. tostring(#v.anon_4))
+
+		for k,d in pairs(v.contained_buildings) do
+			imgui.Text("b " .. tostring(d), "id", tostring(d.id))
+		end
+
+		imgui.Text("assigned " .. tostring(v.assigned_unit_id))
+		imgui.Text("5 " .. tostring(v.anon_5))
+
+		if v.assigned_unit_id ~= -1 then
+			imgui.Text("unit " .. v.assigned_unit.id, tostring(v.assigned_unit))
+		end
+
+		--imgui.Text("6 " .. tostring(v.anon_6))
+		--imgui.Text("7 " .. tostring(v.anon_7))
+		imgui.Text("rinfo " .. tostring(#v.squad_room_info))
+
+		imgui.Text("Checking Squad")
+
+		for k,d in pairs(v.squad_room_info) do
+			imgui.Text("id " .. tostring(d.squad_id))
+			--imgui.Text("flags " .. tostring(d.flags))
+			render.dump_flags(d.mode)
+
+
+			local squad = df.squad.find(d.squad_id)
+
+			imgui.Text("SquadSize", tostring(#squad.rooms))
+
+			for _, r in ipairs(squad.rooms) do
+				if r.building_id == v.id then
+					imgui.Text("Found")
+					render.dump_flags(r.mode)
+				end
+			end
+		end
+
+		imgui.Text("6 " .. tostring(v.anon_6))
+		imgui.Text("7 " .. tostring(v.anon_7))
+
+		--[[for k,v in pairs(df.global.world.schedules.all) do
+			imgui.Text(tostring(d))
+		end]]--
+
+		--imgui.Text("Building_next " .. tostring(df.global.building_next_id))
+
+		--[[for k,d in pairs(df.squad.get_vector()) do
+			for s,v in pairs(d.positions) do
+				imgui.Text(tostring(v))
+			end
+		end]]--
+
+		--[[for k,d in pairs(df.global.plotinfo.main.fortress_entity.positions.own) do
+			imgui.Text(tostring(d))
+		end]]--
+
+		--[[for k,d in pairs(df.squad.get_vector()) do
+			imgui.Text(tostring(d))
+		end]]--
+
+		--[[for k,v in ipairs(df.global.world.units.active) do
+			imgui.Text("hi")
+			imgui.Text(tostring(v.id))
+
+			local val = nobles.unit_to_histfig(v)
+
+			if val ~= nil then
+				imgui.Text(tostring(val.id))
+			end
+		end]]--
+	end
+end
+
 function debug_zones()
 	for _,v in ipairs(df.building.get_vector()) do
-		if df.building_civzonest:is_instance(v) then
-
-			render.dump_flags(v.flags)
-
-			imgui.Text("Id", tostring(v.id))
-			imgui.Text("Civzonebuilding")
-
-			imgui.Text("Jobs", tostring(#v.jobs))
-			imgui.Text("Specific", tostring(#v.specific_refs))
-			imgui.Text("General", tostring(#v.general_refs))
-
-			imgui.Text("Relations", tostring(#v.relations))
-
-			for _,r in ipairs(v.relations) do
-				imgui.Text("Relation", tostring(r))
-			end
-
-			imgui.Text("Assigned Units: ", tostring(#v.assigned_units))
-			imgui.Text("Assigned Items: ", tostring(#v.assigned_items))
-
-			imgui.Text(v.name)
-			imgui.Text(tostring(v.x1))
-			imgui.Text(tostring(v.y1))
-			imgui.Text(tostring(v.x2))
-			imgui.Text(tostring(v.y2))
-
-			if v.room.extents then
-				imgui.Text("Extents " .. tostring(v.room.extents[0]))
-			end
-
-			--imgui.Text(tostring(v.id))
-			imgui.Text("is_active " .. tostring(v.is_active))
-			imgui.Text("1 " .. tostring(v.anon_1))
-			imgui.Text("2 " .. tostring(v.anon_2))
-			--imgui.Text("5 " .. tostring(v.anon_5))
-			--imgui.Text("6 " .. tostring(v.anon_6))
-
-			imgui.Text("zone_num " .. tostring(v.zone_num))
-			--imgui.Text("'dir_x " .. tostring(v.zone_settings.whole.i1))
-			--imgui.Text("'dir_y " .. tostring(v.zone_settings.whole.i2))
-
-			if v.type == df.civzone_type.ArcheryRange then
-				imgui.Text("Dir_x " .. tostring(v.zone_settings.archery.dir_x))
-				imgui.Text("Dir_y " .. tostring(v.zone_settings.archery.dir_y))
-			elseif v.type == df.civzone_type.PlantGathering then
-				render.dump_flags(v.zone_settings.gather)
-			elseif v.type == df.civzone_type.Pen then
-				imgui.Text("Pen " .. tostring(v.zone_settings.pen.unk))
-			elseif v.type == df.civzone_type.Tomb then
-				render.dump_flags(v.zone_settings.tomb)
-			elseif v.type == df.civzone_type.Pond then
-				imgui.Text("Pond: " .. tostring(v.zone_settings.pit_pond))
-			else
-				imgui.Text("Unknown ", tostring(v.zone_settings.whole.i1), tostring(v.zone_settings.whole.i2))
-			end
-
-			imgui.Text("3 " .. tostring(v.anon_3))
-			imgui.Text("4 " .. tostring(#v.anon_4))
-
-			for k,d in pairs(v.contained_buildings) do
-				imgui.Text("b " .. tostring(d), "id", tostring(d.id))
-			end
-
-			imgui.Text("assigned " .. tostring(v.assigned_unit_id))
-			imgui.Text("5 " .. tostring(v.anon_5))
-
-			if v.assigned_unit_id ~= -1 then
-				imgui.Text("unit " .. v.assigned_unit.id, tostring(v.assigned_unit))
-			end
-
-			--imgui.Text("6 " .. tostring(v.anon_6))
-			--imgui.Text("7 " .. tostring(v.anon_7))
-			imgui.Text("rinfo " .. tostring(#v.squad_room_info))
-
-			imgui.Text("Checking Squad")
-
-			for k,d in pairs(v.squad_room_info) do
-				imgui.Text("id " .. tostring(d.squad_id))
-				--imgui.Text("flags " .. tostring(d.flags))
-				render.dump_flags(d.mode)
-
-
-				local squad = df.squad.find(d.squad_id)
-
-				imgui.Text("SquadSize", tostring(#squad.rooms))
-
-				for _, r in ipairs(squad.rooms) do
-					if r.building_id == v.id then
-						imgui.Text("Found")
-						render.dump_flags(r.mode)
-					end
-				end
-			end
-
-			imgui.Text("6 " .. tostring(v.anon_6))
-			imgui.Text("7 " .. tostring(v.anon_7))
-
-			--[[for k,v in pairs(df.global.world.schedules.all) do
-				imgui.Text(tostring(d))
-			end]]--
-
-			--imgui.Text("Building_next " .. tostring(df.global.building_next_id))
-
-			--[[for k,d in pairs(df.squad.get_vector()) do
-				for s,v in pairs(d.positions) do
-					imgui.Text(tostring(v))
-				end
-			end]]--
-
-			--[[for k,d in pairs(df.global.plotinfo.main.fortress_entity.positions.own) do
-				imgui.Text(tostring(d))
-			end]]--
-
-			--[[for k,d in pairs(df.squad.get_vector()) do
-				imgui.Text(tostring(d))
-			end]]--
-
-			--[[for k,v in ipairs(df.global.world.units.active) do
-				imgui.Text("hi")
-				imgui.Text(tostring(v.id))
-
-				local val = nobles.unit_to_histfig(v)
-
-				if val ~= nil then
-					imgui.Text(tostring(val.id))
-				end
-			end]]--
-		end
+		debug_zone(v)
 	end
 end
 
