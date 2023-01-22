@@ -1116,11 +1116,26 @@ function debug_uniform()
 	end
 end
 
+function debug_squad_rooms()
+	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
+	local sorted_squads = get_sorted_squad_ids_by_precedence(entity.squads)
+
+	for _, s_id in ipairs(sorted_squads) do
+		local s = df.squad.find(s_id)
+
+		imgui.Text(get_squad_name(s))
+
+		imgui.Text(#s.rooms)
+	end
+end
+
 function render_military()
 	--debug_military()
 	--debug_squads()
 
 	--debug_uniform()
+
+	--debug_squad_rooms()
 
 	render.set_can_window_pop(true)
 
