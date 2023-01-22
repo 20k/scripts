@@ -526,9 +526,9 @@ function render_setbuilding()
 		end
 
 		if display_jobs(building, real_jobs) then
-			local root = render.get_all_submenus()[1]
-			render.pop_all_submenus()
-			render.push_submenu(root)
+			--local root = render.get_all_submenus()[1]
+			--render.pop_all_submenus()
+			--render.push_submenu(root)
 		end
 
 		if #subscreen == 0 and imgui.Button("back##subback2") then
