@@ -27,6 +27,8 @@ function render_report(report)
 
 	imgui.ButtonColored({fg=col}, text)
 
+	local valid_pos = lx >= -10000 and ly >= -10000 and lz >= -10000
+
 	if imgui.IsItemHovered() then
 		df_year = report.year
 		df_time = report.time
@@ -35,12 +37,12 @@ function render_report(report)
 
 		render.render_absolute_text("X", COLOR_YELLOW, COLOR_BLACK, pos)
 
-		if imgui.Shortcut("STRING_A122") and imgui.IsItemHovered() then
+		if imgui.Shortcut("STRING_A122") and imgui.IsItemHovered() and valid_pos  then
 			render.centre_camera(lx, ly, lz)
 		end
 	end
 
-	if imgui.IsItemClicked(0) then
+	if imgui.IsItemClicked(0) and valid_pos then
 		render.centre_camera(lx, ly, lz)
 	end
 end
