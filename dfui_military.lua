@@ -1227,8 +1227,8 @@ function render_squads()
 			local should_highlight = selected_squad_order==o
 
 			if render.render_hotkey_text({key=keys[o], text=get_squad_name(squad), highlight=should_highlight, highlight_col=COLOR_LIGHTCYAN}) then
-				if selected_squad == o then
-					selected_squad = -1
+				if selected_squad_order == o then
+					selected_squad_order = -1
 				else
 					selected_squad_order = o
 				end
