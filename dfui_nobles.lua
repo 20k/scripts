@@ -487,13 +487,15 @@ function shallow_copy_to_array(t)
 end
 
 function render_titles()
+	render.set_can_window_pop(true)
+
 	local entity = df.historical_entity.find(df.global.plotinfo.group_id)
 
 	if entity == nil then
 		return nil
 	end
 
-	local menu_item = render.get_menu_item()
+	local menu_item = render.get_submenu()
 
 	local override = imgui.Get(override_noble_assignments)
 
@@ -529,7 +531,8 @@ function render_titles()
 					end
 
 					if imgui.ButtonColored({fg=col}, str .. "##" .. tostring(current_assignment_id)) then
-						render.set_menu_item(current_assignment_id)
+						render.pop_all_submenus()
+						render.push_submenu(current_assignment_id)
 					end
 
 					if imgui.IsItemHovered() then
@@ -572,8 +575,8 @@ function render_titles()
 
 		imgui.Text("Currently Choosing: " .. position.name[0])
 
-		if imgui.Button("Back") or (imgui.WantCaptureMouse() and imgui.IsMouseClicked(1)) then
-			render.set_menu_item(nil)
+		if imgui.Button("Back") then
+			render.pop_all_submenus()
 		end
 
 		local valid_units = {}
@@ -598,12 +601,12 @@ function render_titles()
 
 		if clicked ~= nil and clicked.type == "vacant" then
 			remove_fort_title(menu_item)
-			render.set_menu_item(nil)
+			render.pop_all_submenus()
 		end
 
 		if clicked ~= nil and clicked.type == "unit" then
 			add_or_transfer_fort_title_to(clicked.data, menu_item)
-			render.set_menu_item(nil)
+			render.pop_all_submenus()
 		end
 
 		::done::
