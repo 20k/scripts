@@ -125,7 +125,7 @@ function appoint_to(squad_id, slot, pending_unit)
 	end
 end
 
---don't think either of the manip functions are correct, dwarves have a squad_id and a squad_position
+--dwarves have a squad_id and a squad_position
 --When adding a dwarf, the game appears to fix them up, but not when removing
 function remove_from(squad_id, slot)
 	dirty_dwarf_list = true
