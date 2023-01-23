@@ -1396,6 +1396,20 @@ function assign_to_zone(zone, unit)
 	end
 end
 
+function get_assignment_display_name(unit)
+	local name = render.get_user_facing_name(unit)
+
+	local spouse = df.unit.find(unit.relationship_ids.Spouse)
+
+	if spouse then
+		name = name .. "\n          " .. render.get_user_facing_name(spouse) .. " (spouse)"
+	else
+		name = name .. "\n "
+	end
+
+	return name
+end
+
 function handle_specific_zone_render(building)
 	if building.type == df.civzone_type.ArcheryRange then
 		local base_render = {{key="l", text="L"}, {key="r", text="R"}, {key="t", text="T"}, {key="b", text="B"}}
@@ -1641,7 +1655,7 @@ function handle_specific_zone_render(building)
 			local unit = building.assigned_unit
 
 			if unit ~= nil then
-				name = render.get_user_facing_name(unit)
+				name = get_assignment_display_name(unit)
 			else
 				name = "Error"
 			end
