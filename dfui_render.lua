@@ -575,11 +575,33 @@ end
 local dwarf_page = 0
 local search = imgui.Ref("")
 
+function filter_by_matched(units_in, search_text)
+	local out = {}
+
+	local low_search = string.lower(search_text)
+
+	for k,v in ipairs(units_in) do
+		local name = get_user_facing_name(v)
+
+		local low = string.lower(name)
+
+		if string.find(low, low_search) then
+			out[#out+1] = v
+		end
+	end
+
+	return out
+end
+
 function display_unit_list(units_in, opts)
 	local units = {}
 
 	for _,v in ipairs(units_in) do
 		units[#units+1] = v
+	end
+
+	if #imgui.Get(search) > 0 then
+		units = filter_by_matched(units, imgui.Get(search))
 	end
 
 	sort_by_migration_wave(units)
@@ -596,9 +618,11 @@ function display_unit_list(units_in, opts)
 	local which_id = {type="none"}
 
 	if opts.paginate then
-		start_dwarf = math.max(dwarf_page * num_per_page + 1, 1)
+		local clamped_page = math.min(dwarf_page, max_page)
 
-		imgui.Text("Page: " .. tostring(dwarf_page + 1) .. "/" .. tostring(max_page+1))
+		start_dwarf = math.max(clamped_page * num_per_page + 1, 1)
+
+		imgui.Text("Page: " .. tostring(clamped_page + 1) .. "/" .. tostring(max_page+1))
 
 		end_dwarf = start_dwarf + num_per_page - 1
 	end
@@ -702,21 +726,19 @@ function display_unit_list(units_in, opts)
 		imgui.Unindent()
  	end
 
-	imgui.NewLine()
-
-	imgui.Text("Search:")
-
-	imgui.SameLine()
-
-	imgui.InputText("##inputunits", search)
-
 	if opts.paginate then
-		local pad_height = math.max(num_per_page - 1, max_page_height - 1)
+		local pad_height = math.max(num_per_page - 1, max_page_height)
 
 		for i=rendered_count,pad_height do
 			imgui.Text(" ")
 		end
+	end
 
+	imgui.Text("Search:")
+	imgui.SameLine()
+	imgui.InputText("##inputunits", search)
+
+	if opts.paginate then
 		imgui.NewLine()
 
 		if render_hotkey_text({key="q", text="Prev"}) then
