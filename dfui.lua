@@ -222,6 +222,9 @@ function MyScreen:render()
 		end
 	end
 
+	viewitems.handle_building_mouseover()
+	viewitems.handle_unit_mouseover()
+
 	if state == "main" then
 		render_menu()
 	elseif state == "View Items In Buildings" then
@@ -254,9 +257,6 @@ function MyScreen:render()
 	else
 		render.pop_menu()
 	end
-
-	viewitems.handle_building_mouseover()
-	viewitems.handle_unit_mouseover()
 
 	if not imgui.IsMouseDragging(2) or not has_last_camera then
 		last_camera = render.get_camera()
