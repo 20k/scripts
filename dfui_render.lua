@@ -368,7 +368,7 @@ function render_hotkey_text(v)
 		imgui.PushStyleColor(imgui.StyleIndex("Text"), {fg=col})
 	end
 
-	local result = imgui.Button(v.text) or (imgui.Shortcut(keyboard_key) and not imgui.WantCaptureKeyboard())
+	local result = imgui.Button(v.text) or (imgui.Shortcut(keyboard_key) and not imgui.WantTextInput())
 
 	if pushed then
 		imgui.PopStyleColor(1)
@@ -418,7 +418,7 @@ function render_table_impl(menus, old_state)
 				imgui.PushStyleColor(imgui.StyleIndex("Text"), {fg=COLOR_WHITE})
 			end
 
-			if imgui.Button(description) or (imgui.Shortcut(keyboard_key) and not imgui.WantCaptureKeyboard()) then
+			if imgui.Button(description) or (imgui.Shortcut(keyboard_key) and not imgui.WantTextInput()) then
 				--if state == description then
 				--	state = "None"
 				--else
@@ -702,6 +702,14 @@ function display_unit_list(units_in, opts)
 		imgui.Unindent()
  	end
 
+	imgui.NewLine()
+
+	imgui.Text("Search:")
+
+	imgui.SameLine()
+
+	imgui.InputText("##inputunits", search)
+
 	if opts.paginate then
 		local pad_height = math.max(num_per_page - 1, max_page_height - 1)
 
@@ -725,12 +733,6 @@ function display_unit_list(units_in, opts)
 			dwarf_page = math.max(dwarf_page, 0)
 			dwarf_page = math.min(dwarf_page, max_page)
 		end
-
-		imgui.Text("Search:")
-
-		imgui.SameLine()
-
-		imgui.InputText("##inputunits", search)
 	end
 
     if has_tree then
