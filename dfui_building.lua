@@ -1391,7 +1391,7 @@ function assign_to_zone(zone, unit)
 	unit.owned_buildings:insert('#', zone)
 
 	if spouse then
-		dfhack.println("Spose")
+		--dfhack.println("Spose")
 		spouse.owned_buildings:insert('#', zone)
 	end
 end
