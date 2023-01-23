@@ -125,6 +125,7 @@ function appoint_to(squad_id, slot, pending_unit)
 		squad.positions[slot - 1].occupant = pending_unit_histfig.id
 	end
 
+	--the game will patch these up, but it also does set it immediately in the ui
 	pending_unit.military.squad_id = squad.id
 	pending_unit.military.squad_position = slot - 1
 end
