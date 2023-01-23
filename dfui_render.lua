@@ -738,6 +738,16 @@ function display_unit_list(units_in, opts)
 	imgui.SameLine()
 	imgui.InputText("##inputunits", search)
 
+	if render_hotkey_text({key="c", text="Clear"}) then
+		search = imgui.Ref("")
+	end
+
+	imgui.SameLine()
+
+	if render_hotkey_text({key="s", text="Focus"}) then
+		imgui.SetKeyboardFocusHere(-1)
+	end
+
 	if opts.paginate then
 		imgui.NewLine()
 
