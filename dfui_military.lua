@@ -123,6 +123,9 @@ function appoint_to(squad_id, slot, pending_unit)
 	else
 		squad.positions[slot - 1].occupant = pending_unit_histfig.id
 	end
+
+	pending_unit.squad_id = squad.id
+	pending_unit.squad_position = slot - 1
 end
 
 --dwarves have a squad_id and a squad_position
@@ -150,7 +153,8 @@ function remove_from(squad_id, slot)
 
 	unit.military.squad_id = -1
 	unit.military.squad_position = -1
-	unit.military.cur_uniform = 0
+	--the game doesn't modify this when removing someone from a squad immediately
+	--unit.military.cur_uniform = 0
 
 	if existing_histfig_id ~= -1 and leader_assignment.histfig == existing_histfig_id then
 		nobles.remove_fort_title(leader_assignment.id)
