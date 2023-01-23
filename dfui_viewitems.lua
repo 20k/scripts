@@ -471,6 +471,8 @@ function debug_unit(v)
 
 		--imgui.Text("Id", b.id)
 	end
+
+	--imgui.Text("MilUniform", tostring(v.military.cur_uniform))
 end
 
 function handle_unit_mouseover()
