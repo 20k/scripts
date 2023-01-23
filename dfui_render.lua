@@ -622,6 +622,8 @@ function display_unit_list(units_in, opts)
 		count_per_page[cpage] = count_per_page[cpage] + 1
 	end
 
+	local first_unindented_visible = true
+
 	for i=1,#units do
 		local unit = units[i]
 
@@ -651,6 +653,8 @@ function display_unit_list(units_in, opts)
 					active = has_tree
 				end
 
+				first_unindented_visible = false
+
 				imgui.Indent()
 				indented = true
 				rendered_count = rendered_count + 1
@@ -661,6 +665,13 @@ function display_unit_list(units_in, opts)
         end
 
         if active and visible then
+			if first_unindented_visible and not indented then
+				imgui.Indent()
+				indented = true
+			end
+
+			first_unindented_visible = false
+
 			rendered_count = rendered_count + 1
 
             local name = get_user_facing_name(unit)
