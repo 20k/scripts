@@ -352,7 +352,7 @@ function get_plant_in_season(season, building)
 		if is_plantable(plant, season) then
 			local rx, ry = dfhack.maps.getTileBiomeRgn(building.centerx, building.centery, building.z)
 
-			local biome = dfhack.maps.GetBiomeType(rx, ry)
+			local biome = dfhack.maps.getBiomeType(rx, ry)
 
 			local tile_flags = dfhack.maps.getTileFlags(building.centerx, building.centery, building.z)
 
