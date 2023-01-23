@@ -1372,15 +1372,27 @@ function get_assignable_units()
 	return valid
 end
 
-function remove_current_assigned(zone)
-	local old_unit = df.unit.find(zone.assigned_unit_id)
 
-	if old_unit then
-		for i=(#old_unit.owned_buildings-1),0,-1 do
-			if old_unit.owned_buildings[i] == zone then
-				old_unit.owned_buildings:erase(i)
+function remove_current_assigned(zone)
+	for _,unit in ipairs(df.global.world.units.active) do
+		for i=(#unit.owned_buildings-1),0,-1 do
+			if unit.owned_buildings[i] == zone then
+				unit.owned_buildings:erase(i)
 			end
 		end
+	end
+end
+
+function assign_to_zone(zone, unit)
+	remove_current_assigned(zone)
+
+	local spouse = df.unit.find(unit.relationship_ids.Spouse)
+
+	unit.owned_buildings:insert('#', zone)
+
+	if spouse then
+		dfhack.println("Spose")
+		spouse.owned_buildings:insert('#', zone)
 	end
 end
 
@@ -1650,12 +1662,10 @@ function handle_specific_zone_render(building)
 			end
 
 			if clicked ~= nil and clicked.type == "unit" then
-				remove_current_assigned(building)
+				assign_to_zone(building, clicked.data)
 
 				building.assigned_unit_id = clicked.data.id
 				building.assigned_unit = clicked.data
-
-				clicked.data.owned_buildings:insert('#', building)
 			end
 
 			imgui.TreePop()
