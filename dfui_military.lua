@@ -72,6 +72,7 @@ selected_squad = -1
 selected_dwarf = -1
 dirty_dwarf_list = true
 
+--unit.military.squad_id??
 function unit_in_any_squad(unit)
 	local pending_unit_histfig = nobles.unit_to_histfig(unit)
 
@@ -124,8 +125,8 @@ function appoint_to(squad_id, slot, pending_unit)
 		squad.positions[slot - 1].occupant = pending_unit_histfig.id
 	end
 
-	pending_unit.squad_id = squad.id
-	pending_unit.squad_position = slot - 1
+	pending_unit.military.squad_id = squad.id
+	pending_unit.military.squad_position = slot - 1
 end
 
 --dwarves have a squad_id and a squad_position
