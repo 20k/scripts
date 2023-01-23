@@ -472,7 +472,23 @@ function debug_unit(v)
 		--imgui.Text("Id", b.id)
 	end
 
-	--imgui.Text("MilUniform", tostring(v.military.cur_uniform))
+	imgui.Text("UnitSquadId", tostring(v.military.squad_id))
+	imgui.Text("UnitSquadPos", tostring(v.military.squad_position))
+
+	render.dump_flags(v.military.pickup_flags)
+
+	imgui.Text("Unkitems", tostring(#v.military.unk_items))
+	imgui.Text("U0", tostring(#v.military.uniforms[0]))
+	imgui.Text("U1", tostring(#v.military.uniforms[1]))
+	imgui.Text("U2", tostring(#v.military.uniforms[2]))
+	imgui.Text("U3", tostring(#v.military.uniforms[3]))
+
+	imgui.Text("Pickup", tostring(#v.military.uniform_pickup))
+	imgui.Text("Drop", tostring(#v.military.uniform_drop))
+
+	imgui.Text("ScheduleId", tostring(v.schedule_id))
+
+	imgui.Text("MilUniform", tostring(v.military.cur_uniform))
 end
 
 function handle_unit_mouseover()
