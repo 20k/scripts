@@ -749,8 +749,6 @@ function display_unit_list(units_in, opts)
 	end
 
 	if opts.paginate then
-		imgui.NewLine()
-
 		if render_hotkey_text({key="q", text="Prev"}) then
 			dwarf_page = dwarf_page - 1
 
