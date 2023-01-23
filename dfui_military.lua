@@ -655,7 +655,7 @@ function entity_uniform_to_uniform_spec(uniform_spec, part, which)
 	squad_uniform.color = -1
 
 	--TEST UNIFORM ITEM.ITEM_COLOR
-	--think it mathes to squad_uniform.color
+	--think it matches to squad_uniform.color
 
 	squad_uniform.item_filter.item_type = item_type
 	squad_uniform.item_filter.item_subtype = item_subtype
