@@ -8,6 +8,8 @@ local nobles = reqscript('dfui_nobles')
 local setbuilding = reqscript('dfui_setbuilding')
 local military = reqscript('dfui_military')
 local units = reqscript('dfui_units')
+local locations = reqscript('dfui_locations')
+utils = require('utils')
 
 MyScreen = defclass(MyScreen, gui.Screen)
 
@@ -246,6 +248,8 @@ function MyScreen:render()
 	elseif state == "Zones" then
 		render_stock()
 		building.render_zones()
+	elseif state == "Locations and Occupations" then
+		locations.render_locations()
 	elseif state == "Nobles and Administrators" then
 		nobles.render_titles()
 	elseif state == "Set Building Tasks/Prefs" then
