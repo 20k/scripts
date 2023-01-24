@@ -435,7 +435,7 @@ function handle_building_mouseover()
 		imgui.EatMouseInputs()
 
 		for _,civzone in ipairs(civzones) do
-			--debug_zone(civzone)
+			debug_zone(civzone)
 
 			if (current_menu == "main" or current_menu == "Zones") and imgui.IsMouseClicked(0) then
 				if render.get_menu() ~= "Zones" then
