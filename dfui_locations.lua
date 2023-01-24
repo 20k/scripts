@@ -258,6 +258,10 @@ function make_location(type)
 		generic_setup.name.parts_of_speech[i - 1] = j
 	end
 
+    for i,j in pairs(generic_setup.contents) do
+        --imgui.Text("Key", i, "Value", tostring(j))
+        dfhack.println("key", i, "value", j)
+    end
 
     --TODO
     ---SET CONTENTS. Guildhalls have a specific profession which I definitely need to set
