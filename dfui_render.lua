@@ -700,7 +700,7 @@ function display_rich_text(rich_text_in, opts)
 
 		bump_page(cpage)
 
-		if text.type == "tree" then
+		if text.type == "tree" and visible then
 			if has_tree then
 				imgui.TreePop()
 			end
@@ -720,6 +720,8 @@ function display_rich_text(rich_text_in, opts)
 			imgui.Indent()
 			indented = true
 			first_unindented_visible = false
+
+			rendered_count = rendered_count + 1
 
 			goto done
 		end
@@ -769,7 +771,7 @@ function display_rich_text(rich_text_in, opts)
  	end
 
 	if opts.paginate then
-		local pad_height = math.max(num_per_page - 1, max_page_height)
+		local pad_height = math.max(num_per_page, max_page_height)
 
 		for i=rendered_count,pad_height do
 			imgui.Text(" ")
