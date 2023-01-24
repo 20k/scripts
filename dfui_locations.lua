@@ -18,10 +18,10 @@ end
 function get_location_type_name(location)
     local name_to_type = {
         ["Temple"] = df.abstract_building_type.TEMPLE,
-        ["Tomb"] = df.abstract_building_type.TOMB,
+        ["Library"] = df.abstract_building_type.LIBRARY,
         ["Inn/Tavern"] = df.abstract_building_type.INN_TAVERN,
         ["Guildhall"] = df.abstract_building_type.GUILDHALL,
-        ["Hospital"] = df.abstract_building_type.HOSPITAL
+        ["Hospital"] = df.abstract_building_type.HOSPITAL,
     }
 
     local type_to_name = {}
@@ -127,6 +127,99 @@ function on_assign_location(zone, location)
     end
 end
 
+rng = dfhack.random.new(2345)
+
+function location_type_to_word_type(location_type)
+    if location_type == df.abstract_building_type.TEMPLE then
+        return df.language_name_type.Temple
+    end
+
+    if location_type == df.abstract_building_type.LIBRARY then
+        return df.language_name_type.Library
+    end
+
+    if location_type == df.abstract_building_type.GUILDHALL then
+        return df.language_name_type.Guildhall
+    end
+
+    if location_type == df.abstract_building_type.INN_TAVERN then
+        return df.language_name_type.SymbolFood
+    end
+
+    if location_type == df.abstract_building_type.HOSPITAL then
+        return df.language_name_type.Hospital
+    end
+end
+
+function generate_language_name_object(location_type)
+	local result = {}
+
+	result.type = location_type_to_word_type(type)
+	result.nickname = ""
+	result.first_name = ""
+	result.has_name = 1
+	result.language = 0
+	result.words = {-1, -1, -1, -1, -1, -1, -1}
+	result.parts_of_speech = {df.part_of_speech.Noun, df.part_of_speech.Noun, df.part_of_speech.Adjective, df.part_of_speech.Noun, df.part_of_speech.Noun, df.part_of_speech.NounPlural, df.part_of_speech.Noun}
+
+	local lwords = df.global.world.raws.language.word_table[0][35].words[0]
+
+	result.words[3] = lwords[math.floor(rng:drandom() * (#lwords - 1))]
+	result.words[6] = lwords[math.floor(rng:drandom() * (#lwords - 1))]
+
+	return result
+end
+
+---sigh. So it has actual occupations, and pending occupations. This is a HUGE pain
+function make_occupations_for(type)
+    return {}
+end
+
+function make_location(type)
+    local name = generate_language_name_object(location_type)
+
+    local generic_setup = nil
+
+    if type == df.abstract_building_type.INN_TAVERN then
+        local ptr = df.new(df.abstract_building_inn_tavernst)
+        ptr.next_room_info_id = 0
+
+        generic_setup = ptr
+    end
+
+    generic_setup.name = name
+    ---SET CONTENTS
+
+    --don't care about inhabitants
+
+    --guildhalls default to OnlyMembers. Temples *can* be members only
+    --the other flags are {All} = AllowVisitors | AllowResidents
+    --Only Residents = AllowResidents
+    --Citizens Only = none set
+
+    if type == df.abstract_building_type.GUILDHALL then
+        generic_setup.flags.OnlyMembers = true
+    else
+        generic_setup.flags.AllowVisitors = true
+        generic_setup.flags.AllowResidents = true
+    end
+
+    generic_setup.unk1 = nil
+    --don't care about unk2
+    --don't care about parent_building_id
+    --don't care about child_building_ids
+    generic_setup.site_owner_id = df.global.plotinfo.main.fortress_entity.id
+
+    local world_site = df.global.plotinfo.main.fortress_site
+    generic_setup.pos = world_site.pos
+
+    occupations = make_occupations_for(type)
+
+    generic_setup.id = world_site.next_building_id
+    world_site.next_building_id = world_site.next_building_id + 1
+    world_site.buildings:insert('#', generic_setup)
+end
+
 function debug_locations()
 	--there are 5 types of locations that I care about
 	--inns/taverns
@@ -150,13 +243,7 @@ end
 function render_locations()
     render.set_can_window_pop(true)
 
-    --[[local type_to_name = {
-        df.abstract_building_type.TEMPLE="Temple",
-        df.abstract_building_type.TOMB="Tomb",
-        df.abstract_building_type.INN_TAVERN="Inn/Tavern",
-        df.abstract_building_type.GUILDHALL="Guildhall",
-        df.abstract_building_type.HOSPITAL="Hospital"
-    }]]--
+    --imgui.Text(tostring(df.global.plotinfo.group_id))
 
     local locations = get_locations()
 
@@ -169,10 +256,22 @@ function render_locations()
 
         local contents = location:getContents()
 
-        if contents then
+        --[[if contents then
             for i,j in ipairs(contents.building_ids) do
                 imgui.Text(tostring(j))
             end
-        end
+        end]]--
+
+        --imgui.Text(tostring(location.name.type))
+        --imgui.Text(tostring(location.pos.x))
+        --imgui.Text(tostring(location.pos.y))
+
+        --render.dump_flags(location.flags)
+        --local world_site = df.global.plotinfo.main.fortress_site
+
+        --imgui.Text(tostring(location.site_owner_id))
+        --imgui.Text(tostring())
+
+        imgui.Text(location.scribeinfo)
     end
 end
