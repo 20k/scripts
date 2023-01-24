@@ -149,12 +149,16 @@ function location_type_to_word_type(location_type)
     if location_type == df.abstract_building_type.HOSPITAL then
         return df.language_name_type.Hospital
     end
+
+    dfhack.println("Bad location name type")
+
+    return nil
 end
 
 function generate_language_name_object(location_type)
 	local result = {}
 
-	result.type = location_type_to_word_type(type)
+	result.type = location_type_to_word_type(location_type)
 	result.nickname = ""
 	result.first_name = ""
 	result.has_name = 1
@@ -228,7 +232,7 @@ end
 function make_location(type)
     local world_site = df.global.plotinfo.main.fortress_site
 
-    local name = generate_language_name_object(location_type)
+    local name = generate_language_name_object(type)
 
     local generic_setup = nil
 
@@ -240,7 +244,21 @@ function make_location(type)
         generic_setup = ptr
     end
 
-    generic_setup.name = name
+    generic_setup.name.type = name.type
+	generic_setup.name.nickname = name.nickname
+	generic_setup.name.first_name = name.first_name
+	generic_setup.name.has_name = 1
+	generic_setup.name.language = 0
+
+	for i,j in ipairs(name.words) do
+		generic_setup.name.words[i - 1] = j
+	end
+
+	for i,j in ipairs(name.parts_of_speech) do
+		generic_setup.name.parts_of_speech[i - 1] = j
+	end
+
+
     --TODO
     ---SET CONTENTS. Guildhalls have a specific profession which I definitely need to set
 
@@ -267,7 +285,8 @@ function make_location(type)
     generic_setup.reputation_reports = nil
     generic_setup.unk_v42_3 = nil
     generic_setup.site_id = world_site.id
-    generic_setup.pos = world_site.pos
+    generic_setup.pos.x = world_site.pos.x
+    generic_setup.pos.y = world_site.pos.y
     generic_setup.id = world_site.next_building_id
 
     world_site.next_building_id = world_site.next_building_id + 1
