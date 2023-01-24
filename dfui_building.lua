@@ -8,6 +8,7 @@ render = reqscript('dfui_render')
 zone = reqscript('internal/quickfort/zone')
 utils = require('utils')
 military = reqscript('dfui_military')
+locations = reqscript('dfui_locations')
 require('dfhack.buildings')
 
 --workaround
@@ -1684,6 +1685,28 @@ function handle_specific_zone_render(building)
 
 			imgui.TreePop()
 		end
+	end
+
+	local current_location = locations.get_zone_location(building)
+
+	local name = "None"
+
+	if current_location then
+		name = locations.get_location_name(current_location)
+	end
+
+	if imgui.TreeNode("Location:", name) then
+		local next, clicked = locations.display_location_selector()
+
+		if next and clicked then
+			locations.on_assign_location(building, next)
+		end
+
+		if next == nil and clicked then
+			locations.on_assign_location(building, nil)
+		end
+
+		imgui.TreePop()
 	end
 
 	imgui.NewLine()
