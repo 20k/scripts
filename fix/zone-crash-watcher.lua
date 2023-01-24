@@ -29,9 +29,9 @@ local gui = require('gui')
 MyScreen = defclass(MyScreen, gui.Screen)
 
 function MyScreen:render()
-	if dfhack.imgui.IsKeyPressed("LEAVESCREEN") then
-		self:dismiss()
-	end
+	--if dfhack.imgui.IsKeyPressed("LEAVESCREEN") then
+	--	self:dismiss()
+	--end
 
 	if self._native and self._native.parent then
         self._native.parent:render()
@@ -49,6 +49,11 @@ function MyScreen:onIdle()
 end
 
 function MyScreen:onInput(keys)
+	--if keys.LEAVESCREEN then
+	--	self:dismiss()
+	--	return
+	--end
+
 	return self:sendInputToParent(keys)
 end
 
