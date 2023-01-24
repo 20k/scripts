@@ -1695,14 +1695,14 @@ function handle_specific_zone_render(building)
 		name = locations.get_location_name(current_location)
 	end
 
-	if imgui.TreeNode("Location:", name) then
-		local next, clicked = locations.display_location_selector()
+	if imgui.TreeNode("Location: "..name .. "###locationselect") then
+		local which_id = locations.display_location_selector()
 
-		if next and clicked then
-			locations.on_assign_location(building, next)
+		if which_id.type == "location" then
+			locations.on_assign_location(building, which_id.data)
 		end
 
-		if next == nil and clicked then
+		if which_id.type == "vacant" then
 			locations.on_assign_location(building, nil)
 		end
 

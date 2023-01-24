@@ -24,21 +24,15 @@ end
 function display_location_selector()
     local locations = get_locations()
 
-    local which = nil
-    local clicked = false
+    local rich_locations = {}
 
-    if imgui.Button("Leave Vacant##locationselector") then
-        clicked = true
+    for k,v in ipairs(locations) do
+        rich_locations[#rich_locations+1] = {type="location", data=v}
     end
 
-    for k,location in ipairs(locations) do
-        if imgui.Button(get_location_name(location).."##location") then
-            which = location
-            clicked = true
-        end
-    end
+    local opts = {paginate=true, leave_vacant=true}
 
-    return which, clicked
+    return render.display_rich_text(rich_locations, opts)
 end
 
 function get_zone_location(zone)
