@@ -1,6 +1,7 @@
 --@ module = true
 imgui = dfhack.imgui
 render = reqscript('dfui_render')
+utils = require('utils')
 
 function get_locations()
     local world_site = df.global.plotinfo.main.fortress_site
@@ -53,11 +54,48 @@ function get_zone_location(zone)
     return nil
 end
 
+local function id_sorter(a, b)
+	if a == b then
+		return 0
+	end
+
+	if a > b then
+		return 1
+	end
+
+	return -1
+end
+
+function clean_invalid_ids(location)
+    local buildings = location:getContents().building_ids
+
+    for i=#buildings-1, 0, -1 do
+        if df.building.find(buildings[i]) == nil then
+            buildings:erase(i)
+        end
+    end
+end
+
 function on_assign_location(zone, location)
     if location ~= nil then
+        clean_invalid_ids(location)
 
+        local buildings = location:getContents().building_ids
+
+        zone.location_id = location.id
+        zone.site_id = location.site_id
+
+        for i=#buildings-1,0,-1 do
+            if buildings[i] == zone.id then
+                return
+            end
+        end
+
+        buildings:insert('#', zone.id)
+        utils.sort_vector(buildings, nil, id_sorter)
     else
-
+        zone.location_id = -1
+        zone.site_id = -1
     end
 end
 
@@ -88,5 +126,13 @@ function render_locations()
 
     for k,location in ipairs(locations) do
         imgui.Text(get_location_name(location))
+
+        local contents = location:getContents()
+
+        if contents then
+            for i,j in ipairs(contents.building_ids) do
+                imgui.Text(tostring(j))
+            end
+        end
     end
 end
