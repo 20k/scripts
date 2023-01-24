@@ -493,13 +493,36 @@ function debug_unit(v)
 	imgui.Text(tostring(#v.occupations))
 
 	imgui.Text(tostring(v.vision_cone))
-	imgui.Text("Burrows?", #v.burrows)
+	imgui.Text("Burrows?", tostring(#v.burrows))
 	imgui.Text("weight", tostring(v.weight))
 	imgui.Text("weight_fraction", tostring(v.weight_fraction))
 	imgui.Text("tendons_heal", tostring(v.tendons_heal))
 	imgui.Text("ligaments_heal", tostring(v.ligaments_heal))
 	imgui.Text("effective_rate", tostring(v.effective_rate))
 	imgui.Text("healing_rate", tostring(#v.healing_rate))
+	--[[imgui.Text("Weight computed", tostring(v.flags3.weight_computed))
+
+	imgui.Text("a2", tostring(v.anon_2))
+	imgui.Text("a3", tostring(v.anon_3))
+	imgui.Text("a4", tostring(v.anon_4))
+	imgui.Text("a5", tostring(v.anon_5))
+	imgui.Text("a6", tostring(v.anon_6))
+	imgui.Text("a7", tostring(v.anon_7))
+	imgui.Text("a8", tostring(v.anon_8))
+	imgui.Text("a9", tostring(v.anon_9))
+	imgui.Text("a10", tostring(v.anon_10))
+	imgui.Text("a11", tostring(v.anon_11))
+	imgui.Text("a12", tostring(v.anon_12))
+	imgui.Text("a13", tostring(v.anon_13))
+	imgui.Text("a14", tostring(v.anon_14))
+	imgui.Text("a15", tostring(v.anon_15))
+	imgui.Text("a16", tostring(v.anon_16))
+	imgui.Text("a17", tostring(v.anon_17))
+
+	imgui.Text("SIZE", tostring(imgui.msize(v)))
+
+	imgui.Text("VAL", tostring(imgui.debug(v)))]]--
+
 	--imgui.Text(tostring(v.adjective))
 
 	--[[function is_true(v)
@@ -525,6 +548,13 @@ function debug_unit(v)
 	end
 
 	imgui.Text("")]]--
+
+	--[[if imgui.IsKeyDown("STRING_A049") then
+		v.weight = 1234
+		v.flags3.weight_computed = false
+
+		dfhack.println("Hello")
+	end]]--
 end
 
 function handle_unit_mouseover()
