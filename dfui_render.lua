@@ -1,6 +1,7 @@
 --@ module = true
 
 time = reqscript('dfui_libtime')
+locations = reqscript('dfui_locations')
 
 imgui = dfhack.imgui
 menu_state = {"main"}
@@ -574,6 +575,7 @@ end
 
 local dwarf_page = 0
 local search = imgui.Ref("")
+local rich_search = imgui.Ref("")
 
 function filter_by_matched(units_in, search_text)
 	local out = {}
@@ -593,6 +595,225 @@ function filter_by_matched(units_in, search_text)
 	return out
 end
 
+function get_rich_text_name(item)
+	if item.type == "unit" then
+		return get_user_facing_name(item.data)
+	end
+
+	if item.type == "location" then
+		return locations.get_location_name(item.data)
+	end
+
+	if item.type == "text" then
+		return item.data
+	end
+
+	if item.type == "tree" then
+		return item.data
+	end
+end
+
+function filter_by_matched_rich(rich_text, search_text)
+	local out = {}
+
+	local low_search = string.lower(search_text)
+
+	for k,v in ipairs(rich_text) do
+		local name = get_rich_text_name(v)
+
+		local low = string.lower(name)
+
+		if string.find(low, low_search) then
+			out[#out+1] = v
+		end
+	end
+
+	return out
+end
+
+--rich text is {type="type", data=payload}
+--currently supported types
+--{type="dwarf", data=unit}
+--{type="location", data=location}
+--{type="text", data=text}
+--{type="tree", data=text}
+function display_rich_text(rich_text_in, opts)
+	local rich_text = {}
+
+	for _,v in ipairs(rich_text_in) do
+		rich_text[#rich_text+1] = v
+	end
+
+	if #imgui.Get(rich_search) > 0 then
+		rich_text = filter_by_matched_rich(rich_text, imgui.Get(rich_search))
+	end
+
+    local last_migration_date_name = ""
+    local active = true
+	local has_tree = false
+
+	local start_dwarf = 1
+	local end_dwarf = #rich_text
+	local num_per_page = 17
+	local max_page = math.floor(#rich_text / num_per_page)
+
+	local which_id = {type="none"}
+
+	if opts.paginate then
+		local clamped_page = math.min(dwarf_page, max_page)
+
+		start_dwarf = math.max(clamped_page * num_per_page + 1, 1)
+
+		imgui.Text("Page: " .. tostring(clamped_page + 1) .. "/" .. tostring(max_page+1))
+
+		end_dwarf = start_dwarf + num_per_page - 1
+	end
+
+	if opts.leave_vacant then
+		if imgui.Button("Leave Vacant") then
+			which_id = {type="vacant"}
+		end
+	end
+
+	local rendered_count = 0
+	local max_render_height = 0
+	local indented = false
+
+	local count_per_page = {}
+
+	function bump_page(cpage)
+		if count_per_page[cpage] == nil then
+			count_per_page[cpage] = 0
+		end
+
+		count_per_page[cpage] = count_per_page[cpage] + 1
+	end
+
+	local first_unindented_visible = true
+
+	for i=1,#rich_text do
+		local text = rich_text[i]
+
+		local cpage = math.max((i - 1) // num_per_page, 0) + 1
+
+		local visible = i >= start_dwarf and i <= end_dwarf
+
+		bump_page(cpage)
+
+		if text.type == "tree" then
+			if has_tree then
+				imgui.TreePop()
+			end
+
+			if indented then
+				imgui.Unindent()
+			end
+
+			if opts.paginate then
+				imgui.Text(text.data)
+				active = true
+			else
+				has_tree = imgui.TreeNodeEx(text.data, (1<<5))
+				active = has_tree
+			end
+
+			imgui.Indent()
+			indented = true
+			first_unindented_visible = false
+
+			goto done
+		end
+
+		if active and visible then
+			if first_unindented_visible and not indented then
+				imgui.Indent()
+				indented = true
+			end
+
+			first_unindented_visible = false
+
+			rendered_count = rendered_count + 1
+
+            local name = get_rich_text_name(text)
+
+			local col = COLOR_WHITE
+
+			if text.type == "unit" then
+				col = get_unit_colour(text.data)
+			end
+
+            if imgui.ButtonColored(col, name) then
+				if opts.center_on_click then
+					centre_camera(text.data.pos.x, text.data.pos.y, text.data.pos.z)
+				end
+
+				which_id = text
+            end
+
+            if text.type == "unit" and imgui.IsItemHovered() then
+                render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, text.data.pos)
+            end
+		end
+
+		::done::
+    end
+
+	local max_page_height = 0
+
+	for k,v in ipairs(count_per_page) do
+		max_page_height = math.max(max_page_height, v)
+	end
+
+	if indented then
+		imgui.Unindent()
+ 	end
+
+	if opts.paginate then
+		local pad_height = math.max(num_per_page - 1, max_page_height)
+
+		for i=rendered_count,pad_height do
+			imgui.Text(" ")
+		end
+	end
+
+	imgui.Text("Search:")
+	imgui.SameLine()
+	imgui.InputText("##inputunits", rich_search)
+
+	if render_hotkey_text({key="c", text="Clear"}) then
+		rich_search = imgui.Ref("")
+	end
+
+	imgui.SameLine()
+
+	if render_hotkey_text({key="s", text="Focus"}) then
+		imgui.SetKeyboardFocusHere(-1)
+	end
+
+	if opts.paginate then
+		if render_hotkey_text({key="q", text="Prev"}) then
+			dwarf_page = dwarf_page - 1
+
+			dwarf_page = math.max(dwarf_page, 0)
+		end
+
+		imgui.SameLine()
+
+		if render_hotkey_text({key="e", text="Next"}) then
+			dwarf_page = dwarf_page + 1
+
+			dwarf_page = math.max(dwarf_page, 0)
+			dwarf_page = math.min(dwarf_page, max_page)
+		end
+	end
+
+    if has_tree then
+        imgui.TreePop()
+    end
+
+	return which_id
+end
+
 function display_unit_list(units_in, opts)
 	local units = {}
 
@@ -600,13 +821,30 @@ function display_unit_list(units_in, opts)
 		units[#units+1] = v
 	end
 
-	if #imgui.Get(search) > 0 then
+	--[[if #imgui.Get(search) > 0 then
 		units = filter_by_matched(units, imgui.Get(search))
-	end
+	end]]--
 
 	sort_by_migration_wave(units)
 
-    local last_migration_date_name = ""
+	local units_with_waves = {}
+
+	local last_migration_date_name = ""
+
+	for k,unit in ipairs(units) do
+		local migration_name = migration_date_name(unit)
+
+		if imgui.Get(rich_search) == "" and last_migration_date_name ~= migration_name then
+			units_with_waves[#units_with_waves+1] = {type="tree", data="Arrived: " .. migration_name}
+			last_migration_date_name = migration_name
+		end
+
+		units_with_waves[#units_with_waves+1] = {type="unit", data=unit}
+	end
+
+	return display_rich_text(units_with_waves, opts)
+
+    --[[local last_migration_date_name = ""
     local active = true
 	local has_tree = false
 
@@ -769,5 +1007,5 @@ function display_unit_list(units_in, opts)
         imgui.TreePop()
     end
 
-	return which_id
+	return which_id]]--
 end
