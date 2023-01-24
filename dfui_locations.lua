@@ -170,16 +170,69 @@ function generate_language_name_object(location_type)
 	return result
 end
 
+function make_occupation(location, type)
+    local occupation = df.new(df.occupation)
+    occupation.id = df.global.occupation_next_id
+    occupation.type = type
+
+    occupation.histfig_id = -1
+    occupation.unit_id = -1
+    occupation.location_id = location.id
+    occupation.site_id = location.site_id
+    occupation.group_id = -1
+    occupation.unk_2 = 0
+    occupation.army_controller_id = 0
+
+    df.global.occupation_next_id = df.global.occupation_next_id+1
+
+    df.global.world.occupations.all:insert('#', occupation)
+    location.occupations:insert('#', occupation)
+
+    return occupation
+end
+
 ---sigh. So it has actual occupations, and pending occupations. This is a HUGE pain
-function make_occupations_for(type)
+--tavern: 0 = tavern_keeper. Infinite
+--tavern: 1 = performer. Infinite
+--temple: 1 = performer
+--guildhall: none
+--library: phew none
+--hospital: 7=doctor
+--hospital: 8=diagnostician
+--hospital: 9=surgeon
+--hospital: 10=bone doctor
+
+--occupations are lazily generated, so if we screw this up its not the end of the world
+function make_occupations_for(location)
+    local type = location:getType()
+
+    if type == df.abstract_building_type.INN_TAVERN then
+        make_occupation(location, 0)
+        make_occupation(location, 1)
+    end
+
+    if type == df.abstract_building_type.TEMPLE then
+        make_occupation(location, 1)
+    end
+
+    if type == df.abstract_building_type.HOSPITAL then
+        make_occupation(location, 7)
+        make_occupation(location, 8)
+        make_occupation(location, 9)
+        make_occupation(location, 10)
+    end
+
     return {}
 end
 
 function make_location(type)
+    local world_site = df.global.plotinfo.main.fortress_site
+
     local name = generate_language_name_object(location_type)
 
     local generic_setup = nil
 
+    --TODO: the rest
     if type == df.abstract_building_type.INN_TAVERN then
         local ptr = df.new(df.abstract_building_inn_tavernst)
         ptr.next_room_info_id = 0
@@ -188,7 +241,8 @@ function make_location(type)
     end
 
     generic_setup.name = name
-    ---SET CONTENTS
+    --TODO
+    ---SET CONTENTS. Guildhalls have a specific profession which I definitely need to set
 
     --don't care about inhabitants
 
@@ -209,15 +263,17 @@ function make_location(type)
     --don't care about parent_building_id
     --don't care about child_building_ids
     generic_setup.site_owner_id = df.global.plotinfo.main.fortress_entity.id
-
-    local world_site = df.global.plotinfo.main.fortress_site
+    generic_setup.scribeinfo = nil
+    generic_setup.reputation_reports = nil
+    generic_setup.unk_v42_3 = nil
+    generic_setup.site_id = world_site.id
     generic_setup.pos = world_site.pos
-
-    occupations = make_occupations_for(type)
-
     generic_setup.id = world_site.next_building_id
+
     world_site.next_building_id = world_site.next_building_id + 1
     world_site.buildings:insert('#', generic_setup)
+
+    make_occupations_for(generic_setup)
 end
 
 function debug_locations()
