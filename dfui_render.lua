@@ -755,6 +755,12 @@ function display_rich_text(rich_text_in, opts)
             if text.type == "unit" and imgui.IsItemHovered() then
                 render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, text.data.pos)
             end
+
+			if text.hover ~= nil and imgui.IsItemHovered() then
+				imgui.BeginTooltip()
+				imgui.Text(text.hover)
+				imgui.EndTooltip()
+			end
 		end
 
 		::done::

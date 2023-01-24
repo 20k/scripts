@@ -15,6 +15,24 @@ function get_locations()
     return result
 end
 
+function get_location_type_name(location)
+    local name_to_type = {
+        ["Temple"] = df.abstract_building_type.TEMPLE,
+        ["Tomb"] = df.abstract_building_type.TOMB,
+        ["Inn/Tavern"] = df.abstract_building_type.INN_TAVERN,
+        ["Guildhall"] = df.abstract_building_type.GUILDHALL,
+        ["Hospital"] = df.abstract_building_type.HOSPITAL
+    }
+
+    local type_to_name = {}
+
+    for i,j in pairs(name_to_type) do
+        type_to_name[j] = i
+    end
+
+    return type_to_name[location:getType()]
+end
+
 function get_location_name(location)
     local language_name = location:getName()
 
@@ -27,7 +45,7 @@ function display_location_selector()
     local rich_locations = {}
 
     for k,v in ipairs(locations) do
-        rich_locations[#rich_locations+1] = {type="location", data=v}
+        rich_locations[#rich_locations+1] = {type="location", data=v, hover=get_location_type_name(v)}
     end
 
     local opts = {paginate=true, leave_vacant=true}
@@ -140,20 +158,6 @@ function render_locations()
         df.abstract_building_type.HOSPITAL="Hospital"
     }]]--
 
-    local name_to_type = {
-        ["Temple"] = df.abstract_building_type.TEMPLE,
-        ["Tomb"] = df.abstract_building_type.TOMB,
-        ["Inn/Tavern"] = df.abstract_building_type.INN_TAVERN,
-        ["Guildhall"] = df.abstract_building_type.GUILDHALL,
-        ["Hospital"] = df.abstract_building_type.HOSPITAL
-    }
-
-    local type_to_name = {}
-
-    for i,j in pairs(name_to_type) do
-        type_to_name[j] = i
-    end
-
     local locations = get_locations()
 
     for k,location in ipairs(locations) do
@@ -161,7 +165,7 @@ function render_locations()
 
         imgui.SameLine()
 
-        imgui.Text(type_to_name[location:getType()])
+        imgui.Text(get_location_type_name(location))
 
         local contents = location:getContents()
 
