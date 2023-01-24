@@ -41,6 +41,8 @@ function debug_locations()
 end
 
 function render_locations()
+    render.set_can_window_pop(true)
+
     local locations = get_locations()
 
     for k,location in ipairs(locations) do
