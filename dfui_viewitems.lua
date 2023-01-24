@@ -472,7 +472,7 @@ function debug_unit(v)
 		--imgui.Text("Id", b.id)
 	end
 
-	imgui.Text("UnitSquadId", tostring(v.military.squad_id))
+	--[[imgui.Text("UnitSquadId", tostring(v.military.squad_id))
 	imgui.Text("UnitSquadPos", tostring(v.military.squad_position))
 
 	render.dump_flags(v.military.pickup_flags)
@@ -488,7 +488,43 @@ function debug_unit(v)
 
 	imgui.Text("ScheduleId", tostring(v.schedule_id))
 
-	imgui.Text("MilUniform", tostring(v.military.cur_uniform))
+	imgui.Text("MilUniform", tostring(v.military.cur_uniform))]]--
+
+	imgui.Text(tostring(#v.occupations))
+
+	imgui.Text(tostring(v.vision_cone))
+	imgui.Text("Burrows?", #v.burrows)
+	imgui.Text("weight", tostring(v.weight))
+	imgui.Text("weight_fraction", tostring(v.weight_fraction))
+	imgui.Text("tendons_heal", tostring(v.tendons_heal))
+	imgui.Text("ligaments_heal", tostring(v.ligaments_heal))
+	imgui.Text("effective_rate", tostring(v.effective_rate))
+	imgui.Text("healing_rate", tostring(#v.healing_rate))
+	--imgui.Text(tostring(v.adjective))
+
+	--[[function is_true(v)
+		if v ~= 0 then
+			return 1
+		end
+
+		return 0
+	end
+
+	for i=0,20 do
+		for j=0,20 do
+			if v.vision_cone then
+				--imgui.Text("Cij", tostring(i), tostring(j), tostring(v.vision_cone[i][j]))
+
+				imgui.Text(is_true(v.vision_cone[i][j]))
+
+				imgui.SameLine()
+			end
+		end
+
+		imgui.NewLine()
+	end
+
+	imgui.Text("")]]--
 end
 
 function handle_unit_mouseover()
@@ -507,7 +543,7 @@ function handle_unit_mouseover()
 			imgui.BeginTooltip()
 
 			render.TextColoredUnit(v)
-			--debug_unit(v)
+			debug_unit(v)
 
 			imgui.EndTooltip()
 		end

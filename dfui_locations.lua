@@ -328,6 +328,10 @@ function render_locations()
         --imgui.Text(tostring(location.site_owner_id))
         --imgui.Text(tostring())
 
-        imgui.Text(location.scribeinfo)
+        --imgui.Text(location.scribeinfo)
+    end
+
+    if imgui.Button("Make Tavern") then
+        make_location(df.abstract_building_type.INN_TAVERN)
     end
 end
