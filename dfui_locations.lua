@@ -602,11 +602,11 @@ function display_religion_selector()
                 for _,name in ipairs(spheres) do
                     hover[#hover+1] = name
                 end
-
-                dat.hover_array = hover
-
-                rich_text[#rich_text+1] = dat
             end
+
+            dat.hover_array = hover
+
+            rich_text[#rich_text+1] = dat
         end
     end
 
