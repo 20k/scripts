@@ -560,8 +560,6 @@ function display_religion_selector()
     local sorted_deities = sort_by_count(deities_by_id)
     local sorted_religions = sort_by_count(religions_by_id)
 
-    local first_tooltip = true
-
     if imgui.TreeNode("Deities") then
         local rich_text = {}
 
@@ -596,34 +594,41 @@ function display_religion_selector()
     end
 
     if imgui.TreeNode("Religions") then
+        local rich_text = {}
+
         for idx,data in ipairs(sorted_religions) do
             local religion_id = data.data
             local entity = df.historical_entity.find(religion_id)
 
-            imgui.Button(translate_name(entity.name) .. "##" .. tostring(religion_id))
+            if entity then
+                local dat = {type="religion", data=entity}
 
-            if imgui.IsItemHovered() and first_tooltip then
+                local worshipper_str = tostring(data.count) .. " worshippers"
+
+                local hover = {worshipper_str}
+
                 local deities = get_religion_deities(entity)
 
-                imgui.BeginTooltip()
-
-                imgui.Text(tostring(data.count), "worshippers")
-
                 for k,deity in ipairs(deities) do
-                    imgui.Text("Worship")
-                    imgui.Text(translate_name(deity.name))
+                    hover[#hover+1] = "Worship"
+                    hover[#hover+1] = translate_name(deity.name)
 
                     local spheres = get_deity_sphere_names(deity)
 
                     for _,name in ipairs(spheres) do
-                        imgui.Text(name)
+                        hover[#hover+1] = name
                     end
-                end
 
-                imgui.EndTooltip()
-                first_tooltip = false
+                    dat.hover_array = hover
+
+                    rich_text[#rich_text+1] = dat
+                end
             end
         end
+
+        local opt = {paginate=true}
+
+        render.display_rich_text(rich_text, opt)
 
         imgui.TreePop()
     end
