@@ -369,22 +369,6 @@ function get_relations(links, filter)
     return result
 end
 
---[[function get_unit_entity_relations(histfig, filter)
-    local result = {}
-
-    for idx, link in ipairs(histfig.entity_links) do
-        if filter then
-            if filter(link) then
-                result[#result+1] = link
-            end
-        else
-            result[#result+1] = link
-        end
-    end
-
-    return result
-end]]--
-
 function render_locations()
     render.set_can_window_pop(true)
 
@@ -453,8 +437,6 @@ function render_locations()
 
     for k,v in ipairs(df.global.world.units.active) do
         if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
-            --valid_units[#valid_units + 1] = v
-
             local histfig = unit_to_histfig(v)
 
             if histfig then
@@ -511,6 +493,28 @@ function render_locations()
 
         if entity then
             imgui.Text("I am the entity", translate_name(entity.name), "worshipped by", tostring(count))
+        end
+
+        for k,deity_id in ipairs(entity.relations.deities) do
+            local deity = df.historical_figure.find(deity_id)
+
+            if deity then
+                local worship = entity.relations.worship[k]
+
+                imgui.Text("Worship", tostring(worship))
+
+                imgui.Text("Deity", translate_name(deity.name))
+            end
+        end
+
+        for k,belief_id in ipairs(entity.relations.belief_systems) do
+            local belief = nil
+
+            for j,b in ipairs(df.global.world.belief_systems.all) do
+                if b.id == belief_id then
+                    imgui.Text("Found belief system")
+                end
+            end
         end
     end
 end
