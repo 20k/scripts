@@ -560,6 +560,8 @@ function display_religion_selector()
     local sorted_deities = sort_by_count(deities_by_id)
     local sorted_religions = sort_by_count(religions_by_id)
 
+    --[[imgui.BeginGroup()
+
     if imgui.TreeNode("Deities") then
         local rich_text = {}
 
@@ -586,12 +588,18 @@ function display_religion_selector()
             end
         end
 
-        local opt = {paginate=true}
+        local opt = {paginate=true, leave_vacant=true, leave_vacant_str="No Specific Religion##0"}
 
         render.display_rich_text(rich_text, opt)
 
         imgui.TreePop()
     end
+
+    imgui.EndGroup()
+
+    imgui.SameLine()
+
+    imgui.BeginGroup()
 
     if imgui.TreeNode("Religions") then
         local rich_text = {}
@@ -626,12 +634,75 @@ function display_religion_selector()
             end
         end
 
-        local opt = {paginate=true}
+        local opt = {paginate=true, leave_vacant=true, leave_vacant_str="No Specific Religion##1"}
 
         render.display_rich_text(rich_text, opt)
 
         imgui.TreePop()
     end
+
+    imgui.EndGroup()]]--
+
+    local rich_text = {{type="text", data="Deities:"}}
+
+    for idx,data in ipairs(sorted_deities) do
+        local deity_id = data.data
+        local histfig = df.historical_figure.find(deity_id)
+
+        if histfig then
+            local dat = {type="deity", data=histfig}
+
+            local worshipper_str = tostring(data.count) .. " worshippers"
+
+            local spheres = get_deity_sphere_names(histfig)
+
+            local hover = {worshipper_str}
+
+            for k,v in ipairs(spheres) do
+                hover[#hover+1] = v
+            end
+
+            dat.hover_array = hover
+
+            rich_text[#rich_text+1] = dat
+        end
+    end
+
+    rich_text[#rich_text+1] = {type="text", data="Religions:"}
+
+    for idx,data in ipairs(sorted_religions) do
+        local religion_id = data.data
+        local entity = df.historical_entity.find(religion_id)
+
+        if entity then
+            local dat = {type="religion", data=entity}
+
+            local worshipper_str = tostring(data.count) .. " worshippers"
+
+            local hover = {worshipper_str}
+
+            local deities = get_religion_deities(entity)
+
+            for k,deity in ipairs(deities) do
+                hover[#hover+1] = "Worship"
+                hover[#hover+1] = translate_name(deity.name)
+
+                local spheres = get_deity_sphere_names(deity)
+
+                for _,name in ipairs(spheres) do
+                    hover[#hover+1] = name
+                end
+
+                dat.hover_array = hover
+
+                rich_text[#rich_text+1] = dat
+            end
+        end
+    end
+
+    local opt = {paginate=true, leave_vacant=true, leave_vacant_str="(No Specific Deity)##0"}
+
+    render.display_rich_text(rich_text, opt)
 end
 
 function render_locations()
@@ -642,7 +713,7 @@ function render_locations()
     local locations = get_locations()
 
     for k,location in ipairs(locations) do
-        imgui.Text(get_location_name(location))
+        --[[imgui.Text(get_location_name(location))
 
         imgui.SameLine()
 
@@ -651,7 +722,7 @@ function render_locations()
         if location:getType() == df.abstract_building_type.TEMPLE then
             imgui.Text("DType", tostring(location.deity_type))
             imgui.Text("DData", tostring(location.deity_data.Deity))
-        end
+        end]]--
 
         --local contents = location:getContents()
 
@@ -702,5 +773,5 @@ function render_locations()
         imgui.Text("hi")
     end]]--
 
-    display_religion_selector()
+    --display_religion_selector()
 end
