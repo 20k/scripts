@@ -605,7 +605,7 @@ function get_rich_text_name(item)
 	end
 
 	if item.type == "location" then
-		return locations.get_location_name(item.data)
+		return locations.get_location_type_name(item.data, true) .. ": " .. locations.get_location_name(item.data)
 	end
 
 	if item.type == "text" then
