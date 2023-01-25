@@ -33,6 +33,10 @@ function get_location_type_name(location)
     return type_to_name[location:getType()]
 end
 
+function translate_name(name)
+    return dfhack.TranslateName(name, true)
+end
+
 function get_location_name(location)
     local language_name = location:getName()
 
@@ -229,7 +233,7 @@ function make_occupations_for(location)
     return {}
 end
 
-function make_location(type)
+function make_location(type, data)
     local world_site = df.global.plotinfo.main.fortress_site
 
     local name = generate_language_name_object(type)
@@ -242,6 +246,32 @@ function make_location(type)
         ptr.next_room_info_id = 0
 
         generic_setup = ptr
+    end
+
+    --guildhall needs profession
+    --todo: we need a general opts struct
+    --data.profession
+    if type == df.abstract_building_type.GUILDHALL then
+
+    end
+
+    --data.deity_type
+    --data.deity_data
+    --Deity == 0 == historical_figure
+    --Religion == 1 == historical_entity
+    if type == df.abstract_building_type.TEMPLE then
+        --deity_type
+        --deity_data
+    end
+
+    --none?
+    if type == df.abstract_building_type.LIBRARY then
+
+    end
+
+    --none?
+    if type == df.abstract_building_type.HOSPITAL then
+
     end
 
     generic_setup.name.type = name.type
@@ -319,6 +349,50 @@ function debug_locations()
 	end
 end
 
+function get_unit_histfig_relations(unit, filter)
+    local histfig = df.historical_figure.find(unit.hist_figure_id)
+
+    if histfig == nil then
+        return {}
+    end
+
+    local result = {}
+
+    for idx, link in ipairs(histfig.histfig_links) do
+        if filter then
+            if filter(link) then
+                result[#result+1] = link
+            end
+        else
+            result[#result+1] = link
+        end
+    end
+
+    return result
+end
+
+function get_unit_entity_relations(unit, filter)
+    local histfig = df.historical_figure.find(unit.hist_figure_id)
+
+    if histfig == nil then
+        return {}
+    end
+
+    local result = {}
+
+    for idx, link in ipairs(histfig.entity_links) do
+        if filter then
+            if filter(link) then
+                result[#result+1] = link
+            end
+        else
+            result[#result+1] = link
+        end
+    end
+
+    return result
+end
+
 function render_locations()
     render.set_can_window_pop(true)
 
@@ -332,6 +406,11 @@ function render_locations()
         imgui.SameLine()
 
         imgui.Text(get_location_type_name(location))
+
+        if location:getType() == df.abstract_building_type.TEMPLE then
+            imgui.Text("DType", tostring(location.deity_type))
+            imgui.Text("DData", tostring(location.deity_data.Deity))
+        end
 
         local contents = location:getContents()
 
@@ -354,7 +433,89 @@ function render_locations()
         --imgui.Text(location.scribeinfo)
     end
 
+    local additional_data = {}
+
     if imgui.Button("Make Tavern") then
         make_location(df.abstract_building_type.INN_TAVERN)
+    end
+
+    function is_deity(link)
+        return link:getType() == df.histfig_hf_link_type.DEITY
+    end
+
+    function is_religion(link)
+        if link:getType() == df.histfig_entity_link_type.MEMBER then
+            local real_entity = df.historical_entity.find(link.entity_id)
+
+            if real_entity == nil then
+                return false
+            end
+
+            return real_entity.type == df.historical_entity_type.Religion
+        end
+
+        return false
+    end
+
+    local valid_units = {}
+
+    for k,v in ipairs(df.global.world.units.active) do
+        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
+            valid_units[#valid_units + 1] = v
+        end
+    end
+
+    local deities_by_id = {}
+    local religions_by_id = {}
+
+    for k,v in ipairs(valid_units) do
+        local results = get_unit_histfig_relations(v, is_deity)
+
+        for j,d in ipairs(results) do
+            local target = d.target_hf
+
+            if deities_by_id[target] == nil then
+                deities_by_id[target] = 0
+            end
+
+            deities_by_id[target] = deities_by_id[target] + 1
+        end
+    end
+
+    for k,v in ipairs(valid_units) do
+        local results = get_unit_entity_relations(v, is_religion)
+
+        for j,d in ipairs(results) do
+            local target = d.entity_id
+
+            --local entity = df.historical_entity.find(target)
+            --imgui.Text("NAME", translate_name(entity.name), "link_type", d:getType())
+
+            if religions_by_id[target] == nil then
+                religions_by_id[target] = 0
+            end
+
+            religions_by_id[target] = religions_by_id[target] + 1
+        end
+    end
+
+    imgui.Text("Deities")
+
+    for deity_id,count in pairs(deities_by_id) do
+        local histfig = df.historical_figure.find(deity_id)
+
+        if histfig then
+            imgui.Text("I am the god", translate_name(histfig.name), "worshipped by", tostring(count))
+        end
+    end
+
+    imgui.Text("Religions")
+
+    for religion_id,count in pairs(religions_by_id) do
+        local entity = df.historical_entity.find(religion_id)
+
+        if entity then
+            imgui.Text("I am the entity", translate_name(entity.name), "worshipped by", tostring(count))
+        end
     end
 end
