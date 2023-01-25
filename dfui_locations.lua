@@ -623,7 +623,7 @@ function display_religion_selector()
 end
 
 function valid_profession(profession)
-    return df.profession.attrs[profession + 1].can_assign_labor and not df.profession.attrs[profession + 1].military
+    --return df.profession.attrs[profession + 1].can_assign_labor and not df.profession.attrs[profession + 1].military
 end
 
 function get_fortress_guilds()
@@ -653,6 +653,36 @@ function get_fortress_guilds()
     return result
 end
 
+function profession_name(id)
+    return df.profession[id]
+end
+
+function profession_parent(id)
+    if id == nil then
+        return -1
+    end
+
+    return df.profession.attrs[id+1].parent
+end
+
+function profession_parent2(id)
+    if id == nil then
+        return -1
+    end
+
+    return df.profession.attrs[profession_parent(id)+1].parent
+end
+
+
+function profession_parent3(id)
+    if id == nil then
+        return -1
+    end
+
+    return df.profession.attrs[profession_parent2(id)+1].parent
+end
+
+
 function display_profession_selector()
     local professions_by_type = {}
 
@@ -670,47 +700,40 @@ function display_profession_selector()
     end
 
     for k,v in ipairs(df.global.world.units.active) do
-        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
+        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) and unit_to_histfig(v) then
             local profession = v.profession
-            local profession2 = v.profession
 
-            local valid_1 = valid_profession(profession)
-            local valid_2 = valid_profession(profession2)
+            --[[local profession3 = nil
 
-            if profession ~= profession2 then
-                if valid_1 then
-                    count(professions_by_type, profession)
-                end
+            if histfig then
+                profession3 = histfig.profession
+            end]]--
 
-                if valid_2 then
-                    count(professions_by_type, profession2)
-                end
-            else
-                if valid_1 then
-                    count(professions_by_type, profession)
-                end
+            local dat = {}
+
+            dat[profession or -1] = 1
+            dat[profession_parent(profession)] = 1
+
+            for k,v in pairs(dat) do
+                count(professions_by_type, k)
             end
-
-            ::skip::
         end
     end
 
-    local profession_map = {}
+    local guild_profession_map = {}
 
     for k,v in ipairs(get_fortress_guilds()) do
         for _,p in ipairs(v.guild_professions) do
 
-            if profession_map[p.profession] == nil then
-                profession_map[p.profession] = {}
+            if guild_profession_map[p.profession] == nil then
+                guild_profession_map[p.profession] = {}
             end
 
-            local prof = profession_map[p.profession]
+            local prof = guild_profession_map[p.profession]
 
             prof[#prof+1] = v
         end
     end
-
-    --local ordered_professions = sort_by_count(professions_by_type)
 
     function count_valid_members(histfigs)
         local count = 0
@@ -733,13 +756,36 @@ function display_profession_selector()
 
         local arr = {tostring(count) .. " workers"}
 
-        local guilds = profession_map[data]
+        local guilds = guild_profession_map[data]
 
         if guilds then
             for i,guild in ipairs(guilds) do
                 arr[#arr+1] = "Guild:"
+                --arr[#arr+1] = "FortCount:" .. tostring(count_fort_valid_members(guild.hist_figures))
                 arr[#arr+1] = translate_name(guild.name)
                 arr[#arr+1] = tostring(count_valid_members(guild.hist_figures)) .. " members"
+
+                local real_unit = 0
+
+                --if translate_name(guild.name) == "The Hall of Glazing" then
+                    for k,v in ipairs(guild.hist_figures) do
+                        if df.unit.find(v.unit_id) ~= nil then
+                            --[[arr[#arr+1] = profession_name(v.profession)
+                            arr[#arr+1] = profession_name(df.unit.find(v.unit_id).profession)
+                            arr[#arr+1] = profession_name(df.unit.find(v.unit_id).profession2)]]--
+
+                            --real_unit = real_unit + 1
+                        end
+                    end
+                --end
+
+
+
+                for k,v in ipairs(guild.guild_professions) do
+                    arr[#arr+1] = profession_name(v.profession)
+                end
+
+                --arr[#arr+1] = "Real: ".. tostring(real_unit)
             end
         end
 
