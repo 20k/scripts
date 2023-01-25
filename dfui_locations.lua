@@ -413,6 +413,22 @@ function count(tab, val)
     tab[val] = tab[val] + 1
 end
 
+function sort_by_count(tab)
+    local result_with_count = {}
+
+    for data,count in pairs(tab) do
+        result_with_count[#result_with_count+1] = {data=data,count=count}
+    end
+
+    function sorter(a, b)
+        return a.count > b.count
+    end
+
+    table.sort(result_with_count, sorter)
+
+    return result_with_count
+end
+
 function display_religion_selector()
     function is_deity(link)
         return link:getType() == df.histfig_hf_link_type.DEITY
@@ -463,10 +479,15 @@ function display_religion_selector()
         end
     end
 
+    local sorted_deities = sort_by_count(deities_by_id)
+    local sorted_religions = sort_by_count(religions_by_id)
+
     local first_tooltip = true
 
     if imgui.TreeNode("Deities") then
-        for deity_id,count in pairs(deities_by_id) do
+        for idx,data in ipairs(sorted_deities) do
+            local deity_id = data.data
+
             local histfig = df.historical_figure.find(deity_id)
 
             if histfig then
@@ -477,7 +498,7 @@ function display_religion_selector()
 
                     imgui.BeginTooltip()
 
-                    imgui.Text(tostring(count), "worshippers")
+                    imgui.Text(tostring(data.count), "worshippers")
 
                     for _,name in ipairs(spheres) do
                         imgui.Text(name)
@@ -493,19 +514,18 @@ function display_religion_selector()
     end
 
     if imgui.TreeNode("Religions") then
-        for religion_id,count in pairs(religions_by_id) do
+        for idx,data in ipairs(sorted_religions) do
+            local religion_id = data.data
             local entity = df.historical_entity.find(religion_id)
 
             imgui.Button(translate_name(entity.name) .. "##" .. tostring(religion_id))
 
             if imgui.IsItemHovered() and first_tooltip then
-                --[[local spheres = get_religion_sphere_names(entity)]]--
-
                 local deities = get_religion_deities(entity)
 
                 imgui.BeginTooltip()
 
-                imgui.Text(tostring(count), "worshippers")
+                imgui.Text(tostring(data.count), "worshippers")
 
                 for k,deity in ipairs(deities) do
                     imgui.Text("Worship")
