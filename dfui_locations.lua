@@ -296,17 +296,15 @@ function make_location(type, data)
 
     --TODO: the rest
     if type == df.abstract_building_type.INN_TAVERN then
-        local ptr = df.new(df.abstract_building_inn_tavernst)
-        ptr.next_room_info_id = 0
-
-        generic_setup = ptr
+        generic_setup = df.new(df.abstract_building_inn_tavernst)
+        generic_setup.next_room_info_id = 0
     end
 
     --guildhall needs profession
     --todo: we need a general opts struct
     --data.profession
     if type == df.abstract_building_type.GUILDHALL then
-
+        generic_setup = df.new(df.abstract_building_guildhallst)
     end
 
     --data.deity_type
@@ -316,11 +314,30 @@ function make_location(type, data)
     if type == df.abstract_building_type.TEMPLE then
         --deity_type
         --deity_data
+        generic_setup = df.new(df.abstract_building_templest)
+        generic_setup.deity_type = data.deity_type
+
+        --doing it 'properly', could be a 1 liner
+        if generic_setup.deity_type == -1 then
+            generic_setup.deity_data.Deity = -1
+        end
+
+        if generic_setup.deity_type == 0 then
+            generic_setup.deity_data.Deity = data.deity_data
+        end
+
+        if generic_setup.deity_type == 1 then
+            generic_setup.deity_data.Religion = data.deity_data
+        end
     end
 
     --none?
     if type == df.abstract_building_type.LIBRARY then
-
+        generic_setup = df.new(df.abstract_building_libraryst)
+        generic_setup.unk_1 = -1
+        generic_setup.unk_2 = -1
+        generic_setup.unk_3 = -1
+        generic_setup.unk_4 = -1
     end
 
     --none?
