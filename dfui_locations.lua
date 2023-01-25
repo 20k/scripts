@@ -617,9 +617,9 @@ function display_religion_selector()
         end
     end
 
-    local opt = {paginate=true, leave_vacant=true, leave_vacant_str="(No Specific Deity)##0"}
+    local opt = {paginate=true, leave_vacant=true, leave_vacant_str="(No Specific Deity)##0", cancel=true, cancel_str="(Cancel)"}
 
-    render.display_rich_text(rich_text, opt)
+    return render.display_rich_text(rich_text, opt)
 end
 
 function render_locations()
@@ -677,7 +677,29 @@ function render_locations()
     end
 
     if imgui.BeginPopup("maketemple") then
-        display_religion_selector()
+        local result = display_religion_selector()
+
+        if result.type == "vacant" then
+            make_location(df.abstract_building_type.TEMPLE, {deity_type=-1, deity_data=-1})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "deity" then
+            make_location(df.abstract_building_type.TEMPLE, {deity_type=0, deity_data=result.data.id})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "religion" then
+            make_location(df.abstract_building_type.TEMPLE, {deity_type=1, deity_data=result.data.id})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "cancel" then
+            imgui.CloseCurrentPopup()
+        end
 
         imgui.EndPopup()
     end

@@ -685,6 +685,18 @@ function display_rich_text(rich_text_in, opts)
 		end_dwarf = start_dwarf + num_per_page - 1
 	end
 
+	if opts.cancel then
+		local cancel_str = opts.cancel_str
+
+		if cancel_str == nil then
+			cancel_str = "Cancel"
+		end
+
+		if imgui.Button(cancel_str) then
+			which_id = {type="cancel"}
+		end
+	end
+
 	if opts.leave_vacant then
 		local str = opts.leave_vacant_str
 
