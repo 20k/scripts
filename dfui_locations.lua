@@ -451,8 +451,6 @@ function display_religion_selector()
         local results = get_relations(v.histfig_links, is_deity)
 
         for j,d in ipairs(results) do
-            local target = d.target_hf
-
             count(deities_by_id, d.target_hf)
         end
     end
