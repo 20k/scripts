@@ -300,14 +300,12 @@ function make_location(type, data)
 
     local generic_setup = nil
 
-    --TODO: the rest
     if type == df.abstract_building_type.INN_TAVERN then
         generic_setup = df.new(df.abstract_building_inn_tavernst)
         generic_setup.next_room_info_id = 0
     end
 
     --guildhall needs profession
-    --todo: we need a general opts struct
     --data.profession
     if type == df.abstract_building_type.GUILDHALL then
         generic_setup = df.new(df.abstract_building_guildhallst)
@@ -370,7 +368,6 @@ function make_location(type, data)
         dfhack.println("key", i, "value", j)
     end]]--
 
-    --TODO
     ---SET CONTENTS. Guildhalls have a specific profession which I definitely need to set
     fill_contents(generic_setup, data)
 
@@ -422,8 +419,6 @@ function debug_locations()
 		local name = dfhack.TranslateName(language_name, true)
 
 		imgui.Text(name)
-
-		--imgui.Text("Inhabitants", #v.)
 	end
 end
 
@@ -462,22 +457,6 @@ function get_deity_sphere_names(deity_histfig)
         local name = tostring(df.sphere_type[sphere])
 
         result[#result+1] = name
-    end
-
-    return result
-end
-
-function get_religion_sphere_names(religion_entity)
-    local deities = get_religion_deities(religion_entity)
-
-    local result = {}
-
-    for k,v in ipairs(deities) do
-        local spheres = get_deity_sphere_names(v)
-
-        for i,j in ipairs(spheres) do
-            result[#result+1] = j
-        end
     end
 
     return result
@@ -622,10 +601,6 @@ function display_religion_selector()
     return render.display_rich_text(rich_text, opt)
 end
 
-function valid_profession(profession)
-    --return df.profession.attrs[profession + 1].can_assign_labor and not df.profession.attrs[profession + 1].military
-end
-
 function get_fortress_guilds()
     local result = {}
 
@@ -633,18 +608,7 @@ function get_fortress_guilds()
 
     for k,v in ipairs(df.global.world.entities.all) do
         if v.type == df.historical_entity_type.Guild then
-            --if translate_name(v.name) == "The Guild of Heather" then
             if v.founding_site_government == fortress_entity.id then
-
-                --[[imgui.Text("En", tostring(translate_name(v.name)))
-
-                for d,p in ipairs(v.guild_professions) do
-                    imgui.Text(tostring(df.profession[p.profession]))
-                end
-
-                imgui.Text(tostring(v))
-                imgui.Text(tostring(v.id))]]--
-
                 result[#result+1] = v
             end
         end
@@ -664,24 +628,6 @@ function profession_parent(id)
 
     return df.profession.attrs[id+1].parent
 end
-
-function profession_parent2(id)
-    if id == nil then
-        return -1
-    end
-
-    return df.profession.attrs[profession_parent(id)+1].parent
-end
-
-
-function profession_parent3(id)
-    if id == nil then
-        return -1
-    end
-
-    return df.profession.attrs[profession_parent2(id)+1].parent
-end
-
 
 function display_profession_selector()
     local professions_by_type = {}
@@ -761,31 +707,12 @@ function display_profession_selector()
         if guilds then
             for i,guild in ipairs(guilds) do
                 arr[#arr+1] = "Guild:"
-                --arr[#arr+1] = "FortCount:" .. tostring(count_fort_valid_members(guild.hist_figures))
                 arr[#arr+1] = translate_name(guild.name)
                 arr[#arr+1] = tostring(count_valid_members(guild.hist_figures)) .. " members"
 
-                local real_unit = 0
-
-                --if translate_name(guild.name) == "The Hall of Glazing" then
-                    for k,v in ipairs(guild.hist_figures) do
-                        if df.unit.find(v.unit_id) ~= nil then
-                            --[[arr[#arr+1] = profession_name(v.profession)
-                            arr[#arr+1] = profession_name(df.unit.find(v.unit_id).profession)
-                            arr[#arr+1] = profession_name(df.unit.find(v.unit_id).profession2)]]--
-
-                            --real_unit = real_unit + 1
-                        end
-                    end
-                --end
-
-
-
-                for k,v in ipairs(guild.guild_professions) do
+                --[[for k,v in ipairs(guild.guild_professions) do
                     arr[#arr+1] = profession_name(v.profession)
-                end
-
-                --arr[#arr+1] = "Real: ".. tostring(real_unit)
+                end]]--
             end
         end
 
@@ -906,33 +833,4 @@ function render_locations()
             imgui.CloseCurrentPopup()
         end
     end
-
-    --[[local fortress_entity = df.global.plotinfo.main.fortress_entity
-
-    for k,v in ipairs(df.global.world.entities.all) do
-        if v.type == df.historical_entity_type.Guild then
-            --if translate_name(v.name) == "The Guild of Heather" then
-            if v.founding_site_government == fortress_entity.id then
-
-                imgui.Text("En", tostring(translate_name(v.name)))
-
-                for d,p in ipairs(v.guild_professions) do
-                    imgui.Text(tostring(df.profession[p.profession]))
-                end
-
-                imgui.Text(tostring(v))
-                imgui.Text(tostring(v.id))
-            end
-        end
-    end]]--
-
-    --[[if imgui.Button("TestPopup") then
-        imgui.OpenPopup("test")
-    end
-
-    if imgui.BeginPopupModal("test") then
-        imgui.Text("hi")
-    end]]--
-
-    --display_religion_selector()
 end
