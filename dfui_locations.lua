@@ -487,7 +487,6 @@ function display_religion_selector()
     if imgui.TreeNode("Deities") then
         for idx,data in ipairs(sorted_deities) do
             local deity_id = data.data
-
             local histfig = df.historical_figure.find(deity_id)
 
             if histfig then
