@@ -686,7 +686,13 @@ function display_rich_text(rich_text_in, opts)
 	end
 
 	if opts.leave_vacant then
-		if imgui.Button("Leave Vacant") then
+		local str = opts.leave_vacant_str
+
+		if str == nil then
+			str = "Leave Vacant"
+		end
+
+		if imgui.Button(str) then
 			which_id = {type="vacant"}
 		end
 	end
@@ -760,6 +766,14 @@ function display_rich_text(rich_text_in, opts)
 				col = get_unit_colour(text.data)
 			end
 
+			if text.type == "deity" then
+				col = COLOR_LIGHTCYAN
+			end
+
+			if text.type == "religion" then
+				col = COLOR_YELLOW
+			end
+
             if imgui.ButtonColored(col, name) then
 				if opts.center_on_click then
 					centre_camera(text.data.pos.x, text.data.pos.y, text.data.pos.z)
@@ -815,8 +829,8 @@ function display_rich_text(rich_text_in, opts)
 	end
 
 	imgui.Text("Search:")
-	imgui.SameLine()
-	imgui.InputText("##inputunits", rich_search)
+	--imgui.SameLine()
+	--imgui.InputText("##inputunits", rich_search)
 
 	if render_hotkey_text({key="c", text="Clear"}) then
 		rich_search = imgui.Ref("")
