@@ -34,7 +34,7 @@ function get_location_type_name(location)
 end
 
 function translate_name(name)
-    return dfhack.TranslateName(name, true)
+    return dfhack.df2utf(dfhack.TranslateName(name, true))
 end
 
 function get_location_name(location)
@@ -374,7 +374,7 @@ function get_religion_deities(religion_entity)
         deities[#deities+1] = deity
     end
 
-    return deity
+    return deities
 end
 
 function get_deity_sphere_names(deity_histfig)
@@ -463,12 +463,29 @@ function display_religion_selector()
         end
     end
 
+    local first_tooltip = true
+
     if imgui.TreeNode("Deities") then
         for deity_id,count in pairs(deities_by_id) do
             local histfig = df.historical_figure.find(deity_id)
 
             if histfig then
-                imgui.Text("I am the god", translate_name(histfig.name), "worshipped by", tostring(count))
+                imgui.Button(translate_name(histfig.name) .. "##" .. tostring(deity_id))
+
+                if imgui.IsItemHovered() and first_tooltip then
+                    local spheres = get_deity_sphere_names(histfig)
+
+                    imgui.BeginTooltip()
+
+                    imgui.Text(tostring(count), "worshippers")
+
+                    for _,name in ipairs(spheres) do
+                        imgui.Text(name)
+                    end
+
+                    imgui.EndTooltip()
+                    first_tooltip = false
+                end
             end
         end
 
@@ -479,7 +496,31 @@ function display_religion_selector()
         for religion_id,count in pairs(religions_by_id) do
             local entity = df.historical_entity.find(religion_id)
 
-            imgui.Text("Religion", translate_name(entity.name), "worshipped by", tostring(count))
+            imgui.Button(translate_name(entity.name) .. "##" .. tostring(religion_id))
+
+            if imgui.IsItemHovered() and first_tooltip then
+                --[[local spheres = get_religion_sphere_names(entity)]]--
+
+                local deities = get_religion_deities(entity)
+
+                imgui.BeginTooltip()
+
+                imgui.Text(tostring(count), "worshippers")
+
+                for k,deity in ipairs(deities) do
+                    imgui.Text("Worship")
+                    imgui.Text(translate_name(deity.name))
+
+                    local spheres = get_deity_sphere_names(deity)
+
+                    for _,name in ipairs(spheres) do
+                        imgui.Text(name)
+                    end
+                end
+
+                imgui.EndTooltip()
+                first_tooltip = false
+            end
         end
 
         imgui.TreePop()
