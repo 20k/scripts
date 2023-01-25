@@ -622,6 +622,137 @@ function display_religion_selector()
     return render.display_rich_text(rich_text, opt)
 end
 
+function valid_profession(profession)
+    return df.profession.attrs[profession + 1].can_assign_labor and not df.profession.attrs[profession + 1].military
+end
+
+function get_fortress_guilds()
+    local result = {}
+
+    local fortress_entity = df.global.plotinfo.main.fortress_entity
+
+    for k,v in ipairs(df.global.world.entities.all) do
+        if v.type == df.historical_entity_type.Guild then
+            --if translate_name(v.name) == "The Guild of Heather" then
+            if v.founding_site_government == fortress_entity.id then
+
+                --[[imgui.Text("En", tostring(translate_name(v.name)))
+
+                for d,p in ipairs(v.guild_professions) do
+                    imgui.Text(tostring(df.profession[p.profession]))
+                end
+
+                imgui.Text(tostring(v))
+                imgui.Text(tostring(v.id))]]--
+
+                result[#result+1] = v
+            end
+        end
+    end
+
+    return result
+end
+
+function display_profession_selector()
+    local professions_by_type = {}
+
+    local ordered_professions = {}
+
+    for i=0,df.profession.SURGEON do
+        if i == df.profession.STONECUTTER or i == df.profession.STONE_CARVER or
+           i == df.profession.CLERK or i == df.profession.ADMINISTRATOR or i == df.profession.TRADER then
+            goto toadyhatesyou
+        end
+
+        ordered_professions[#ordered_professions+1] = i
+
+        ::toadyhatesyou::
+    end
+
+    for k,v in ipairs(df.global.world.units.active) do
+        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
+            local profession = v.profession
+            local profession2 = v.profession
+
+            local valid_1 = valid_profession(profession)
+            local valid_2 = valid_profession(profession2)
+
+            if profession ~= profession2 then
+                if valid_1 then
+                    count(professions_by_type, profession)
+                end
+
+                if valid_2 then
+                    count(professions_by_type, profession2)
+                end
+            else
+                if valid_1 then
+                    count(professions_by_type, profession)
+                end
+            end
+
+            ::skip::
+        end
+    end
+
+    local profession_map = {}
+
+    for k,v in ipairs(get_fortress_guilds()) do
+        for _,p in ipairs(v.guild_professions) do
+
+            if profession_map[p.profession] == nil then
+                profession_map[p.profession] = {}
+            end
+
+            local prof = profession_map[p.profession]
+
+            prof[#prof+1] = v
+        end
+    end
+
+    --local ordered_professions = sort_by_count(professions_by_type)
+
+    function count_valid_members(histfigs)
+        local count = 0
+
+        for i,v in ipairs(histfigs) do
+            local unit = df.unit.find(v.unit_id)
+
+            if unit ~= nil and not dfhack.units.isKilled(unit) then
+                count = count + 1
+            end
+        end
+
+        return count
+    end
+
+    local rich_text = {{type="text", data="Professions:"}}
+
+    for k,data in ipairs(ordered_professions) do
+        local count = professions_by_type[data] or 0
+
+        local arr = {tostring(count) .. " workers"}
+
+        local guilds = profession_map[data]
+
+        if guilds then
+            for i,guild in ipairs(guilds) do
+                arr[#arr+1] = "Guild:"
+                arr[#arr+1] = translate_name(guild.name)
+                arr[#arr+1] = tostring(count_valid_members(guild.hist_figures)) .. " members"
+            end
+        end
+
+        local dat = {type="profession", data=data, hover_array=arr}
+
+        rich_text[#rich_text+1] = dat
+    end
+
+    local opt = {paginate=true, cancel=true, cancel_str="(Cancel)"}
+
+    return render.display_rich_text(rich_text, opt)
+end
+
 function render_locations()
     render.set_can_window_pop(true)
 
@@ -662,6 +793,10 @@ function render_locations()
         --imgui.Text(location.scribeinfo)
     end
 
+    --imgui.Text(#df.global.plotinfo.main.fortress_entity.guild_professions)
+
+
+    --TODO: SORT PEOPLE WHO WE HAVE OPEN PETITIONS WITH AT THE TOP
     local additional_data = {}
 
     if imgui.Button("Make Tavern") then
@@ -674,6 +809,14 @@ function render_locations()
 
     if imgui.Button("Make Temple") then
         imgui.OpenPopup("maketemple")
+    end
+
+    if imgui.Button("Make Library") then
+        make_location(df.abstract_building_type.LIBRARY, additional_data)
+    end
+
+    if imgui.Button("Make Guildhall") then
+        imgui.OpenPopup("makeguildhall")
     end
 
     if imgui.BeginPopup("maketemple") then
@@ -703,6 +846,39 @@ function render_locations()
 
         imgui.EndPopup()
     end
+
+    if imgui.BeginPopup("makeguildhall") then
+        local result = display_profession_selector()
+
+        if result.type == "profession" then
+            make_location(df.abstract_building_type.GUILDHALL, {profession=result.data})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "cancel" then
+            imgui.CloseCurrentPopup()
+        end
+    end
+
+    --[[local fortress_entity = df.global.plotinfo.main.fortress_entity
+
+    for k,v in ipairs(df.global.world.entities.all) do
+        if v.type == df.historical_entity_type.Guild then
+            --if translate_name(v.name) == "The Guild of Heather" then
+            if v.founding_site_government == fortress_entity.id then
+
+                imgui.Text("En", tostring(translate_name(v.name)))
+
+                for d,p in ipairs(v.guild_professions) do
+                    imgui.Text(tostring(df.profession[p.profession]))
+                end
+
+                imgui.Text(tostring(v))
+                imgui.Text(tostring(v.id))
+            end
+        end
+    end]]--
 
     --[[if imgui.Button("TestPopup") then
         imgui.OpenPopup("test")

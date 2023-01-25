@@ -623,6 +623,10 @@ function get_rich_text_name(item)
 	if item.type == "religion" then
 		return translate_name(item.data.name)
 	end
+
+	if item.type == "profession" then
+		return tostring(df.profession[item.data])
+	end
 end
 
 function filter_by_matched_rich(rich_text, search_text)
@@ -651,6 +655,7 @@ end
 --{type="tree", data=text}
 --{type="deity", data=histfig}
 --{type="religion", data=entity}
+--{type="profession", data=profession}
 function display_rich_text(rich_text_in, opts)
 	local rich_text = {}
 
@@ -783,6 +788,10 @@ function display_rich_text(rich_text_in, opts)
 			end
 
 			if text.type == "religion" then
+				col = COLOR_YELLOW
+			end
+
+			if text.type == "profession" then
 				col = COLOR_YELLOW
 			end
 
