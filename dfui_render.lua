@@ -216,6 +216,10 @@ function check_hostile(unit)
 		   dfhack.units.isGreatDanger(unit)
 end
 
+function translate_name(name)
+    return dfhack.df2utf(dfhack.TranslateName(name, true))
+end
+
 function get_user_facing_name(unit)
 	local name_type = dfhack.units.getVisibleName(unit)
 
@@ -611,6 +615,14 @@ function get_rich_text_name(item)
 	if item.type == "tree" then
 		return item.data
 	end
+
+	if item.type == "deity" then
+		return translate_name(item.data.name)
+	end
+
+	if item.type == "religion" then
+		return translate_name(item.data.name)
+	end
 end
 
 function filter_by_matched_rich(rich_text, search_text)
@@ -637,6 +649,8 @@ end
 --{type="location", data=location}
 --{type="text", data=text}
 --{type="tree", data=text}
+--{type="deity", data=histfig}
+--{type="religion", data=entity}
 function display_rich_text(rich_text_in, opts)
 	local rich_text = {}
 
@@ -656,6 +670,8 @@ function display_rich_text(rich_text_in, opts)
 	local end_dwarf = #rich_text
 	local num_per_page = 17
 	local max_page = math.floor(#rich_text / num_per_page)
+
+	local first_hover = true
 
 	local which_id = {type="none"}
 
@@ -756,10 +772,24 @@ function display_rich_text(rich_text_in, opts)
                 render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, text.data.pos)
             end
 
-			if text.hover ~= nil and imgui.IsItemHovered() then
+			if text.hover ~= nil and imgui.IsItemHovered()  and first_hover then
 				imgui.BeginTooltip()
 				imgui.Text(text.hover)
 				imgui.EndTooltip()
+
+				first_hover = false
+			end
+
+			if text.hover_array ~= nil and imgui.IsItemHovered() and first_hover then
+				imgui.BeginTooltip()
+
+				for k,v in ipairs(text.hover_array) do
+					imgui.Text(v)
+				end
+
+				imgui.EndTooltip()
+
+				first_hover = false
 			end
 		end
 

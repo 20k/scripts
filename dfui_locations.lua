@@ -3,13 +3,19 @@ imgui = dfhack.imgui
 render = reqscript('dfui_render')
 utils = require('utils')
 
-function get_locations()
+function get_locations(type)
     local world_site = df.global.plotinfo.main.fortress_site
 
     local result = {}
 
 	for k,location in ipairs(world_site.buildings) do
-        result[#result+1] = location
+        if type then
+            if location:getType() == type then
+                result[#result+1] = location
+            end
+        else
+            result[#result+1] = location
+        end
     end
 
     return result
@@ -557,29 +563,34 @@ function display_religion_selector()
     local first_tooltip = true
 
     if imgui.TreeNode("Deities") then
+        local rich_text = {}
+
         for idx,data in ipairs(sorted_deities) do
             local deity_id = data.data
             local histfig = df.historical_figure.find(deity_id)
 
             if histfig then
-                imgui.Button(translate_name(histfig.name) .. "##" .. tostring(deity_id))
+                local dat = {type="deity", data=histfig}
 
-                if imgui.IsItemHovered() and first_tooltip then
-                    local spheres = get_deity_sphere_names(histfig)
+                local worshipper_str = tostring(data.count) .. " worshippers"
 
-                    imgui.BeginTooltip()
+                local spheres = get_deity_sphere_names(histfig)
 
-                    imgui.Text(tostring(data.count), "worshippers")
+                local hover = {worshipper_str}
 
-                    for _,name in ipairs(spheres) do
-                        imgui.Text(name)
-                    end
-
-                    imgui.EndTooltip()
-                    first_tooltip = false
+                for k,v in ipairs(spheres) do
+                    hover[#hover+1] = v
                 end
+
+                dat.hover_array = hover
+
+                rich_text[#rich_text+1] = dat
             end
         end
+
+        local opt = {paginate=true}
+
+        render.display_rich_text(rich_text, opt)
 
         imgui.TreePop()
     end
@@ -667,6 +678,24 @@ function render_locations()
     if imgui.Button("Make Hospital") then
         make_location(df.abstract_building_type.HOSPITAL, additional_data)
     end
+
+    if imgui.Button("Make Temple") then
+        imgui.OpenPopup("maketemple")
+    end
+
+    if imgui.BeginPopup("maketemple") then
+        display_religion_selector()
+
+        imgui.EndPopup()
+    end
+
+    --[[if imgui.Button("TestPopup") then
+        imgui.OpenPopup("test")
+    end
+
+    if imgui.BeginPopupModal("test") then
+        imgui.Text("hi")
+    end]]--
 
     display_religion_selector()
 end
