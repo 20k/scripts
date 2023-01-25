@@ -21,7 +21,7 @@ function get_locations(type)
     return result
 end
 
-function get_location_type_name(location)
+function get_location_type_name(location, pad)
     local name_to_type = {
         ["Temple"] = df.abstract_building_type.TEMPLE,
         ["Library"] = df.abstract_building_type.LIBRARY,
@@ -36,7 +36,21 @@ function get_location_type_name(location)
         type_to_name[j] = i
     end
 
-    return type_to_name[location:getType()]
+    local result = type_to_name[location:getType()]
+
+    if pad then
+        local max = 0
+
+        for k,v in pairs(name_to_type) do
+            max = math.max(max,#k)
+        end
+
+        for i=#result,max do
+            result = result.." "
+        end
+    end
+
+    return result
 end
 
 function translate_name(name)
@@ -55,7 +69,7 @@ function display_location_selector()
     local rich_locations = {}
 
     for k,v in ipairs(locations) do
-        rich_locations[#rich_locations+1] = {type="location", data=v, hover=get_location_type_name(v)}
+        rich_locations[#rich_locations+1] = {type="location", data=v}
     end
 
     local opts = {paginate=true, leave_vacant=true}

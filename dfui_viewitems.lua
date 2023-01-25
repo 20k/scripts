@@ -435,7 +435,7 @@ function handle_building_mouseover()
 		imgui.EatMouseInputs()
 
 		for _,civzone in ipairs(civzones) do
-			debug_zone(civzone)
+			--debug_zone(civzone)
 
 			if (current_menu == "main" or current_menu == "Zones") and imgui.IsMouseClicked(0) then
 				if render.get_menu() ~= "Zones" then
@@ -500,6 +500,7 @@ function debug_unit(v)
 	imgui.Text("ligaments_heal", tostring(v.ligaments_heal))
 	imgui.Text("effective_rate", tostring(v.effective_rate))
 	imgui.Text("healing_rate", tostring(#v.healing_rate))
+
 	--[[imgui.Text("Weight computed", tostring(v.flags3.weight_computed))
 
 	imgui.Text("a2", tostring(v.anon_2))
@@ -573,7 +574,7 @@ function handle_unit_mouseover()
 			imgui.BeginTooltip()
 
 			render.TextColoredUnit(v)
-			debug_unit(v)
+			--debug_unit(v)
 
 			imgui.EndTooltip()
 		end
