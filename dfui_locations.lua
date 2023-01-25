@@ -233,6 +233,60 @@ function make_occupations_for(location)
     return {}
 end
 
+function fill_contents(location, data)
+    local type = location:getType()
+    local contents = location:getContents()
+
+    contents.profession = -1
+    contents.desired_copies = 0
+    contents.unk_v47_2 = 0
+    contents.unk_v47_3 = 2
+    contents.anon_13 = 100
+
+    if type == df.abstract_building_type.INN_TAVERN then
+        --so. I think I need to fill profession through unk_v47_2
+        contents.desired_goblets  = 10
+        contents.desired_instruments = 5
+    end
+
+    if type == df.abstract_building_type.GUILDHALL then
+        contents.profession = data.profession
+    end
+
+    if type == df.abstract_building_type.TEMPLE then
+        contents.desired_instruments = 5
+    end
+
+    if type == df.abstract_building_type.LIBRARY then
+        contents.desired_paper = 10
+    end
+
+    --int32_t max_splints;
+    --int32_t max_thread;
+    --int32_t max_cloth;
+    --int32_t max_crutches;
+    --int32_t max_plaster;
+    --int32_t max_buckets;
+    --int32_t max_soap;
+
+    if type == df.abstract_building_type.HOSPITAL then
+        --max_splints;
+        --max_thread;
+        --max_cloth;
+        --max_crutches;
+        --max_plaster;
+        --max_buckets;
+        --max_soap;
+        contents.desired_copies = 5
+        contents.location_tier = 75000
+        contents.location_value = 50000
+        contents.count_goblets = 5
+        contents.count_instruments = 750
+        contents.count_paper = 2
+        contents.unk_v47_2 = 750
+    end
+end
+
 function make_location(type, data)
     local world_site = df.global.plotinfo.main.fortress_site
 
@@ -271,7 +325,7 @@ function make_location(type, data)
 
     --none?
     if type == df.abstract_building_type.HOSPITAL then
-
+        generic_setup = df.new(df.abstract_building_hospitalst)
     end
 
     generic_setup.name.type = name.type
@@ -288,13 +342,14 @@ function make_location(type, data)
 		generic_setup.name.parts_of_speech[i - 1] = j
 	end
 
-    for i,j in pairs(generic_setup.contents) do
+    --[[for i,j in pairs(generic_setup.contents) do
         --imgui.Text("Key", i, "Value", tostring(j))
         dfhack.println("key", i, "value", j)
-    end
+    end]]--
 
     --TODO
     ---SET CONTENTS. Guildhalls have a specific profession which I definitely need to set
+    fill_contents(generic_setup, data)
 
     --don't care about inhabitants
 
@@ -565,7 +620,7 @@ function render_locations()
             imgui.Text("DData", tostring(location.deity_data.Deity))
         end
 
-        local contents = location:getContents()
+        --local contents = location:getContents()
 
         --[[if contents then
             for i,j in ipairs(contents.building_ids) do
@@ -590,6 +645,10 @@ function render_locations()
 
     if imgui.Button("Make Tavern") then
         make_location(df.abstract_building_type.INN_TAVERN, additional_data)
+    end
+
+    if imgui.Button("Make Hospital") then
+        make_location(df.abstract_building_type.HOSPITAL, additional_data)
     end
 
     display_religion_selector()
