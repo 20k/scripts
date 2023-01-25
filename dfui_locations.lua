@@ -476,45 +476,62 @@ function render_locations()
         end
     end
 
-    imgui.Text("Deities")
+    if imgui.TreeNode("Deities") then
+        for deity_id,count in pairs(deities_by_id) do
+            local histfig = df.historical_figure.find(deity_id)
 
-    for deity_id,count in pairs(deities_by_id) do
-        local histfig = df.historical_figure.find(deity_id)
+            if histfig then
+                imgui.Text("I am the god", translate_name(histfig.name), "worshipped by", tostring(count))
 
-        if histfig then
-            imgui.Text("I am the god", translate_name(histfig.name), "worshipped by", tostring(count))
-        end
-    end
+                for idx,sphere in ipairs(histfig.info.spheres.spheres) do
+                    local name = tostring(df.sphere_type[sphere])
 
-    imgui.Text("Religions")
+                    imgui.Text(name)
 
-    for religion_id,count in pairs(religions_by_id) do
-        local entity = df.historical_entity.find(religion_id)
+                    --local name = tostring(df.sphere_type.attrssphere)
 
-        if entity then
-            imgui.Text("I am the entity", translate_name(entity.name), "worshipped by", tostring(count))
-        end
+                    --imgui.Text(name)
 
-        for k,deity_id in ipairs(entity.relations.deities) do
-            local deity = df.historical_figure.find(deity_id)
-
-            if deity then
-                local worship = entity.relations.worship[k]
-
-                imgui.Text("Worship", tostring(worship))
-
-                imgui.Text("Deity", translate_name(deity.name))
-            end
-        end
-
-        for k,belief_id in ipairs(entity.relations.belief_systems) do
-            local belief = nil
-
-            for j,b in ipairs(df.global.world.belief_systems.all) do
-                if b.id == belief_id then
-                    imgui.Text("Found belief system")
+                    --[[for l,m in pairs(df.sphere_type) do
+                        dfhack.println(l)
+                    end]]--
                 end
             end
+        end
+
+        imgui.TreePop()
+    end
+
+    if imgui.TreeNodeEx("Religions", (1<<5)) then
+        for religion_id,count in pairs(religions_by_id) do
+            local entity = df.historical_entity.find(religion_id)
+
+            imgui.Text(translate_name(entity.name), "worshipped by", tostring(count))
+
+            for k,deity_id in ipairs(entity.relations.deities) do
+                local deity = df.historical_figure.find(deity_id)
+
+                --[[if deity then
+                    local worship = entity.relations.worship[k]
+
+                    imgui.Text("Worship", tostring(worship))
+                    imgui.Text("Deity", translate_name(deity.name))
+                end]]--
+            end
+
+            --unrelated
+            --[[if imgui.TreeNode("Belief:"..tostring(religion_id)) then
+                for k,belief_id in ipairs(entity.relations.belief_systems) do
+                    local belief_system = df.belief_system.find(belief_id)
+
+                    if belief_system then
+                        imgui.Text("Found belief system")
+                        imgui.Text("Mental pictures#", tostring(#belief_system.mental_pictures[0]))
+                    end
+                end
+
+                imgui.TreePop()
+            end]]--
         end
     end
 end
