@@ -357,16 +357,135 @@ function get_relations(links, filter)
     local result = {}
 
     for idx, link in ipairs(links) do
-        if filter then
-            if filter(link) then
-                result[#result+1] = link
-            end
-        else
+        if filter(link) then
             result[#result+1] = link
         end
     end
 
     return result
+end
+
+function get_religion_deities(religion_entity)
+    local deities = {}
+
+    for k,deity_id in ipairs(religion_entity.relations.deities) do
+        local deity = df.historical_figure.find(deity_id)
+
+        deities[#deities+1] = deity
+    end
+
+    return deity
+end
+
+function get_deity_sphere_names(deity_histfig)
+    local result = {}
+
+    for idx,sphere in ipairs(deity_histfig.info.spheres.spheres) do
+        local name = tostring(df.sphere_type[sphere])
+
+        result[#result+1] = name
+    end
+
+    return result
+end
+
+function get_religion_sphere_names(religion_entity)
+    local deities = get_religion_deities(religion_entity)
+
+    local result = {}
+
+    for k,v in ipairs(deities) do
+        local spheres = get_deity_sphere_names(v)
+
+        for i,j in ipairs(spheres) do
+            result[#result+1] = j
+        end
+    end
+
+    return result
+end
+
+function count(tab, val)
+    if tab[val] == nil then
+        tab[val] = 0
+    end
+
+    tab[val] = tab[val] + 1
+end
+
+function display_religion_selector()
+    function is_deity(link)
+        return link:getType() == df.histfig_hf_link_type.DEITY
+    end
+
+    function is_religion(link)
+        if link:getType() == df.histfig_entity_link_type.MEMBER then
+            local real_entity = df.historical_entity.find(link.entity_id)
+
+            if real_entity == nil then
+                return false
+            end
+
+            return real_entity.type == df.historical_entity_type.Religion
+        end
+
+        return false
+    end
+
+    local valid_histfigs = {}
+
+    for k,v in ipairs(df.global.world.units.active) do
+        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
+            local histfig = unit_to_histfig(v)
+
+            if histfig then
+                valid_histfigs[#valid_histfigs+1] = histfig
+            end
+        end
+    end
+
+    local deities_by_id = {}
+    local religions_by_id = {}
+
+    for k,v in ipairs(valid_histfigs) do
+        local results = get_relations(v.histfig_links, is_deity)
+
+        for j,d in ipairs(results) do
+            local target = d.target_hf
+
+            count(deities_by_id, d.target_hf)
+        end
+    end
+
+    for k,v in ipairs(valid_histfigs) do
+        local results = get_relations(v.entity_links, is_religion)
+
+        for j,d in ipairs(results) do
+            count(religions_by_id, d.entity_id)
+        end
+    end
+
+    if imgui.TreeNode("Deities") then
+        for deity_id,count in pairs(deities_by_id) do
+            local histfig = df.historical_figure.find(deity_id)
+
+            if histfig then
+                imgui.Text("I am the god", translate_name(histfig.name), "worshipped by", tostring(count))
+            end
+        end
+
+        imgui.TreePop()
+    end
+
+    if imgui.TreeNode("Religions") then
+        for religion_id,count in pairs(religions_by_id) do
+            local entity = df.historical_entity.find(religion_id)
+
+            imgui.Text("Religion", translate_name(entity.name), "worshipped by", tostring(count))
+        end
+
+        imgui.TreePop()
+    end
 end
 
 function render_locations()
@@ -412,126 +531,8 @@ function render_locations()
     local additional_data = {}
 
     if imgui.Button("Make Tavern") then
-        make_location(df.abstract_building_type.INN_TAVERN)
+        make_location(df.abstract_building_type.INN_TAVERN, additional_data)
     end
 
-    function is_deity(link)
-        return link:getType() == df.histfig_hf_link_type.DEITY
-    end
-
-    function is_religion(link)
-        if link:getType() == df.histfig_entity_link_type.MEMBER then
-            local real_entity = df.historical_entity.find(link.entity_id)
-
-            if real_entity == nil then
-                return false
-            end
-
-            return real_entity.type == df.historical_entity_type.Religion
-        end
-
-        return false
-    end
-
-    local valid_histfigs = {}
-
-    for k,v in ipairs(df.global.world.units.active) do
-        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
-            local histfig = unit_to_histfig(v)
-
-            if histfig then
-                valid_histfigs[#valid_histfigs+1] = histfig
-            end
-        end
-    end
-
-    local deities_by_id = {}
-    local religions_by_id = {}
-
-    for k,v in ipairs(valid_histfigs) do
-        local results = get_relations(v.histfig_links, is_deity)
-
-        for j,d in ipairs(results) do
-            local target = d.target_hf
-
-            if deities_by_id[target] == nil then
-                deities_by_id[target] = 0
-            end
-
-            deities_by_id[target] = deities_by_id[target] + 1
-        end
-    end
-
-    for k,v in ipairs(valid_histfigs) do
-        local results = get_relations(v.entity_links, is_religion)
-
-        for j,d in ipairs(results) do
-            local target = d.entity_id
-
-            if religions_by_id[target] == nil then
-                religions_by_id[target] = 0
-            end
-
-            religions_by_id[target] = religions_by_id[target] + 1
-        end
-    end
-
-    if imgui.TreeNode("Deities") then
-        for deity_id,count in pairs(deities_by_id) do
-            local histfig = df.historical_figure.find(deity_id)
-
-            if histfig then
-                imgui.Text("I am the god", translate_name(histfig.name), "worshipped by", tostring(count))
-
-                for idx,sphere in ipairs(histfig.info.spheres.spheres) do
-                    local name = tostring(df.sphere_type[sphere])
-
-                    imgui.Text(name)
-
-                    --local name = tostring(df.sphere_type.attrssphere)
-
-                    --imgui.Text(name)
-
-                    --[[for l,m in pairs(df.sphere_type) do
-                        dfhack.println(l)
-                    end]]--
-                end
-            end
-        end
-
-        imgui.TreePop()
-    end
-
-    if imgui.TreeNodeEx("Religions", (1<<5)) then
-        for religion_id,count in pairs(religions_by_id) do
-            local entity = df.historical_entity.find(religion_id)
-
-            imgui.Text(translate_name(entity.name), "worshipped by", tostring(count))
-
-            for k,deity_id in ipairs(entity.relations.deities) do
-                local deity = df.historical_figure.find(deity_id)
-
-                --[[if deity then
-                    local worship = entity.relations.worship[k]
-
-                    imgui.Text("Worship", tostring(worship))
-                    imgui.Text("Deity", translate_name(deity.name))
-                end]]--
-            end
-
-            --unrelated
-            --[[if imgui.TreeNode("Belief:"..tostring(religion_id)) then
-                for k,belief_id in ipairs(entity.relations.belief_systems) do
-                    local belief_system = df.belief_system.find(belief_id)
-
-                    if belief_system then
-                        imgui.Text("Found belief system")
-                        imgui.Text("Mental pictures#", tostring(#belief_system.mental_pictures[0]))
-                    end
-                end
-
-                imgui.TreePop()
-            end]]--
-        end
-    end
+    display_religion_selector()
 end
