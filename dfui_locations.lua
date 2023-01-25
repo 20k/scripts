@@ -349,16 +349,14 @@ function debug_locations()
 	end
 end
 
-function get_unit_histfig_relations(unit, filter)
-    local histfig = df.historical_figure.find(unit.hist_figure_id)
+function unit_to_histfig(unit)
+    return df.historical_figure.find(unit.hist_figure_id)
+end
 
-    if histfig == nil then
-        return {}
-    end
-
+function get_relations(links, filter)
     local result = {}
 
-    for idx, link in ipairs(histfig.histfig_links) do
+    for idx, link in ipairs(links) do
         if filter then
             if filter(link) then
                 result[#result+1] = link
@@ -371,13 +369,7 @@ function get_unit_histfig_relations(unit, filter)
     return result
 end
 
-function get_unit_entity_relations(unit, filter)
-    local histfig = df.historical_figure.find(unit.hist_figure_id)
-
-    if histfig == nil then
-        return {}
-    end
-
+--[[function get_unit_entity_relations(histfig, filter)
     local result = {}
 
     for idx, link in ipairs(histfig.entity_links) do
@@ -391,7 +383,7 @@ function get_unit_entity_relations(unit, filter)
     end
 
     return result
-end
+end]]--
 
 function render_locations()
     render.set_can_window_pop(true)
@@ -457,19 +449,25 @@ function render_locations()
         return false
     end
 
-    local valid_units = {}
+    local valid_histfigs = {}
 
     for k,v in ipairs(df.global.world.units.active) do
         if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
-            valid_units[#valid_units + 1] = v
+            --valid_units[#valid_units + 1] = v
+
+            local histfig = unit_to_histfig(v)
+
+            if histfig then
+                valid_histfigs[#valid_histfigs+1] = histfig
+            end
         end
     end
 
     local deities_by_id = {}
     local religions_by_id = {}
 
-    for k,v in ipairs(valid_units) do
-        local results = get_unit_histfig_relations(v, is_deity)
+    for k,v in ipairs(valid_histfigs) do
+        local results = get_relations(v.histfig_links, is_deity)
 
         for j,d in ipairs(results) do
             local target = d.target_hf
@@ -482,14 +480,11 @@ function render_locations()
         end
     end
 
-    for k,v in ipairs(valid_units) do
-        local results = get_unit_entity_relations(v, is_religion)
+    for k,v in ipairs(valid_histfigs) do
+        local results = get_relations(v.entity_links, is_religion)
 
         for j,d in ipairs(results) do
             local target = d.entity_id
-
-            --local entity = df.historical_entity.find(target)
-            --imgui.Text("NAME", translate_name(entity.name), "link_type", d:getType())
 
             if religions_by_id[target] == nil then
                 religions_by_id[target] = 0
