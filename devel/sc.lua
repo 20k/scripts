@@ -36,7 +36,7 @@ local utils = require('utils')
 local guess_pointers = false
 local check_vectors = true
 local check_pointers = true
-local check_enums = true
+local check_enums = false
 
 
 -- not really a queue, I know
@@ -153,6 +153,20 @@ local function check_container(obj, path)
                     return
                 end
 
+                if check_pointers and obj:_field(k)._kind == "primitive" and dfhack.query_heapa(a) ~= s and dfhack.query_heapa(a) > 0 then
+                    local query_size = dfhack.query_heapa(a)
+
+                    local key = tostring(obj._type) .. '.' .. k
+                    if not checkedp[key] then
+                        checkedp[key] = true
+                        bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
+                        err('  INVALID POINTER ALLOCATION SIZE, SKIPPING REST OF THE TYPE')
+
+                        dfhack.printerr(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
+                    end
+                    --return
+                end
+
                 -- the first check is to process pointers only, not nested structures
                 if obj:_field(k)._kind == 'primitive' and df.reinterpret_cast('uint32_t',a-8).value == 0xdfdf4ac8 then
                     if not checkedt[t] then
@@ -180,6 +194,39 @@ local function check_container(obj, path)
         else
             local field = obj:_field(k)
             if field then
+                --dfhack.println(field._type, tostring(field))
+
+                --if df.reinterpret_cast('char', v) ~= nil then
+                    --local ptr = df.reinterpret_cast('char', v)
+                --[[if field._type == 'void*'
+                    or field._type == 'int64_t' or field._type == 'uint64_t'
+                    or field._type == 'int32_t' or field._type == 'uint32_t' then
+                    local s,a = field:sizeof()
+
+                    local query_size = dfhack.query_heapa(a)
+
+                    if check_pointers and query_size ~= field:sizeof() and query_size > 0 then
+                        local key = tostring(obj._type) .. '.' .. k
+                        if not checkedp[key] then
+                            checkedp[key] = true
+                            bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
+                            err('  INVALID POINTER ALLOCATION SIZE2, SKIPPING REST OF THE TYPE')
+                        end
+                    end
+                end]]--
+
+                --obj:_field(k) == "primitive"
+
+                --[[if check_pointers and obj:_field(k)._kind == "primitive" and dfhack.query_heapa(a) ~= s and query_size > 0 then
+                    local key = tostring(obj._type) .. '.' .. k
+                    if not checkedp[key] then
+                        checkedp[key] = true
+                        bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(dfhack.query_heapa(a)))
+                        err('  INVALID POINTER ALLOCATION SIZE, SKIPPING REST OF THE TYPE')
+                    end
+                    --return
+                end]]--
+
                 if guess_pointers then
                     if field._type == 'void*'
                     or field._type == 'int64_t' or field._type == 'uint64_t'
@@ -238,6 +285,8 @@ for i,mem in ipairs(dfhack.internal.getMemRanges()) do
         mem_end = mem.end_addr
     end
 end
+
+dfhack.take_heap_snapshot()
 
 while #queue > 0 do
     local v = queue[#queue]
