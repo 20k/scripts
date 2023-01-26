@@ -37,6 +37,8 @@ local guess_pointers = false
 local check_vectors = true
 local check_pointers = true
 local check_enums = false
+local check_allocation_size = false
+local winapi_debugging = true
 
 
 -- not really a queue, I know
@@ -143,7 +145,7 @@ local function check_container(obj, path)
             elseif v and v._kind == 'struct' then
                 local t = v._type
 
-                if check_pointers and not is_valid_address(a) then
+                --[[if check_pointers and not is_valid_address(a) then
                     local key = tostring(obj._type) .. '.' .. k
                     if not checkedp[key] then
                         checkedp[key] = true
@@ -151,20 +153,42 @@ local function check_container(obj, path)
                         err('  INVALID ADDRESS, SKIPPING REST OF THE TYPE')
                     end
                     return
-                end
+                end]]--
 
-                if check_pointers and obj:_field(k)._kind == "primitive" and dfhack.query_heapa(a) ~= s and dfhack.query_heapa(a) > 0 then
-                    local query_size = dfhack.query_heapa(a)
-
-                    local key = tostring(obj._type) .. '.' .. k
-                    if not checkedp[key] then
-                        checkedp[key] = true
-                        bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
-                        err('  INVALID POINTER ALLOCATION SIZE, SKIPPING REST OF THE TYPE')
-
-                        dfhack.printerr(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
+                if obj:_field(k)._kind == "primitive" and a ~= 0 and winapi_debugging then
+                    if check_pointers and not dfhack.internal.isAddressInHeap(a) then
+                        local key = tostring(obj._type) .. '.' .. k
+                        if not checkedp[key] then
+                            checkedp[key] = true
+                            bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k)
+                            err('  INVALID ADDRESS ' .. tostring(a) .. ' (windows heap debugging), SKIPPING REST OF THE TYPE')
+                        end
+                        return
                     end
-                    --return
+
+                    if check_pointers and dfhack.internal.isAddressUsedAfterFreeInHeap(a) then
+                        local key = tostring(obj._type) .. '.' .. k
+                        if not checkedp[key] then
+                            checkedp[key] = true
+                            bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k)
+                            err('  DANGLING ADDRESS (windows heap debugging), SKIPPING REST OF THE TYPE')
+                        end
+                        return
+                    end
+
+                    local query_size = dfhack.internal.getAddressSizeInHeap(a)
+
+                    if check_allocation_size and check_pointers and query_size ~= s and query_size > 0 then
+                        local key = tostring(obj._type) .. '.' .. k
+                        if not checkedp[key] then
+                            checkedp[key] = true
+                            bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
+                            err('  INVALID POINTER ALLOCATION SIZE (windows heap debugging)')
+
+                            dfhack.printerr(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
+                        end
+                        --return
+                    end
                 end
 
                 -- the first check is to process pointers only, not nested structures
@@ -286,7 +310,7 @@ for i,mem in ipairs(dfhack.internal.getMemRanges()) do
     end
 end
 
-dfhack.take_heap_snapshot()
+dfhack.internal.heapTakeSnapshot()
 
 while #queue > 0 do
     local v = queue[#queue]
