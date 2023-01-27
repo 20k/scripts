@@ -37,7 +37,7 @@ local guess_pointers = false
 local check_vectors = true
 local check_pointers = true
 local check_enums = false
-local check_allocation_size = false
+local check_allocation_size = true
 local winapi_debugging = true
 
 
