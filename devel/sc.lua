@@ -178,7 +178,7 @@ local function check_container(obj, path)
 
                     local query_size = dfhack.internal.getAddressSizeInHeap(a)
 
-                    if check_allocation_size and check_pointers and query_size ~= s and query_size > 0 then
+                    if check_allocation_size and query_size ~= s and query_size > 0 then
                         local key = tostring(obj._type) .. '.' .. k
                         if not checkedp[key] then
                             checkedp[key] = true
