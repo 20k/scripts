@@ -39,23 +39,25 @@ local check_pointers = true
 local check_enums = false
 local check_allocation_size = false
 local winapi_debugging = true
+local winapi_check_subpointers = true
 
 
 -- not really a queue, I know
-local queue
+local queue = {}
+local root_queue
 
 local args = {...}
 if args[1] == '-all' then
-    queue = {}
+    root_queue = {}
     for k, v in pairs(df.global) do
         if type(v) == 'userdata' then
-            table.insert(queue, { v, k })
+            table.insert(root_queue, { v, k })
         end
     end
 elseif #args == 1 then
-    queue = { { utils.df_expr_to_ref(args[1]), args[1] } }
+    root_queue = { { utils.df_expr_to_ref(args[1]), args[1] } }
 else
-    queue = { { df.global.world, 'world' } }
+    root_queue = { { df.global.world, 'world' } }
 end
 
 local checkedt = {}
@@ -118,7 +120,9 @@ end
 
 prog = '|/-\\'
 local count = -1
-local function check_container(obj, path)
+local function check_container(obj, path, root)
+    local root_size, root_address = root:sizeof()
+
     count = count + 1
     if dfhack.is_interactive() and count % 500 == 0 then
         local i = ((count / 500) % 4) + 1
@@ -153,6 +157,20 @@ local function check_container(obj, path)
                         err('  INVALID ADDRESS, SKIPPING REST OF THE TYPE')
                     end
                     return
+                end
+
+                local in_root = a >= root_address and a < root_address + root_size
+
+                if not in_root and winapi_check_subpointers then
+                    if a ~= 0 and dfhack.internal.getRootAddressOfHeapObject(a) == 0 then
+                        local key = tostring(obj._type) .. '.' .. k
+                        if not checkedp[key] then
+                            checkedp[key] = true
+                            bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k)
+                            err('  INVALID SUBADDRESS ' .. tostring(a) .. ' (windows heap debugging), SKIPPING REST OF THE TYPE')
+                        end
+                        return
+                    end
                 end
 
                 if obj:_field(k)._kind == "primitive" and a ~= 0 and winapi_debugging then
@@ -279,9 +297,17 @@ end
 
 dfhack.internal.heapTakeSnapshot()
 
-while #queue > 0 do
-    local v = queue[#queue]
-    table.remove(queue, #queue)
-    check_container(v[1], v[2])
+while #root_queue > 0 do
+    local root = root_queue[#root_queue]
+
+    table.insert(queue, root)
+
+    while #queue > 0 do
+        local v = queue[#queue]
+        table.remove(queue, #queue)
+        check_container(v[1], v[2], root[1])
+    end
+
+    table.remove(root_queue, #root_queue)
 end
 print(count .. ' scanned')
