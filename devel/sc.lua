@@ -145,7 +145,7 @@ local function check_container(obj, path)
             elseif v and v._kind == 'struct' then
                 local t = v._type
 
-                --[[if check_pointers and not is_valid_address(a) then
+                if check_pointers and not is_valid_address(a) then
                     local key = tostring(obj._type) .. '.' .. k
                     if not checkedp[key] then
                         checkedp[key] = true
@@ -153,7 +153,7 @@ local function check_container(obj, path)
                         err('  INVALID ADDRESS, SKIPPING REST OF THE TYPE')
                     end
                     return
-                end]]--
+                end
 
                 if obj:_field(k)._kind == "primitive" and a ~= 0 and winapi_debugging then
                     if check_pointers and not dfhack.internal.isAddressInHeap(a) then
@@ -187,7 +187,7 @@ local function check_container(obj, path)
 
                             dfhack.printerr(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
                         end
-                        --return
+                        return
                     end
                 end
 
@@ -218,39 +218,6 @@ local function check_container(obj, path)
         else
             local field = obj:_field(k)
             if field then
-                --dfhack.println(field._type, tostring(field))
-
-                --if df.reinterpret_cast('char', v) ~= nil then
-                    --local ptr = df.reinterpret_cast('char', v)
-                --[[if field._type == 'void*'
-                    or field._type == 'int64_t' or field._type == 'uint64_t'
-                    or field._type == 'int32_t' or field._type == 'uint32_t' then
-                    local s,a = field:sizeof()
-
-                    local query_size = dfhack.query_heapa(a)
-
-                    if check_pointers and query_size ~= field:sizeof() and query_size > 0 then
-                        local key = tostring(obj._type) .. '.' .. k
-                        if not checkedp[key] then
-                            checkedp[key] = true
-                            bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
-                            err('  INVALID POINTER ALLOCATION SIZE2, SKIPPING REST OF THE TYPE')
-                        end
-                    end
-                end]]--
-
-                --obj:_field(k) == "primitive"
-
-                --[[if check_pointers and obj:_field(k)._kind == "primitive" and dfhack.query_heapa(a) ~= s and query_size > 0 then
-                    local key = tostring(obj._type) .. '.' .. k
-                    if not checkedp[key] then
-                        checkedp[key] = true
-                        bold(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(dfhack.query_heapa(a)))
-                        err('  INVALID POINTER ALLOCATION SIZE, SKIPPING REST OF THE TYPE')
-                    end
-                    --return
-                end]]--
-
                 if guess_pointers then
                     if field._type == 'void*'
                     or field._type == 'int64_t' or field._type == 'uint64_t'
