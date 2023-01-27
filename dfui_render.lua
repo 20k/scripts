@@ -850,8 +850,8 @@ function display_rich_text(rich_text_in, opts)
 	end
 
 	imgui.Text("Search:")
-	--imgui.SameLine()
-	--imgui.InputText("##inputunits", rich_search)
+	imgui.SameLine()
+	imgui.InputText("##inputunits", rich_search)
 
 	if render_hotkey_text({key="c", text="Clear"}) then
 		rich_search = imgui.Ref("")
