@@ -39,7 +39,7 @@ function get_occupation_name(type)
     return names[type]
 end
 
-function get_location_type_name(location, pad)
+function get_location_type_name(type, pad)
     local name_to_type = {
         ["Temple"] = df.abstract_building_type.TEMPLE,
         ["Library"] = df.abstract_building_type.LIBRARY,
@@ -54,7 +54,7 @@ function get_location_type_name(location, pad)
         type_to_name[j] = i
     end
 
-    local result = type_to_name[location:getType()]
+    local result = type_to_name[type]
 
     if pad then
         local max = 0
@@ -84,17 +84,119 @@ end
 function display_location_selector(current_building)
     local locations = get_locations()
 
-    local rich_locations = {}
+    local locations_by_type = {}
+
+    locations_by_type[df.abstract_building_type.TEMPLE] = {}
+    locations_by_type[df.abstract_building_type.LIBRARY] = {}
+    locations_by_type[df.abstract_building_type.INN_TAVERN] = {}
+    locations_by_type[df.abstract_building_type.GUILDHALL] = {}
+    locations_by_type[df.abstract_building_type.HOSPITAL] = {}
 
     for k,v in ipairs(locations) do
-        rich_locations[#rich_locations+1] = {type="location", data=v}
+        local type = v:getType()
+
+        local l = locations_by_type[type]
+
+        l[#l+1] = v
     end
 
-    local opts = {paginate=true, leave_vacant=true}
+    function on_click_make_temple()
+        if imgui.BeginPopupContextItem(nil, 0) then
+            local result = display_religion_selector()
 
-    display_make_selector(current_building)
+            if result.type == "vacant" then
+                new_loc = make_location(df.abstract_building_type.TEMPLE, {deity_type=-1, deity_data=-1})
 
-    return render.display_rich_text(rich_locations, opts)
+                imgui.CloseCurrentPopup()
+            end
+
+            if result.type == "deity" then
+                new_loc = make_location(df.abstract_building_type.TEMPLE, {deity_type=0, deity_data=result.data.id})
+
+                imgui.CloseCurrentPopup()
+            end
+
+            if result.type == "religion" then
+                new_loc = make_location(df.abstract_building_type.TEMPLE, {deity_type=1, deity_data=result.data.id})
+
+                imgui.CloseCurrentPopup()
+            end
+
+            if result.type == "cancel" then
+                imgui.CloseCurrentPopup()
+            end
+
+            imgui.EndPopup()
+        end
+    end
+
+    function on_click_make_guildhall()
+        if imgui.BeginPopupContextItem(nil, 0) then
+            local result = display_profession_selector()
+
+            if result.type == "profession" then
+                new_loc = make_location(df.abstract_building_type.GUILDHALL, {profession=result.data})
+
+                imgui.CloseCurrentPopup()
+            end
+
+            if result.type == "cancel" then
+                imgui.CloseCurrentPopup()
+            end
+        end
+    end
+
+    local rich_locations = {}
+
+    for k,v in pairs(locations_by_type) do
+        local type_name = get_location_type_name(k)
+
+        rich_locations[#rich_locations+1] = {type="tree", data=get_location_type_name(k)}
+
+        local make_name = "(Make New " .. type_name .. ")"
+
+        local open_popup = nil
+
+        if k == df.abstract_building_type.TEMPLE then
+            open_popup = on_click_make_temple
+        end
+
+        if k == df.abstract_building_type.GUILDHALL then
+            open_popup = on_click_make_guildhall
+        end
+
+        rich_locations[#rich_locations+1] = {type="button", data=make_name, extra=k, open_popup=open_popup}
+
+        for kl,vl in ipairs(v) do
+            rich_locations[#rich_locations+1] = {type="location", data=vl}
+        end
+    end
+
+    local opts = {paginate=false, leave_vacant=true}
+
+    local selected = render.display_rich_text(rich_locations, opts)
+
+    local new_loc = nil
+
+    if selected.type == "button" then
+        if selected.extra == df.abstract_building_type.INN_TAVERN then
+            new_loc = make_location(selected.extra, nil)
+        end
+
+        if selected.extra == df.abstract_building_type.HOSPITAL then
+            new_loc = make_location(selected.extra, nil)
+        end
+
+        if selected.extra == df.abstract_building_type.LIBRARY then
+            new_loc = make_location(selected.extra, nil)
+        end
+    end
+
+    if new_loc ~= nil then
+        return {type="location", data=new_loc}
+    end
+
+    return selected
 end
 
 function get_zone_location(zone)

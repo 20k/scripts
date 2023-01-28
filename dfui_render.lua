@@ -604,8 +604,13 @@ function get_rich_text_name(item)
 		return get_user_facing_name(item.data)
 	end
 
+	if item.type == "button" then
+		return item.data
+	end
+
 	if item.type == "location" then
-		return locations.get_location_type_name(item.data, true) .. ": " .. locations.get_location_name(item.data)
+		--return locations.get_location_type_name(item.data:getType(), true) .. ": " .. locations.get_location_name(item.data)
+		return locations.get_location_name(item.data)
 	end
 
 	if item.type == "text" then
@@ -652,6 +657,7 @@ end
 --{type="dwarf", data=unit}
 --{type="location", data=location}
 --{type="text", data=text}
+--{type="button", data=text}
 --{type="tree", data=text}
 --{type="deity", data=histfig}
 --{type="religion", data=entity}
@@ -802,6 +808,10 @@ function display_rich_text(rich_text_in, opts)
 
 				which_id = text
             end
+
+			if text.open_popup then
+				text.open_popup()
+			end
 
             if text.type == "unit" and imgui.IsItemHovered() then
                 render_absolute_text('X', COLOR_YELLOW, COLOR_BLACK, text.data.pos)

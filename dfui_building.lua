@@ -1692,11 +1692,15 @@ function handle_specific_zone_render(building)
 	local name = "None"
 
 	if current_location then
-		name = locations.get_location_name(current_location) .. " (" .. locations.get_location_type_name(current_location, false) .. ")"
+		name = locations.get_location_name(current_location) .. " (" .. locations.get_location_type_name(current_location:getType(), false) .. ")"
 	end
 
 	if imgui.TreeNode("Location: "..name .. "###locationselect") then
 		local which_id = locations.display_location_selector(building)
+
+		--[[if which_id.type == "button" then
+			locations.on_make_new(building, which_id.extra)
+		end]]--
 
 		if which_id.type == "location" then
 			locations.on_assign_location(building, which_id.data)
@@ -1708,6 +1712,10 @@ function handle_specific_zone_render(building)
 
 		imgui.TreePop()
 	end
+
+	--[[if imgui.TreeNode("Role Select") then
+
+	end]]--
 
 	imgui.NewLine()
 
