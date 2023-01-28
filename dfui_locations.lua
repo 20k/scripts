@@ -63,7 +63,7 @@ function get_location_name(location)
     return dfhack.TranslateName(language_name, true)
 end
 
-function display_location_selector()
+function display_location_selector(current_building)
     local locations = get_locations()
 
     local rich_locations = {}
@@ -73,6 +73,8 @@ function display_location_selector()
     end
 
     local opts = {paginate=true, leave_vacant=true}
+
+    display_make_selector(current_building)
 
     return render.display_rich_text(rich_locations, opts)
 end
@@ -416,6 +418,8 @@ function make_location(type, data)
     world_site.buildings:insert('#', generic_setup)
 
     make_occupations_for(generic_setup)
+
+    return generic_setup
 end
 
 function debug_locations()
@@ -740,6 +744,79 @@ function display_profession_selector()
     return render.display_rich_text(rich_text, opt)
 end
 
+function display_make_selector(current_building)
+    --TODO: SORT PEOPLE WHO WE HAVE OPEN PETITIONS WITH AT THE TOP
+    local additional_data = {}
+
+    local loc = nil
+
+    if imgui.Button("(Make Tavern)") then
+        loc = make_location(df.abstract_building_type.INN_TAVERN, additional_data)
+    end
+
+    if imgui.Button("(Make Hospital)") then
+        loc = make_location(df.abstract_building_type.HOSPITAL, additional_data)
+    end
+
+    if imgui.Button("(Make Temple)") then
+        imgui.OpenPopup("maketemple")
+    end
+
+    if imgui.Button("(Make Library)") then
+        loc = make_location(df.abstract_building_type.LIBRARY, additional_data)
+    end
+
+    if imgui.Button("(Make Guildhall)") then
+        imgui.OpenPopup("makeguildhall")
+    end
+
+    if imgui.BeginPopup("maketemple") then
+        local result = display_religion_selector()
+
+        if result.type == "vacant" then
+            loc = make_location(df.abstract_building_type.TEMPLE, {deity_type=-1, deity_data=-1})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "deity" then
+            loc = make_location(df.abstract_building_type.TEMPLE, {deity_type=0, deity_data=result.data.id})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "religion" then
+            loc = make_location(df.abstract_building_type.TEMPLE, {deity_type=1, deity_data=result.data.id})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "cancel" then
+            imgui.CloseCurrentPopup()
+        end
+
+        imgui.EndPopup()
+    end
+
+    if imgui.BeginPopup("makeguildhall") then
+        local result = display_profession_selector()
+
+        if result.type == "profession" then
+            loc = make_location(df.abstract_building_type.GUILDHALL, {profession=result.data})
+
+            imgui.CloseCurrentPopup()
+        end
+
+        if result.type == "cancel" then
+            imgui.CloseCurrentPopup()
+        end
+    end
+
+    if loc and current_building then
+        on_assign_location(current_building, loc)
+    end
+end
+
 function render_locations()
     render.set_can_window_pop(true)
 
@@ -782,69 +859,4 @@ function render_locations()
 
     --imgui.Text(#df.global.plotinfo.main.fortress_entity.guild_professions)
 
-
-    --TODO: SORT PEOPLE WHO WE HAVE OPEN PETITIONS WITH AT THE TOP
-    local additional_data = {}
-
-    if imgui.Button("Make Tavern") then
-        make_location(df.abstract_building_type.INN_TAVERN, additional_data)
-    end
-
-    if imgui.Button("Make Hospital") then
-        make_location(df.abstract_building_type.HOSPITAL, additional_data)
-    end
-
-    if imgui.Button("Make Temple") then
-        imgui.OpenPopup("maketemple")
-    end
-
-    if imgui.Button("Make Library") then
-        make_location(df.abstract_building_type.LIBRARY, additional_data)
-    end
-
-    if imgui.Button("Make Guildhall") then
-        imgui.OpenPopup("makeguildhall")
-    end
-
-    if imgui.BeginPopup("maketemple") then
-        local result = display_religion_selector()
-
-        if result.type == "vacant" then
-            make_location(df.abstract_building_type.TEMPLE, {deity_type=-1, deity_data=-1})
-
-            imgui.CloseCurrentPopup()
-        end
-
-        if result.type == "deity" then
-            make_location(df.abstract_building_type.TEMPLE, {deity_type=0, deity_data=result.data.id})
-
-            imgui.CloseCurrentPopup()
-        end
-
-        if result.type == "religion" then
-            make_location(df.abstract_building_type.TEMPLE, {deity_type=1, deity_data=result.data.id})
-
-            imgui.CloseCurrentPopup()
-        end
-
-        if result.type == "cancel" then
-            imgui.CloseCurrentPopup()
-        end
-
-        imgui.EndPopup()
-    end
-
-    if imgui.BeginPopup("makeguildhall") then
-        local result = display_profession_selector()
-
-        if result.type == "profession" then
-            make_location(df.abstract_building_type.GUILDHALL, {profession=result.data})
-
-            imgui.CloseCurrentPopup()
-        end
-
-        if result.type == "cancel" then
-            imgui.CloseCurrentPopup()
-        end
-    end
 end

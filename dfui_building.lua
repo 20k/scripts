@@ -1696,7 +1696,7 @@ function handle_specific_zone_render(building)
 	end
 
 	if imgui.TreeNode("Location: "..name .. "###locationselect") then
-		local which_id = locations.display_location_selector()
+		local which_id = locations.display_location_selector(building)
 
 		if which_id.type == "location" then
 			locations.on_assign_location(building, which_id.data)
