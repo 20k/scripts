@@ -100,6 +100,8 @@ function display_location_selector(current_building)
         l[#l+1] = v
     end
 
+    local new_loc = nil
+
     function on_click_make_temple()
         if imgui.BeginPopupContextItem(nil, 0) then
             local result = display_religion_selector()
@@ -175,8 +177,6 @@ function display_location_selector(current_building)
     local opts = {paginate=false, leave_vacant=true}
 
     local selected = render.display_rich_text(rich_locations, opts)
-
-    local new_loc = nil
 
     if selected.type == "button" then
         if selected.extra == df.abstract_building_type.INN_TAVERN then
