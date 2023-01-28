@@ -21,6 +21,24 @@ function get_locations(type)
     return result
 end
 
+function get_occupation_name(type)
+    local names = {
+        "Tavern Keeper",
+        "Performer",
+        "Scholar",
+        "Mercenary",
+        "Monster Slayer",
+        "Scribe",
+        "Messenger",
+        "Doctor",
+        "Diagnostician",
+        "Surgeon",
+        "Bone Doctor"
+    }
+
+    return names[type]
+end
+
 function get_location_type_name(location, pad)
     local name_to_type = {
         ["Temple"] = df.abstract_building_type.TEMPLE,
