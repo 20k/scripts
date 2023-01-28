@@ -218,7 +218,7 @@ function generate_language_name_object(location_type)
 	return result
 end
 
-function make_occupation(location, type)
+function add_occupation(location, type)
     local occupation = df.new(df.occupation)
     occupation.id = df.global.occupation_next_id
     occupation.type = type
@@ -251,23 +251,23 @@ end
 --hospital: 10=bone doctor
 
 --occupations are lazily generated, so if we screw this up its not the end of the world
-function make_occupations_for(location)
+function ensure_occupations_for(location)
     local type = location:getType()
 
     if type == df.abstract_building_type.INN_TAVERN then
-        make_occupation(location, 0)
-        make_occupation(location, 1)
+        add_occupation(location, 0)
+        add_occupation(location, 1)
     end
 
     if type == df.abstract_building_type.TEMPLE then
-        make_occupation(location, 1)
+        add_occupation(location, 1)
     end
 
     if type == df.abstract_building_type.HOSPITAL then
-        make_occupation(location, 7)
-        make_occupation(location, 8)
-        make_occupation(location, 9)
-        make_occupation(location, 10)
+        add_occupation(location, 7)
+        add_occupation(location, 8)
+        add_occupation(location, 9)
+        add_occupation(location, 10)
     end
 
     return {}
@@ -435,7 +435,7 @@ function make_location(type, data)
     world_site.next_building_id = world_site.next_building_id + 1
     world_site.buildings:insert('#', generic_setup)
 
-    make_occupations_for(generic_setup)
+    ensure_occupations_for(generic_setup)
 
     return generic_setup
 end
