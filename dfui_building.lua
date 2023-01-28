@@ -1692,7 +1692,7 @@ function handle_specific_zone_render(building)
 	local name = "None"
 
 	if current_location then
-		name = locations.get_location_name(current_location)
+		name = locations.get_location_name(current_location) .. " (" .. locations.get_location_type_name(current_location, false) .. ")"
 	end
 
 	if imgui.TreeNode("Location: "..name .. "###locationselect") then
