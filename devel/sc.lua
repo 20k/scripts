@@ -116,6 +116,8 @@ local function err(s)
     dfhack.color(-1)
 end
 
+local broken_type_list = {}
+
 prog = '|/-\\'
 local count = -1
 local function check_container(obj, path)
@@ -186,8 +188,10 @@ local function check_container(obj, path)
                             err('  INVALID POINTER ALLOCATION SIZE (windows heap debugging)')
 
                             dfhack.printerr(path .. ' ' .. tostring(obj._type) .. ' -> ' .. k .. " expected " .. tostring(s) .. " got " .. tostring(query_size))
+
+                            broken_type_list[t] = true
                         end
-                        return
+                        --return
                     end
                 end
 
@@ -285,3 +289,9 @@ while #queue > 0 do
     check_container(v[1], v[2])
 end
 print(count .. ' scanned')
+
+print("Invalid allocation size count: " .. tostring(#broken_type_list))
+
+for k,v in pairs(broken_type_list) do
+    print(k)
+end
