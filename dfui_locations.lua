@@ -219,6 +219,14 @@ function generate_language_name_object(location_type)
 end
 
 function add_occupation(location, type)
+    for k,v in ipairs(location.occupations) do
+        --need to double check histfig_id
+        --if the type matches, and its unassigned, don't double insert
+        if v.type == type and occupation.histfig_id == -1 then
+            return
+        end
+    end
+
     local occupation = df.new(df.occupation)
     occupation.id = df.global.occupation_next_id
     occupation.type = type
