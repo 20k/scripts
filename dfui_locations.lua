@@ -440,6 +440,8 @@ end
 --so. I think the way it works is that when you assign an occupation
 --unit.profession is set to the profession type of the occupation
 --when you deassign a profession, unit.profession = unit.profession2
+--but it won't eg overwrite a recruit with being a doctor. This hopefully handles
+--the profession cases, and considers an unprofessioned dwarf as profession==profession2
 function set_occupation(occ, unit)
     local histfig = unit_to_histfig(unit)
 
@@ -466,7 +468,10 @@ function set_occupation(occ, unit)
     occ.histfig_id = unit.hist_figure_id
 
     unit.occupations:insert('#', occ)
-    unit.profession = occupation_to_profession(occ.type)
+
+    if unit.profession == unit.profession2 then
+        unit.profession = occupation_to_profession(occ.type)
+    end
 
     --[[dfhack.println("Profession", tostring(df.profession[unit.profession]))
     dfhack.println("Profession2", tostring(df.profession[unit.profession2]))

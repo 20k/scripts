@@ -490,6 +490,9 @@ function debug_unit(v)
 
 	imgui.Text("MilUniform", tostring(v.military.cur_uniform))]]--
 
+	imgui.Text("Profession1", tostring(df.profession[v.profession]))
+	imgui.Text("Profession2", tostring(df.profession[v.profession2]))
+
 	imgui.Text(tostring(#v.occupations))
 
 	for k,o in ipairs(v.occupations) do
