@@ -839,6 +839,8 @@ function display_rich_text(rich_text_in, opts)
 
 			if text.on_hover ~= nil and imgui.IsItemHovered() and first_hover then
 				text.on_hover(text)
+
+				first_hover = false
 			end
 		end
 

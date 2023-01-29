@@ -170,7 +170,7 @@ function display_location_selector(current_building)
         rich_locations[#rich_locations+1] = {type="button", data=make_name, extra=k, open_popup=open_popup}
 
         for kl,vl in ipairs(v) do
-            rich_locations[#rich_locations+1] = {type="location", data=vl}
+            rich_locations[#rich_locations+1] = {type="location", data=vl, on_hover=do_location_on_hover}
         end
     end
 
@@ -752,16 +752,38 @@ function do_deity_hover_info(rich_text)
     render_array(get_deity_hover_info(rich_text.data))
 end
 
-function get_hover_info(location, count)
+function get_location_hover_info(location)
     local type = location:getType()
 
     local hover = {}
 
     if type == df.abstract_building_type.TEMPLE then
+        if location.deity_type == -1 then
+            return {"No specific deity"}
+        end
 
+        if location.deity_type == 0 then
+            local real_deity = df.historical_figure.find(location.deity_data.Deity)
+
+            return get_deity_hover_info(real_deity)
+        end
+
+        if location.deity_type == 1 then
+            local real_entity = df.historical_entity.find(location.deity_data.Religion)
+
+            return get_religion_hover_info(real_entity)
+        end
     end
 
     return hover
+end
+
+function do_location_on_hover(rich_text)
+    if rich_text.type ~= "location" then
+        return
+    end
+
+    return render_array(get_location_hover_info(rich_text.data))
 end
 
 function display_religion_selector()
