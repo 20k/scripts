@@ -632,6 +632,65 @@ function sort_by_count(tab)
     return result_with_count
 end
 
+function get_religion_hover_info(religion_id, count)
+    local hover = {}
+
+    local entity = df.historical_entity.find(religion_id)
+
+    if entity then
+        local worshipper_str = tostring(count) .. " worshippers"
+
+        hover = {worshipper_str}
+
+        local deities = get_religion_deities(entity)
+
+        for k,deity in ipairs(deities) do
+            hover[#hover+1] = "Worship"
+            hover[#hover+1] = translate_name(deity.name)
+
+            local spheres = get_deity_sphere_names(deity)
+
+            for _,name in ipairs(spheres) do
+                hover[#hover+1] = name
+            end
+        end
+    end
+
+    return hover
+end
+
+function get_deity_hover_info(deity_id, count)
+    local hover = {}
+
+    local histfig = df.historical_figure.find(deity_id)
+
+    if histfig then
+        local worshipper_str = tostring(count) .. " worshippers"
+
+        local spheres = get_deity_sphere_names(histfig)
+
+        hover = {worshipper_str}
+
+        for k,v in ipairs(spheres) do
+            hover[#hover+1] = v
+        end
+    end
+
+    return hover
+end
+
+function get_hover_info(location, count)
+    local type = location:getType()
+
+    local hover = {}
+
+    if type == df.abstract_building_type.TEMPLE then
+
+    end
+
+    return hover
+end
+
 function display_religion_selector()
     function is_deity(link)
         return link:getType() == df.histfig_hf_link_type.DEITY
@@ -691,23 +750,7 @@ function display_religion_selector()
         local deity_id = data.data
         local histfig = df.historical_figure.find(deity_id)
 
-        if histfig then
-            local dat = {type="deity", data=histfig}
-
-            local worshipper_str = tostring(data.count) .. " worshippers"
-
-            local spheres = get_deity_sphere_names(histfig)
-
-            local hover = {worshipper_str}
-
-            for k,v in ipairs(spheres) do
-                hover[#hover+1] = v
-            end
-
-            dat.hover_array = hover
-
-            rich_text[#rich_text+1] = dat
-        end
+        rich_text[#rich_text+1] = {type="deity", data=histfig, hover_array=get_deity_hover_info(deity_id, data.count)}
     end
 
     rich_text[#rich_text+1] = {type="text", data="Religions:"}
@@ -716,30 +759,7 @@ function display_religion_selector()
         local religion_id = data.data
         local entity = df.historical_entity.find(religion_id)
 
-        if entity then
-            local dat = {type="religion", data=entity}
-
-            local worshipper_str = tostring(data.count) .. " worshippers"
-
-            local hover = {worshipper_str}
-
-            local deities = get_religion_deities(entity)
-
-            for k,deity in ipairs(deities) do
-                hover[#hover+1] = "Worship"
-                hover[#hover+1] = translate_name(deity.name)
-
-                local spheres = get_deity_sphere_names(deity)
-
-                for _,name in ipairs(spheres) do
-                    hover[#hover+1] = name
-                end
-            end
-
-            dat.hover_array = hover
-
-            rich_text[#rich_text+1] = dat
-        end
+        rich_text[#rich_text+1] = {type="religion", data=entity, hover_array=get_religion_hover_info(religion_id, data.count)}
     end
 
     local opt = {paginate=true, leave_vacant=true, leave_vacant_str="(No Specific Deity)##0", cancel=true, cancel_str="(Cancel)"}
