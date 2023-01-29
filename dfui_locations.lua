@@ -145,6 +145,8 @@ function display_location_selector(current_building)
             if result.type == "cancel" then
                 imgui.CloseCurrentPopup()
             end
+
+            imgui.EndPopup()
         end
     end
 
@@ -691,7 +693,7 @@ function get_religion_believer_count(religion)
     return count
 end
 
-function get_religion_hover_info(religion)
+function get_religion_hover_info(religion, omit_title)
     local hover = {}
 
     local entity = religion
@@ -701,7 +703,11 @@ function get_religion_hover_info(religion)
 
         local worshipper_str = tostring(count) .. " worshippers"
 
-        hover = {worshipper_str}
+        if omit_title == false then
+            hover[#hover+1] = "Religion | " .. translate_name(religion.name)
+        end
+
+        hover[#hover+1] = worshipper_str
 
         local deities = get_religion_deities(entity)
 
@@ -720,7 +726,7 @@ function get_religion_hover_info(religion)
     return hover
 end
 
-function get_deity_hover_info(deity)
+function get_deity_hover_info(deity, omit_title)
     local hover = {}
 
     local histfig = deity
@@ -732,7 +738,11 @@ function get_deity_hover_info(deity)
 
         local spheres = get_deity_sphere_names(histfig)
 
-        hover = {worshipper_str}
+        if omit_title == false then
+            hover[#hover+1] = "Deity | " .. translate_name(deity.name)
+        end
+
+        hover[#hover+1] = worshipper_str
 
         for k,v in ipairs(spheres) do
             hover[#hover+1] = v
@@ -743,23 +753,27 @@ function get_deity_hover_info(deity)
 end
 
 function do_religion_hover_info(rich_text)
-    render_array(get_religion_hover_info(rich_text.data))
+    render_array(get_religion_hover_info(rich_text.data, true))
 end
 
 function do_deity_hover_info(rich_text)
-    render_array(get_deity_hover_info(rich_text.data))
+    render_array(get_deity_hover_info(rich_text.data, true))
 end
 
-function get_guild_hover_info(guild)
-    local result = {}
+function get_guild_hover_info(guild, omit_title)
+    local hover = {}
 
-    for k,v in ipairs(guild.guild_professions) do
-        result[#result+1] = tostring(df.profession[v.profession])
+    if omit_title == false then
+        hover[#hover+1] = "Guild | " .. tostring(translate_name(guild.name))
     end
 
-    result[#result+1] = tostring(count_valid_guild_members(guild.hist_figures)) .. " members"
+    for k,v in ipairs(guild.guild_professions) do
+        hover[#hover+1] = tostring(df.profession[v.profession])
+    end
 
-    return result
+    hover[#hover+1] = tostring(count_valid_guild_members(guild.hist_figures)) .. " members"
+
+    return hover
 end
 
 function get_location_hover_info(location)
@@ -775,13 +789,13 @@ function get_location_hover_info(location)
         if location.deity_type == 0 then
             local real_deity = df.historical_figure.find(location.deity_data.Deity)
 
-            return get_deity_hover_info(real_deity)
+            return get_deity_hover_info(real_deity, false)
         end
 
         if location.deity_type == 1 then
             local real_entity = df.historical_entity.find(location.deity_data.Religion)
 
-            return get_religion_hover_info(real_entity)
+            return get_religion_hover_info(real_entity, false)
         end
     end
 
@@ -790,9 +804,14 @@ function get_location_hover_info(location)
         local guilds_of_profession = profession_to_guilds(location.contents.profession)
 
         for _,guild in ipairs(guilds_of_profession) do
-            for _,v in ipairs(get_guild_hover_info(guild)) do
+            for _,v in ipairs(get_guild_hover_info(guild, false)) do
                 hover[#hover+1] = v
             end
+        end
+
+        if #guilds_of_profession == 0 then
+            hover[#hover+1] = "No established guild"
+            hover[#hover+1] = tostring(df.profession[location.contents.profession])
         end
     end
 
@@ -1088,6 +1107,8 @@ function display_make_selector(current_building)
         if result.type == "cancel" then
             imgui.CloseCurrentPopup()
         end
+
+        imgui.EndPopup()
     end
 
     if loc and current_building then
