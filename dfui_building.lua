@@ -1709,6 +1709,19 @@ function handle_specific_zone_render(building)
 		imgui.TreePop()
 	end
 
+	if current_location then
+		locations.ensure_occupations_for(current_location)
+
+		--OR IS ORGANISED TEMPLE RELIGION ASSIGN PRIEST
+		if #current_location.occupations > 0 then
+			if imgui.TreeNode("Roles") then
+				locations.display_occupation_selector(current_location)
+
+				imgui.TreePop()
+			end
+		end
+	end
+
 	--[[if imgui.TreeNode("Role Select") then
 
 	end]]--

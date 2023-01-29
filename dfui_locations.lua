@@ -326,7 +326,7 @@ function add_occupation(location, type)
     for k,v in ipairs(location.occupations) do
         --need to double check histfig_id
         --if the type matches, and its unassigned, don't double insert
-        if v.type == type and occupation.histfig_id == -1 then
+        if v.type == type and v.histfig_id == -1 then
             return
         end
     end
@@ -349,6 +349,10 @@ function add_occupation(location, type)
     location.occupations:insert('#', occupation)
 
     return occupation
+end
+
+function display_occupation_selector(location)
+
 end
 
 ---sigh. So it has actual occupations, and pending occupations. This is a HUGE pain
