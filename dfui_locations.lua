@@ -632,12 +632,75 @@ function sort_by_count(tab)
     return result_with_count
 end
 
-function get_religion_hover_info(religion_id, count)
+function render_array(array)
+    imgui.BeginTooltip()
+
+    for k,v in ipairs(array) do
+        imgui.Text(v)
+    end
+
+    imgui.EndTooltip()
+end
+
+function get_deity_believer_count(deity)
+    function is_deity(link)
+        return link:getType() == df.histfig_hf_link_type.DEITY and link.target_hf == deity.id
+    end
+
+    local count = 0
+
+    for k,v in ipairs(df.global.world.units.active) do
+        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
+            local histfig = unit_to_histfig(v)
+
+            if histfig then
+                local results = get_relations(histfig.histfig_links, is_deity)
+
+                count = count + #results
+            end
+        end
+    end
+
+    return count
+end
+
+--if links are bidirectional, can make this run much faster
+function get_religion_believer_count(religion)
+    local count = 0
+
+    function is_religion(link)
+        if link:getType() == df.histfig_entity_link_type.MEMBER then
+            if link.entity_id == religion.id then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    for k,v in ipairs(df.global.world.units.active) do
+        if dfhack.units.isFortControlled(v) and not dfhack.units.isKilled(v) then
+            local histfig = unit_to_histfig(v)
+
+            if histfig then
+                local results = get_relations(histfig.entity_links, is_religion)
+
+                count = count + #results
+            end
+        end
+    end
+
+    return count
+end
+
+function get_religion_hover_info(religion)
     local hover = {}
 
-    local entity = df.historical_entity.find(religion_id)
+    local entity = religion
 
     if entity then
+        local count = get_religion_believer_count(entity)
+
         local worshipper_str = tostring(count) .. " worshippers"
 
         hover = {worshipper_str}
@@ -659,12 +722,14 @@ function get_religion_hover_info(religion_id, count)
     return hover
 end
 
-function get_deity_hover_info(deity_id, count)
+function get_deity_hover_info(deity)
     local hover = {}
 
-    local histfig = df.historical_figure.find(deity_id)
+    local histfig = deity
 
     if histfig then
+        local count = get_deity_believer_count(deity)
+
         local worshipper_str = tostring(count) .. " worshippers"
 
         local spheres = get_deity_sphere_names(histfig)
@@ -677,6 +742,14 @@ function get_deity_hover_info(deity_id, count)
     end
 
     return hover
+end
+
+function do_religion_hover_info(rich_text)
+    render_array(get_religion_hover_info(rich_text.data))
+end
+
+function do_deity_hover_info(rich_text)
+    render_array(get_deity_hover_info(rich_text.data))
 end
 
 function get_hover_info(location, count)
@@ -750,7 +823,7 @@ function display_religion_selector()
         local deity_id = data.data
         local histfig = df.historical_figure.find(deity_id)
 
-        rich_text[#rich_text+1] = {type="deity", data=histfig, hover_array=get_deity_hover_info(deity_id, data.count)}
+        rich_text[#rich_text+1] = {type="deity", data=histfig, on_hover=do_deity_hover_info}
     end
 
     rich_text[#rich_text+1] = {type="text", data="Religions:"}
@@ -759,7 +832,7 @@ function display_religion_selector()
         local religion_id = data.data
         local entity = df.historical_entity.find(religion_id)
 
-        rich_text[#rich_text+1] = {type="religion", data=entity, hover_array=get_religion_hover_info(religion_id, data.count)}
+        rich_text[#rich_text+1] = {type="religion", data=entity, on_hover=do_religion_hover_info}
     end
 
     local opt = {paginate=true, leave_vacant=true, leave_vacant_str="(No Specific Deity)##0", cancel=true, cancel_str="(Cancel)"}
