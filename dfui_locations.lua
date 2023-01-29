@@ -633,6 +633,10 @@ function sort_by_count(tab)
 end
 
 function render_array(array)
+    if #array == 0 then
+        return
+    end
+
     imgui.BeginTooltip()
 
     for k,v in ipairs(array) do
