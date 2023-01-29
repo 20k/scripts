@@ -36,7 +36,7 @@ function get_occupation_name(type)
         "Bone Doctor"
     }
 
-    return names[type]
+    return names[type + 1]
 end
 
 function get_location_type_name(type, pad)
@@ -351,8 +351,51 @@ function add_occupation(location, type)
     return occupation
 end
 
-function display_occupation_selector(location)
+function sort_by_occupation(a, b)
+    return a.unit_id > b.unit_id
+end
 
+function display_occupation_selector(location)
+    local occupations_by_type = {}
+
+    for k,v in ipairs(location.occupations) do
+        if occupations_by_type[v.type] == nil then
+            occupations_by_type[v.type] = {}
+        end
+
+        local val = occupations_by_type[v.type]
+
+        val[#val+1] = v
+    end
+
+    for k,v in pairs(occupations_by_type) do
+        table.sort(v, sort_by_occupation)
+    end
+
+    if imgui.BeginTable("Iamatable", 2, 1 << 13) then
+        for type,occupations in pairs(occupations_by_type) do
+            for k,v in ipairs(occupations) do
+                imgui.TableNextRow();
+                imgui.TableNextColumn();
+
+                local unit = df.unit.find(v.unit_id)
+
+                local role_name = get_occupation_name(v.type)
+
+                imgui.Text(role_name .. ":")
+
+                imgui.TableNextColumn()
+
+                if unit then
+                    imgui.Text(render.get_user_facing_name(unit))
+                else
+                    imgui.Text("None")
+                end
+            end
+        end
+
+        imgui.EndTable()
+    end
 end
 
 ---sigh. So it has actual occupations, and pending occupations. This is a HUGE pain
