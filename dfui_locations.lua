@@ -673,13 +673,7 @@ function get_religion_believer_count(religion)
     local count = 0
 
     function is_religion(link)
-        if link:getType() == df.histfig_entity_link_type.MEMBER then
-            if link.entity_id == religion.id then
-                return true
-            end
-        end
-
-        return false
+        return link:getType() == df.histfig_entity_link_type.MEMBER and link.entity_id == religion.id
     end
 
     for k,v in ipairs(df.global.world.units.active) do
