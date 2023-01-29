@@ -750,6 +750,18 @@ function do_deity_hover_info(rich_text)
     render_array(get_deity_hover_info(rich_text.data))
 end
 
+function get_guild_hover_info(guild)
+    local result = {}
+
+    for k,v in ipairs(guild.guild_professions) do
+        result[#result+1] = tostring(df.profession[v.profession])
+    end
+
+    result[#result+1] = tostring(count_valid_guild_members(guild.hist_figures)) .. " members"
+
+    return result
+end
+
 function get_location_hover_info(location)
     local type = location:getType()
 
@@ -770,6 +782,17 @@ function get_location_hover_info(location)
             local real_entity = df.historical_entity.find(location.deity_data.Religion)
 
             return get_religion_hover_info(real_entity)
+        end
+    end
+
+    --guilds are a historical entity
+    if type == df.abstract_building_type.GUILDHALL then
+        local guilds_of_profession = profession_to_guilds(location.contents.profession)
+
+        for _,guild in ipairs(guilds_of_profession) do
+            for _,v in ipairs(get_guild_hover_info(guild)) do
+                hover[#hover+1] = v
+            end
         end
     end
 
@@ -888,6 +911,34 @@ function profession_parent(id)
     return df.profession.attrs[id+1].parent
 end
 
+function profession_to_guilds(profession)
+    local guilds = {}
+
+    for k,v in ipairs(get_fortress_guilds()) do
+        for _,p in ipairs(v.guild_professions) do
+            if p.profession == profession then
+                guilds[#guilds+1] = v
+            end
+        end
+    end
+
+    return guilds
+end
+
+function count_valid_guild_members(histfigs)
+    local count = 0
+
+    for i,v in ipairs(histfigs) do
+        local unit = df.unit.find(v.unit_id)
+
+        if unit ~= nil and not dfhack.units.isKilled(unit) then
+            count = count + 1
+        end
+    end
+
+    return count
+end
+
 function display_profession_selector()
     local professions_by_type = {}
 
@@ -940,20 +991,6 @@ function display_profession_selector()
         end
     end
 
-    function count_valid_members(histfigs)
-        local count = 0
-
-        for i,v in ipairs(histfigs) do
-            local unit = df.unit.find(v.unit_id)
-
-            if unit ~= nil and not dfhack.units.isKilled(unit) then
-                count = count + 1
-            end
-        end
-
-        return count
-    end
-
     local rich_text = {{type="text", data="Professions:"}}
 
     for k,data in ipairs(ordered_professions) do
@@ -967,7 +1004,7 @@ function display_profession_selector()
             for i,guild in ipairs(guilds) do
                 arr[#arr+1] = "Guild:"
                 arr[#arr+1] = translate_name(guild.name)
-                arr[#arr+1] = tostring(count_valid_members(guild.hist_figures)) .. " members"
+                arr[#arr+1] = tostring(count_valid_guild_members(guild.hist_figures)) .. " members"
 
                 --[[for k,v in ipairs(guild.guild_professions) do
                     arr[#arr+1] = profession_name(v.profession)
