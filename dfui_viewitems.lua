@@ -492,6 +492,10 @@ function debug_unit(v)
 
 	imgui.Text(tostring(#v.occupations))
 
+	for k,o in ipairs(v.occupations) do
+		imgui.Text("o", tostring(df.occupation_type[o.type]))
+	end
+
 	imgui.Text(tostring(v.vision_cone))
 	imgui.Text("Burrows?", tostring(#v.burrows))
 	imgui.Text("weight", tostring(v.weight))

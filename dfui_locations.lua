@@ -39,6 +39,24 @@ function get_occupation_name(type)
     return names[type + 1]
 end
 
+function occupation_to_profession(occ_type)
+    local type_list = {
+        df.profession.TAVERN_KEEPER,
+        df.profession.BARD,
+        df.profession.SCHOLAR, --???
+        df.profession.MERCENARY,
+        df.profession.MONSTER_SLAYER,
+        df.profession.SCRIBE,
+        df.profession.MESSENGER,
+        df.profession.DOCTOR,
+        df.profession.DIAGNOSER,
+        df.profession.SURGEON,
+        df.profession.BONE_SETTER
+    }
+
+    return type_list[occ_type + 1]
+end
+
 function get_location_type_name(type, pad)
     local name_to_type = {
         ["Temple"] = df.abstract_building_type.TEMPLE,
@@ -355,7 +373,111 @@ function sort_by_occupation(a, b)
     return a.unit_id > b.unit_id
 end
 
+function valid_unit(unit)
+	if not dfhack.units.isOwnGroup(unit) then
+		return false
+	end
+
+	if not dfhack.units.isOwnCiv(unit) then
+		return false
+	end
+
+	if not dfhack.units.isActive(unit) then
+		return false
+	end
+
+	if unit.flags2.visitor then
+		return false
+	end
+
+	if unit.flags3.ghostly then
+		return false
+	end
+
+	if dfhack.units.isChild(unit) or dfhack.units.isBaby(unit) then
+		return false
+	end
+
+	return true
+end
+
+function get_valid_units()
+	local result = {}
+
+	local units = df.global.world.units.active
+
+	for i=0,#units-1 do
+		local unit = units[i]
+
+		if valid_unit(unit) then
+			result[#result+1] = unit
+		end
+	end
+
+	return result
+end
+
+function remove_occupation(occ)
+    local unit = df.unit.find(occ.unit_id)
+
+    if unit == nil then
+        return
+    end
+
+    for i=#unit.occupations-1,0,-1 do
+        local uocc = unit.occupations[i]
+
+        if occ.id == uocc.id then
+            unit.occupations:erase(i)
+            unit.profession = unit.profession2
+
+            occ.unit_id = -1
+            occ.histfig_id = -1
+        end
+    end
+end
+
+--so. I think the way it works is that when you assign an occupation
+--unit.profession is set to the profession type of the occupation
+--when you deassign a profession, unit.profession = unit.profession2
+function set_occupation(occ, unit)
+    local histfig = unit_to_histfig(unit)
+
+    if histfig == nil then
+        dfhack.println("Warning: nil histfig ", render.get_user_facing_name(unit))
+        return
+    end
+
+    remove_occupation(occ)
+
+    local occ_copy = {}
+
+    for k,v in ipairs(unit.occupations) do
+        occ_copy[#occ_copy+1] = v
+    end
+
+    for k,v in ipairs(occ_copy) do
+        remove_occupation(v)
+    end
+
+    unit.occupations:resize(0)
+
+    occ.unit_id = unit.id
+    occ.histfig_id = unit.hist_figure_id
+
+    unit.occupations:insert('#', occ)
+    unit.profession = occupation_to_profession(occ.type)
+
+    --[[dfhack.println("Profession", tostring(df.profession[unit.profession]))
+    dfhack.println("Profession2", tostring(df.profession[unit.profession2]))
+    dfhack.println("Profession3", tostring(df.profession[histfig.profession]))
+
+    dfhack.println("Hello", tostring(df.occupation[occ.type]))--]]
+end
+
 function display_occupation_selector(location)
+    ensure_occupations_for(location)
+
     local occupations_by_type = {}
 
     for k,v in ipairs(location.occupations) do
@@ -380,9 +502,25 @@ function display_occupation_selector(location)
             for k,v in ipairs(occupations) do
                 local unit = df.unit.find(v.unit_id)
                 if unit then
-                    imgui.Button(render.get_user_facing_name(unit), "###occ" .. tostring(v.id)))
+                    imgui.Button(render.get_user_facing_name(unit) .. "###occ" .. tostring(v.id))
                 else
                     imgui.Button("None###occ" .. tostring(v.id))
+                end
+
+                if imgui.BeginPopupContextItem("###occ" .. tostring(v.id), 0) then
+                    local opts = {paginate=true, leave_vacant=true}
+
+                    local result = render.display_unit_list(get_valid_units(), opts)
+
+                    if result.type == "vacant" then
+                        remove_occupation(v)
+                    end
+
+                    if result.type == "unit" then
+                        set_occupation(v, result.data)
+                    end
+
+                    imgui.EndPopup()
                 end
             end
 
@@ -390,6 +528,8 @@ function display_occupation_selector(location)
             imgui.TreePop()
         end
     end
+
+    ensure_occupations_for(location)
 end
 
 ---sigh. So it has actual occupations, and pending occupations. This is a HUGE pain

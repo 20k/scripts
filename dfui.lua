@@ -173,7 +173,7 @@ function MyScreen:render()
 
 	should_pop = should_pop or imgui.IsMouseClicked(1) and render.can_pop() and render.mouse_rclick_poppable
 
-	if should_pop then
+	if should_pop and not imgui.IsPopupOpen("", (1 << 7) | (1<<8)) then
 		if render.menu_popping_pops_everything then
 			render.pop_menu()
 		else
