@@ -380,9 +380,9 @@ function display_occupation_selector(location)
             for k,v in ipairs(occupations) do
                 local unit = df.unit.find(v.unit_id)
                 if unit then
-                    imgui.Text(render.get_user_facing_name(unit))
+                    imgui.Button(render.get_user_facing_name(unit), "###occ" .. tostring(v.id)))
                 else
-                    imgui.Text("None")
+                    imgui.Button("None###occ" .. tostring(v.id))
                 end
             end
 
