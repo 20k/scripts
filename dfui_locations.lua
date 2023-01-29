@@ -372,29 +372,23 @@ function display_occupation_selector(location)
         table.sort(v, sort_by_occupation)
     end
 
-    if imgui.BeginTable("Iamatable", 2, 1 << 13) then
-        for type,occupations in pairs(occupations_by_type) do
+    for type,occupations in pairs(occupations_by_type) do
+        local role_name = get_occupation_name(type)
+
+        if imgui.TreeNodeEx(role_name .. " (" .. tostring(#occupations) .. ")###" .. role_name, 1<<5) then
+            imgui.Indent()
             for k,v in ipairs(occupations) do
-                imgui.TableNextRow();
-                imgui.TableNextColumn();
-
                 local unit = df.unit.find(v.unit_id)
-
-                local role_name = get_occupation_name(v.type)
-
-                imgui.Text(role_name .. ":")
-
-                imgui.TableNextColumn()
-
                 if unit then
                     imgui.Text(render.get_user_facing_name(unit))
                 else
                     imgui.Text("None")
                 end
             end
-        end
 
-        imgui.EndTable()
+            imgui.Unindent()
+            imgui.TreePop()
+        end
     end
 end
 
